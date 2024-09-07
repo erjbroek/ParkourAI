@@ -1,6 +1,8 @@
 export default class MouseHandler {
   public constructor() {
-
+    document.addEventListener('mousedown', this.mouseDown);
+    document.addEventListener('mouseup', this.mouseUp);
+    
   }
 
   public mouseDown() {
@@ -9,5 +11,9 @@ export default class MouseHandler {
 
   public mouseUp() {
 
-  } 
+  }
+  
+  public mouseMove() {
+
+  }
 }
