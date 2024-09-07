@@ -26,9 +26,11 @@ export default class GameSetup {
 
         window.addEventListener('resize', () => this.onWindowResize(), false);
 
+        this.setupLight();
         this.activeScene = new Game();
         this.startRendering();
     }
+
 
     /*
     * Automatically adjusts scene size/aspect if window is resized
@@ -37,6 +39,15 @@ export default class GameSetup {
         GameSetup.camera.aspect = window.innerWidth / window.innerHeight;
         GameSetup.camera.updateProjectionMatrix();
         GameSetup.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    public setupLight() {
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        GameSetup.scene.add(ambientLight);
+    
+        const directionalLight = new THREE.DirectionalLight(0xffffff, Math.PI);
+        directionalLight.position.set(-100, 100, 100).normalize();
+        GameSetup.scene.add(directionalLight);
     }
 
     /*

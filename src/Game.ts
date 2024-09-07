@@ -11,8 +11,10 @@ export default class Game extends Scene {
   }
 
   private createCube(): void {
+    
     const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    
     this.cube = new THREE.Mesh(geometry, material);
     GameSetup.scene.add(this.cube);
   }
@@ -22,7 +24,6 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-
     this.cube.rotation.x += 0.01;
     this.cube.rotation.y += 0.01;
     console.log(deltaTime);
