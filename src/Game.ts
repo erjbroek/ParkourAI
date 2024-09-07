@@ -2,22 +2,26 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GameSetup from './GameSetup.js';
 import Scene from './Scene.js';
 import * as THREE from 'three';
+import Player from './Player.js';
 
 export default class Game extends Scene {
-  private cube: THREE.Mesh;
+  private startingPlatform: THREE.Mesh;
+
+  private player: Player = new Player();
 
   public constructor() {
     super();
     this.generateParkour();
+    this.player.createPlayer();
   }
 
   private generateParkour(): void {
-    const geometry = new THREE.BoxGeometry(10, 3, 8);
+    const geometry = new THREE.BoxGeometry(15, 0.5, 8);
     const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
     
-    this.cube = new THREE.Mesh(geometry, material);
-    this.cube.position.set(0, -5, -10);
-    GameSetup.scene.add(this.cube);
+    this.startingPlatform = new THREE.Mesh(geometry, material);
+    this.startingPlatform.position.set(0, 0, 0);
+    GameSetup.scene.add(this.startingPlatform);
   }
 
   public override processInput(): void {
@@ -30,7 +34,7 @@ export default class Game extends Scene {
 
   public override render(): void {
 
-    GameSetup.scene.add(this.cube);
+    GameSetup.scene.add(this.startingPlatform);
     GameSetup.renderer.render(GameSetup.scene, GameSetup.camera);
   }
 }
