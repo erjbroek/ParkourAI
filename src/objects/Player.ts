@@ -1,22 +1,36 @@
 import * as THREE from 'three';
-import GameSetup from './GameSetup.js';
+import GameSetup from '../setup/GameSetup.js';
+import SceneManager from '../utilities/SceneManager.js';
 
 export default class Player {
-  public posX: number;
-  public posY: number;
-  public posZ: number;
+  public static x: number;
+
+  public static y: number;
+
+  public static z: number;
+
   public height: number;
+
   public radius: number;
+
   public playerGroup: THREE.Group;
 
-  constructor(posX = 0, posY = 2, posZ = 0, height = 1.5, radius = 1) {
-    this.posX = posX;
-    this.posY = posY;
-    this.posZ = posZ;
+  public constructor(posX = 0, posY = 2.3, posZ = 0, height = 1.5, radius = 1) {
+    Player.x = posX;
+    Player.y = posY;
+    Player.z = posZ;
     this.height = height;
     this.radius = radius;
     this.playerGroup = new THREE.Group();
     this.createPlayer();
+  }
+
+  public getCoordinates(): { x: number, y: number, z: number } {
+    return { x: Player.x, y: Player.y, z: Player.z };
+  }
+
+  public update(deltaTime: number) {
+
   }
 
   private createPlayer(): void {
@@ -36,7 +50,7 @@ export default class Player {
     this.playerGroup.add(playerSphere1);
     this.playerGroup.add(playerSphere2);
 
-    this.playerGroup.position.set(this.posX, this.posY, this.posZ);
-    GameSetup.scene.add(this.playerGroup);
+    this.playerGroup.position.set(Player.x, Player.y, Player.z);
+    SceneManager.scene.add(this.playerGroup);
   }
 }
