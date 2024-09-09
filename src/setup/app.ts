@@ -1,5 +1,5 @@
-import GameSetup from './GameSetup.js';
+import MainCanvas from './MainCanvas.js';
 
 window.onload = () => {
-  new GameSetup();
+  new MainCanvas();
 }

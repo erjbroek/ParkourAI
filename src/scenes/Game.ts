@@ -1,10 +1,10 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import GameSetup from '../setup/GameSetup.js';
+import MainCanvas from '../setup/MainCanvas.js';
 import Scene from './Scene.js';
 import * as THREE from 'three';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
-import SceneManager from '../utilities/SceneManager.js';
+import CanvasManager from '../setup/CanvasManager.js';
 import GUI from '../utilities/GUI.js';
 import MouseHandler from '../utilities/MouseHandler.js';
 import UICollision from '../utilities/UICollision.js';
@@ -53,15 +53,15 @@ export default class Game extends Scene {
   public override update(deltaTime: number): Scene {
     // makes sure orbital camera doesnt move when in the editor
     if (MouseHandler.y2 >= window.innerHeight * 0.8 && this.openEditor) {
-      SceneManager.orbitControls.enabled = false;
+      CanvasManager.orbitControls.enabled = false;
     } else {
-      SceneManager.orbitControls.enabled = true;
+      CanvasManager.orbitControls.enabled = true;
     }
     return this;
   }
 
   public override render(): void {
-    SceneManager.renderer.render(SceneManager.scene, SceneManager.camera);
+    CanvasManager.renderer.render(CanvasManager.scene, CanvasManager.camera);
     const canvas = GUI.getCanvas();
     if (this.clickEditor) {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);

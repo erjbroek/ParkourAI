@@ -1,26 +1,21 @@
 import * as THREE from 'three';
-import GameSetup from '../setup/GameSetup.js';
-import SceneManager from '../utilities/SceneManager.js';
+import MainCanvas from '../setup/MainCanvas.js';
+import CanvasManager from '../setup/CanvasManager.js';
 
 export default class Player {
-  public static x: number;
+  public static x: number = 0;
 
-  public static y: number;
+  public static y: number = 2.7;
 
-  public static z: number;
+  public static z: number = 0;
 
-  public height: number;
+  public height: number = 2.3;
 
-  public radius: number;
+  public radius: number = 1;
 
   public playerGroup: THREE.Group;
 
-  public constructor(posX = 0, posY = 2.3, posZ = 0, height = 1.5, radius = 1) {
-    Player.x = posX;
-    Player.y = posY;
-    Player.z = posZ;
-    this.height = height;
-    this.radius = radius;
+  public constructor() {
     this.playerGroup = new THREE.Group();
     this.createPlayer();
   }
@@ -46,11 +41,12 @@ export default class Player {
     playerSphere1.position.set(0, -this.height / 2, 0);
     playerSphere2.position.set(0, this.height / 2, 0);
 
+
     this.playerGroup.add(playerCylinder);
     this.playerGroup.add(playerSphere1);
     this.playerGroup.add(playerSphere2);
 
     this.playerGroup.position.set(Player.x, Player.y, Player.z);
-    SceneManager.scene.add(this.playerGroup);
+    CanvasManager.scene.add(this.playerGroup);
   }
 }
