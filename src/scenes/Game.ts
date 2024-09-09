@@ -3,11 +3,11 @@ import Scene from './Scene.js';
 import * as THREE from 'three';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
-import CanvasManager from '../setup/CanvasManager.js';
 import GUI from '../utilities/GUI.js';
 import UICollision from '../utilities/UICollision.js';
 import Edit from './Edit.js';
 import Mousehandler from '../utilities/MouseHandler.js';
+import MainCanvas from '../setup/mainCanvas.js';
 
 export default class Game extends Scene {
   private player: Player = new Player();
@@ -51,16 +51,18 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     // makes sure orbital camera doesnt move when in the editor
+    this.player.update(deltaTime);
+    MainCanvas.orbitControls.target = new THREE.Vector3(Player.x, Player.y, Player.z);
     if (Mousehandler.y2 >= window.innerHeight * 0.8 && this.openEditor) {
-      CanvasManager.orbitControls.enabled = false;
+      MainCanvas.orbitControls.enabled = false;
     } else {
-      CanvasManager.orbitControls.enabled = true;
+      MainCanvas.orbitControls.enabled = true;
     }
     return this;
   }
 
   public override render(): void {
-    CanvasManager.renderer.render(CanvasManager.scene, CanvasManager.camera);
+    MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
     if (this.clickEditor) {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);

@@ -1,16 +1,16 @@
 import { platform } from 'os';
 import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
-import CanvasManager from '../setup/CanvasManager.js';
+import MainCanvas from '../setup/mainCanvas.js';
 
 export default class Parkour {
-  public level1: Obstacle[] = [];
+  public static level1: Obstacle[] = [];
 
-  public level2: Obstacle[] = [];
+  public static level2: Obstacle[] = [];
 
-  public level3: Obstacle[] = [];
+  public static level3: Obstacle[] = [];
 
-  public level4: Obstacle[] = [];
+  public static level4: Obstacle[] = [];
 
   // used to display all different objects in the parkour
   public objectArray: Obstacle[] = [];
@@ -47,19 +47,19 @@ export default class Parkour {
     //   new Obstacle(this.checkPoint.clone(), 190, 30, 30)
     //   );
 
-    this.level1.push(startingPlatform, bridge, obstacle1, obstacle2, bridge2, checkpoint1);
+    Parkour.level1.push(startingPlatform, bridge, obstacle1, obstacle2, bridge2, checkpoint1);
 
     this.renderParkour()
   }
 
   public renderParkour(): void {
-    this.level1.forEach((obstacle) => {
-      CanvasManager.scene.add(obstacle.mesh);
+    Parkour.level1.forEach((obstacle) => {
+      MainCanvas.scene.add(obstacle.mesh);
       obstacle.mesh.position.set(obstacle.posX, obstacle.posY, obstacle.posZ);
       obstacle.mesh.rotation.set(obstacle.rotationX, obstacle.rotationY, obstacle.rotationZ);
     })
     this.objectArray.forEach((obstacle) => {
-      CanvasManager.scene.add(obstacle.mesh);
+      MainCanvas.scene.add(obstacle.mesh);
       obstacle.mesh.position.set(obstacle.posX, obstacle.posY, obstacle.posZ);
       obstacle.mesh.rotation.set(obstacle.rotationX, obstacle.rotationY, obstacle.rotationZ);
     });

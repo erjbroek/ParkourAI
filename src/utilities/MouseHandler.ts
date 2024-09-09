@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import CanvasManager from '../setup/CanvasManager.js';
 
 export default class Mousehandler {
   public static x2: number = 0;

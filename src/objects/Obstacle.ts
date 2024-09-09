@@ -23,6 +23,8 @@ export default class Obstacle {
 
   public mesh: THREE.Mesh;
 
+  public boundingBox: THREE.Box3;
+
   public constructor(mesh: THREE.Mesh, posX = 0, posY = 0, posZ = 0, rotationX = 0, rotationY = 0, rotationZ = 0, moving = false, movingSpeed = 1, movingLength = 1, movingDirection = 1) {
     this.mesh = mesh;
     this.posX = posX;
@@ -35,6 +37,11 @@ export default class Obstacle {
     this.movingSpeed = movingSpeed;
     this.movingLength = movingLength;
     this.movingDirection = movingDirection;
+
+    this.mesh.position.set(this.posX, this.posY, this.posZ);
+    this.mesh.rotation.set(this.rotationX, this.rotationY, this.rotationZ);
+
+    this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 
   public moveObstacle(deltaTime: number): void {
