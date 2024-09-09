@@ -4,6 +4,7 @@ import Game from '../scenes/Game.js';
 import SceneManager from '../utilities/SceneManager.js';
 import GUI from '../utilities/GUI.js';
 import MouseHandler from '../utilities/MouseHandler.js';
+import UICollision from '../utilities/UICollision.js';
 
 export default class GameSetup {
     public activeScene: Scene;
@@ -17,6 +18,7 @@ export default class GameSetup {
     public constructor() {
         new SceneManager()
         new MouseHandler();
+        new UICollision();
 
         window.addEventListener('resize', () => this.onWindowResize(), false);
 

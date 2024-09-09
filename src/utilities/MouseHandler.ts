@@ -2,7 +2,13 @@ import * as THREE from 'three';
 import SceneManager from './SceneManager.js';
 
 export default class MouseHandler {
-  public static coordinates: { x: number, y: number } = { x: 0, y: 0 };
+  public static x2: number = 0;
+
+  public static y2: number = 0;
+
+  public static x: number = 0;
+
+  public static y: number = 0;
 
   public static mouseDown: boolean = false;
 
@@ -28,5 +34,10 @@ export default class MouseHandler {
   }
   
   public mouseMove(event: MouseEvent) {
+    MouseHandler.x = (event.clientX / window.innerWidth) * 2 - 1;
+    MouseHandler.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    MouseHandler.x2 = event.clientX;
+    MouseHandler.y2 = event.clientY;
   }
 }
