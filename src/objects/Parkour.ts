@@ -1,5 +1,4 @@
 import { platform } from 'os';
-import MainCanvas from '../setup/MainCanvas.js';
 import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
 import CanvasManager from '../setup/CanvasManager.js';
@@ -33,7 +32,6 @@ export default class Parkour {
   }
 
   public generateParkour(): void {
-    
     const startingPlatform = new Obstacle(this.platformBlock.clone(), 0, 0, 0, 0, 0, 0);
     const bridge = new Obstacle(this.bridge.clone(), 0, 0, -18, 0, 0, 0);
     const obstacle1 = new Obstacle(this.normalBlock.clone(), -4, 0, -26);
@@ -41,12 +39,14 @@ export default class Parkour {
     const bridge2 = new Obstacle(this.bridge.clone(), -8, 0, -36, 0, 0, 0);
     const checkpoint1 = new Obstacle(this.checkPoint.clone(), -8, 0, -49, 0, 0, 0);
     
-    this.objectArray.push(
-      new Obstacle(this.normalBlock.clone(), 30, 30, 30),
-      new Obstacle(this.longBlock.clone(), 50, 30, 30),
-      new Obstacle(this.bridge.clone(), 70, 30, 30),
-      new Obstacle(this.platformBlock.clone(), 100, 30, 30),
-      new Obstacle(this.checkPoint.clone(), 150, 30, 30));
+    // this.objectArray.push(
+    //   new Obstacle(this.normalBlock.clone(), 30, 30, 30),
+    //   new Obstacle(this.longBlock.clone(), 70, 30, 30),
+    //   new Obstacle(this.bridge.clone(), 110, 30, 30),
+    //   new Obstacle(this.platformBlock.clone(), 150, 30, 30),
+    //   new Obstacle(this.checkPoint.clone(), 190, 30, 30)
+    //   );
+
     this.level1.push(startingPlatform, bridge, obstacle1, obstacle2, bridge2, checkpoint1);
 
     this.renderParkour()

@@ -25,6 +25,38 @@ export default class GUI {
     return this.canvas;
   }
 
+    /**
+   * Loads a new image into an HTMLImageElement
+   * WARNING: This happens async. Therefor the result might not immediately be visible
+   *
+   * @param source the path of the image to be loaded
+   * @returns the image
+   */
+    public static loadNewImage(source: string): HTMLImageElement {
+      const img = new Image();
+      img.src = source;
+      return img;
+    }
+
+    public static drawImage(canvas: HTMLCanvasElement, image: HTMLImageElement, dx: number, dy: number, width: number = 0, height: number = 0, rotation: number = 0, opacity?: number): void {
+      const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(canvas);
+  
+      if (width === 0) width = image.width;
+      if (height === 0) height = image.height;
+  
+      ctx.save();
+  
+      // Check if opacity is explicitly provided
+      if (opacity !== undefined) {
+        ctx.globalAlpha = opacity;
+      }
+  
+      ctx.translate(dx + width / 2, dy + height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.drawImage(image, -width / 2, -height / 2, width, height);
+      ctx.restore();
+    }  
+
   /**
   * Write text to the canvas, with line breaks for each occurrence of "<br>"
   *

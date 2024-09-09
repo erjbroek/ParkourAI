@@ -1,14 +1,13 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import MainCanvas from '../setup/MainCanvas.js';
 import Scene from './Scene.js';
 import * as THREE from 'three';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
 import CanvasManager from '../setup/CanvasManager.js';
 import GUI from '../utilities/GUI.js';
-import MouseHandler from '../utilities/MouseHandler.js';
 import UICollision from '../utilities/UICollision.js';
 import Edit from './Edit.js';
+import Mousehandler from '../utilities/MouseHandler.js';
 
 export default class Game extends Scene {
   private player: Player = new Player();
@@ -34,7 +33,7 @@ export default class Game extends Scene {
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
-      if (MouseHandler.mouseDown) {
+      if (Mousehandler.mouseDown) {
         this.clickEditor = true;
         if (this.readyClickEditor) {
           this.readyClickEditor = false;
@@ -52,7 +51,7 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     // makes sure orbital camera doesnt move when in the editor
-    if (MouseHandler.y2 >= window.innerHeight * 0.8 && this.openEditor) {
+    if (Mousehandler.y2 >= window.innerHeight * 0.8 && this.openEditor) {
       CanvasManager.orbitControls.enabled = false;
     } else {
       CanvasManager.orbitControls.enabled = true;
@@ -72,6 +71,7 @@ export default class Game extends Scene {
     }
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
+      this.editor.processInput()
       this.editor.render(canvas)
     }
   }

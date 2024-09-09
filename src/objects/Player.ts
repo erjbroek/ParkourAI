@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import MainCanvas from '../setup/MainCanvas.js';
 import CanvasManager from '../setup/CanvasManager.js';
 
 export default class Player {
@@ -20,8 +19,8 @@ export default class Player {
     this.createPlayer();
   }
 
-  public getCoordinates(): { x: number, y: number, z: number } {
-    return { x: Player.x, y: Player.y, z: Player.z };
+  public getCoordinates(): {x: number, y: number, z: number} {
+    return {x: Player.x, y: Player.y, z: Player.z};
   }
 
   public update(deltaTime: number) {

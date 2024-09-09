@@ -3,7 +3,7 @@ import Scene from '../scenes/Scene.js';
 import Game from '../scenes/Game.js';
 import CanvasManager from './CanvasManager.js';
 import GUI from '../utilities/GUI.js';
-import MouseHandler from '../utilities/MouseHandler.js';
+import Mousehandler from '../utilities/MouseHandler.js';
 import UICollision from '../utilities/UICollision.js';
 
 export default class MainCanvas {
@@ -17,7 +17,7 @@ export default class MainCanvas {
 
     public constructor() {
         new CanvasManager()
-        new MouseHandler();
+        new Mousehandler();
         new UICollision();
 
         window.addEventListener('resize', () => this.onWindowResize(), false);

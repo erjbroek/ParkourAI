@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import CanvasManager from '../setup/CanvasManager.js';
 
-export default class MouseHandler {
+export default class Mousehandler {
   public static x2: number = 0;
 
   public static y2: number = 0;
@@ -25,19 +25,19 @@ export default class MouseHandler {
   }
 
   public mouseDown(event: MouseEvent) {
-    MouseHandler.mouseDown = true;
+    Mousehandler.mouseDown = true;
   }
 
   public mouseUp(event: MouseEvent) {
     console.log('up')
-    MouseHandler.mouseDown = false;
+    Mousehandler.mouseDown = false;
   }
   
   public mouseMove(event: MouseEvent) {
-    MouseHandler.x = (event.clientX / window.innerWidth) * 2 - 1;
-    MouseHandler.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    Mousehandler.x = (event.clientX / window.innerWidth) * 2 - 1;
+    Mousehandler.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    MouseHandler.x2 = event.clientX;
-    MouseHandler.y2 = event.clientY;
+    Mousehandler.x2 = event.clientX;
+    Mousehandler.y2 = event.clientY;
   }
 }
