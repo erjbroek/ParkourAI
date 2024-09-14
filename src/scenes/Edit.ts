@@ -75,11 +75,12 @@ export default class Edit {
    */
   public createObstacle(mesh: THREE.Mesh): void {
     const { x: width, y: height, z: depth } = new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3());
-    this.mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(width, height, depth),
-      new THREE.MeshLambertMaterial({ color: 0xccffcc })
-    );
-    MainCanvas.scene.add(this.mesh);
+
+    this.mesh = mesh;
+
+    if (!MainCanvas.scene.children.includes(this.mesh)) {
+      MainCanvas.scene.add(this.mesh);
+    }
 
     this.obstacleMaterial = new CANNON.Material("obstacleMaterial");
     this.obstacleBody = new CANNON.Body({
@@ -92,8 +93,8 @@ export default class Edit {
       ),
       material: this.obstacleMaterial,
     });
-
     MainCanvas.world.addBody(this.obstacleBody);
+
     this.transformControls.attach(this.mesh);
 
     const contactMaterial = new CANNON.ContactMaterial(
