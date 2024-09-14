@@ -24,10 +24,20 @@ export default class Parkour {
 
   }
 
+    /**
+   * Creates obstacle
+   * 
+   * Instead of using mesh, it is used as Obstacle 
+   * this way, controlling the parkour jumps is easier
+   * think of things like moving obstacles, ect.
+   */
   private createObstacle(mesh: THREE.Mesh, posX: number, posY: number, posZ: number, rotationX = 0, rotationY = 0, rotationZ = 0): Obstacle {
     return new Obstacle(mesh.clone(), { posX, posY, posZ, rotationX, rotationY, rotationZ });
   }
 
+  /**
+   * Generates the levels in the parkour
+   */
   public generateParkour(): void {
     Parkour.level1.push(
       this.createObstacle(ParkourPieces.platform, 0, 0, 0),
@@ -38,11 +48,16 @@ export default class Parkour {
       this.createObstacle(ParkourPieces.checkPoint, -8, 0, -49)
     );
 
-    this.renderParkour()
+    this.renderParkour(Parkour.level1);
   }
 
-  public renderParkour(): void {
-    Parkour.level1.forEach((obstacle) => {
+  /**
+   * Adds the level meshes to the scene
+   * 
+   * @param level is an array containing the meshes/ obstacles that should be added
+   */
+  public renderParkour(level: Obstacle[]): void {
+    level.forEach((obstacle) => {
       MainCanvas.scene.add(obstacle.mesh);
     })
   }

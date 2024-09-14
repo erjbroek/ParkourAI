@@ -41,20 +41,16 @@ export default class Player {
     
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0.0, restitution: 0.0 });
     
-    // this.playerGroup.position.set(Player.x4, Player.y, Player.z);
     Player.playerBody.linearDamping = 0.4;
     Player.playerBody.angularDamping = 0.1;
     MainCanvas.world.addBody(Player.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
-    // Edit.transformControls.attach(Player.mesh);
     MainCanvas.scene.add(Player.mesh);
 
   }
 
   public update(deltaTime: number) {
-    // console.log(MainCanvas.orbitControls.getAzimuthalAngle())
-
-    const speed = 10; // Adjust the speed factor as needed
+    const speed = 10;
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
 
     if (KeyListener.isKeyDown('KeyW')) {
@@ -73,6 +69,9 @@ export default class Player {
     this.updateMeshes(Parkour.level1);
   }
 
+  /**
+   * Updates the position of the physics body to match position of mesh
+   */
   public updateMeshes(obstacles: Obstacle[]): void {
     obstacles.forEach((obstacle) => {
       obstacle.mesh.position.copy(obstacle.platformBody.position);

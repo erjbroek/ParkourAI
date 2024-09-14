@@ -49,6 +49,11 @@ export default class Edit {
     });
   }
 
+  /**
+   * processes player input
+   * 
+   * In the case of the editor, this is choosing what mesh/obstacle to add
+   */
   public processInput() {
     if (MouseListener.mouseDown) {
       for (let i = 0; i < 4; i++) {
@@ -64,6 +69,8 @@ export default class Edit {
 
   /**
    * Creates mesh and belonging physics body to edit
+   * next, the transform controls are attached to the mesh so it can be moved
+   * 
    * @param mesh - the mesh of the obstacle
    */
   public createObstacle(mesh: THREE.Mesh): void {
@@ -127,6 +134,9 @@ export default class Edit {
   
   }
 
+  /**
+   * Renders the editor ui
+   */
   public render(canvas: HTMLCanvasElement) {
     GUI.fillRectangle(canvas, canvas.width * 0.85, canvas.height * 0.72, canvas.width * 0.15, canvas.height * 0.06, 255, 255, 255, 0.5);
     GUI.fillRectangle(canvas, 0, canvas.height * 0.78, canvas.width, canvas.height * 0.24, 255, 255, 255, 0.5, 5);
