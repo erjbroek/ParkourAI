@@ -1,7 +1,10 @@
 import * as THREE from 'three';
-import MainCanvas from '../setup/mainCanvas.js';
+import * as CANNON from 'cannon-es';
+import MainCanvas from '../setup/MainCanvas.js';
 import Obstacle from './Obstacle.js';
 import Parkour from './Parkour.js';
+import KeyListener from '../utilities/KeyListener.js';
+import Edit from '../scenes/Edit.js';
 
 export default class Player {
   public static x: number = 0;
@@ -14,68 +17,66 @@ export default class Player {
 
   public static rotation: number = Math.PI * 1.5;
 
-  public height: number = 2.3;
+  public static height: number = 2.3;
 
-  public radius: number = 1;
+  public static radius: number = 1;
 
-  public playerGroup: THREE.Group;
+  public static mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 2.3, 1), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
 
-  public boundingBox: THREE.Box3;
+  public static playerBody: CANNON.Body;
+
+  public static physicsMaterial: CANNON.Material = new CANNON.Material()
+  public obstacleMaterial: CANNON.Material;
+
 
   public constructor() {
-    this.playerGroup = new THREE.Group();
-    this.boundingBox = new THREE.Box3().setFromObject(this.playerGroup);
+    Player.mesh.position.set(0, 2, 0);
+    
+    Player.playerBody = new CANNON.Body({ 
+      mass: 1, 
+      shape: new CANNON.Box(new CANNON.Vec3(0.5, 1.15, 0.5)), 
+      position: new CANNON.Vec3(0, 5, 0),
+      material: Player.physicsMaterial
+    })
+    
+    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0.0, restitution: 0.0 });
+    
+    // this.playerGroup.position.set(Player.x4, Player.y, Player.z);
+    Player.playerBody.linearDamping = 0.4;
+    Player.playerBody.angularDamping = 0.1;
+    MainCanvas.world.addBody(Player.playerBody);
+    MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
+    // Edit.transformControls.attach(Player.mesh);
+    MainCanvas.scene.add(Player.mesh);
 
-    this.createPlayer();
-  }
-
-  private createPlayer(): void {
-    const cylinderGeometry = new THREE.CylinderGeometry(this.radius, this.radius, this.height, 32);
-    const sphereGeometry = new THREE.SphereGeometry(this.radius, 32, 32);
-    const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
-    const faceMaterial = new THREE.MeshLambertMaterial({ color: 0xaaaaff });
-
-    const playerCylinder = new THREE.Mesh(cylinderGeometry, material);
-    const playerSphere1 = new THREE.Mesh(sphereGeometry, material);
-    const playerSphere2 = new THREE.Mesh(sphereGeometry, material);
-    const playerFace = new THREE.Mesh(sphereGeometry, faceMaterial);
-
-    playerCylinder.position.set(0, 0, 0);
-    playerSphere1.position.set(0, -this.height / 2, 0);
-    playerSphere2.position.set(0, this.height / 2, 0);
-    playerFace.position.set(0, 0.6, this.radius / 3);
-
-    this.playerGroup.add(playerCylinder);
-    this.playerGroup.add(playerSphere1);
-    this.playerGroup.add(playerSphere2);
-    this.playerGroup.add(playerFace);
-
-    this.playerGroup.position.set(Player.x, Player.y, Player.z);
-    MainCanvas.scene.add(this.playerGroup);
-  }
-
-  public getCoordinates(): { x: number, y: number, z: number } {
-    return { x: Player.x, y: Player.y, z: Player.z };
   }
 
   public update(deltaTime: number) {
-    console.log(MainCanvas.orbitControls.getAzimuthalAngle())
-    
+    // console.log(MainCanvas.orbitControls.getAzimuthalAngle())
+
     const speed = 10; // Adjust the speed factor as needed
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
-    Player.velocity.x = -Math.sin(Player.rotation) * speed;
-    Player.velocity.z = -Math.cos(Player.rotation) * speed;
 
-    Player.x += Player.velocity.x * deltaTime;
-    Player.y += Player.velocity.y * deltaTime;
-    Player.z += Player.velocity.z * deltaTime;
+    if (KeyListener.isKeyDown('KeyW')) {
+      Player.playerBody.velocity.z = -speed;  // Move forward
+    }
+    if (KeyListener.isKeyDown('KeyS')) {
+      Player.playerBody.velocity.z = speed;   // Move backward
+    }
+    if (KeyListener.isKeyDown('KeyA')) {
+      Player.playerBody.velocity.x = -speed;  // Move left
+    }
+    if (KeyListener.isKeyDown('KeyD')) {
+      Player.playerBody.velocity.x = speed;   // Move right
+    }
 
+    this.updateMeshes(Parkour.level1);
+  }
 
-    // gravity
-    Player.velocity.y -= MainCanvas.gravityConstant * deltaTime * 3
-    Player.y += Player.velocity.y * deltaTime;
-
-    this.playerGroup.position.set(Player.x, Player.y, Player.z);
-    this.playerGroup.rotation.y = Player.rotation - Math.PI;
+  public updateMeshes(obstacles: Obstacle[]): void {
+    obstacles.forEach((obstacle) => {
+      obstacle.mesh.position.copy(obstacle.platformBody.position);
+      obstacle.mesh.quaternion.copy(obstacle.platformBody.quaternion);
+    });
   }
 }

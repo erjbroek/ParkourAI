@@ -1,21 +1,13 @@
 import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
+import MainCanvas from '../setup/MainCanvas.js';
+import Edit from '../scenes/Edit.js';
 
 export default class Obstacle {
-  public posX: number;
-
-  public posY: number;
-
-  public posZ: number;
-
-  public rotationX: number;
-
-  public rotationY: number;
-
-  public rotationZ: number;
 
   public moving: boolean;
 
-  public movingSpeed: number;  
+  public movingSpeed: number;
 
   public movingLength: number;
 
@@ -25,25 +17,51 @@ export default class Obstacle {
 
   public boundingBox: THREE.Box3;
 
-  public constructor(mesh: THREE.Mesh, posX = 0, posY = 0, posZ = 0, rotationX = 0, rotationY = 0, rotationZ = 0, moving = false, movingSpeed = 1, movingLength = 1, movingDirection = 1) {
-    this.mesh = mesh;
-    this.posX = posX;
-    this.posY = posY;
-    this.posZ = posZ;
-    this.rotationX = rotationX;
-    this.rotationY = rotationY;
-    this.rotationZ = rotationZ;
-    this.moving = moving;
-    this.movingSpeed = movingSpeed;
-    this.movingLength = movingLength;
-    this.movingDirection = movingDirection;
+  public platformBody: CANNON.Body;
 
-    this.mesh.position.set(this.posX, this.posY, this.posZ);
-    this.mesh.rotation.set(this.rotationX, this.rotationY, this.rotationZ);
+  public static material: CANNON.Material = new CANNON.Material();
+
+  public constructor(
+    mesh: THREE.Mesh,
+    options: {
+      posX?: number;
+      posY?: number;
+      posZ?: number;
+      rotationX?: number;
+      rotationY?: number;
+      rotationZ?: number;
+      moving?: boolean;
+      movingSpeed?: number;
+      movingLength?: number;
+      movingDirection?: number;
+    } = {}
+  ) {
+    const {
+      posX = 0, posY = 0, posZ = 0,
+      rotationX = 0, rotationY = 0, rotationZ = 0,
+      moving = false, movingSpeed = 0, movingLength = 0, movingDirection = 0
+    } = options;
+
+    this.mesh = mesh;
+    this.mesh.position.set(posX, posY, posZ);
+    this.mesh.rotation.set(rotationX, rotationY, rotationZ);
 
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
+    const size = this.boundingBox.getSize(new THREE.Vector3());
+
+    this.platformBody = new CANNON.Body({
+      mass: 0,
+      shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2)),
+      position: new CANNON.Vec3(posX, posY, posZ),
+      material: Obstacle.material
+    });
+
+    MainCanvas.world.addBody(this.platformBody);
   }
 
+  /**
+   * Not used yet, but will be used to move obstacles for the parkour
+   */
   public moveObstacle(deltaTime: number): void {
 
   }

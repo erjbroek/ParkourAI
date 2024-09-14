@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export default class Mousehandler {
+export default class MouseListener {
   public static x2: number = 0;
 
   public static y2: number = 0;
@@ -24,19 +24,19 @@ export default class Mousehandler {
   }
 
   public mouseDown(event: MouseEvent) {
-    Mousehandler.mouseDown = true;
+    MouseListener.mouseDown = true;
   }
 
   public mouseUp(event: MouseEvent) {
     console.log('up')
-    Mousehandler.mouseDown = false;
+    MouseListener.mouseDown = false;
   }
   
   public mouseMove(event: MouseEvent) {
-    Mousehandler.x = (event.clientX / window.innerWidth) * 2 - 1;
-    Mousehandler.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    MouseListener.x = (event.clientX / window.innerWidth) * 2 - 1;
+    MouseListener.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    Mousehandler.x2 = event.clientX;
-    Mousehandler.y2 = event.clientY;
+    MouseListener.x2 = event.clientX;
+    MouseListener.y2 = event.clientY;
   }
 }

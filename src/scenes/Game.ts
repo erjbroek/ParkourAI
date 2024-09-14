@@ -6,22 +6,22 @@ import Parkour from '../objects/Parkour.js';
 import GUI from '../utilities/GUI.js';
 import UICollision from '../utilities/UICollision.js';
 import Edit from './Edit.js';
-import Mousehandler from '../utilities/MouseHandler.js';
-import MainCanvas from '../setup/mainCanvas.js';
+import MouseListener from '../utilities/MouseListener.js';
+import MainCanvas from '../setup/MainCanvas.js';
 
 export default class Game extends Scene {
-  private player: Player = new Player();
-
-  private openEditor: boolean = false;
-
-  private hoverEditor: boolean = false;
-
-  private clickEditor: boolean = false;
-
-  private readyClickEditor: boolean = true;
-
   private editor: Edit = new Edit()
-
+  
+  private openEditor: boolean = false;
+  
+  private hoverEditor: boolean = false;
+  
+  private clickEditor: boolean = false;
+  
+  private readyClickEditor: boolean = true;
+  
+  private player: Player = new Player();
+  
   public parkour: Parkour = new Parkour();
 
   public constructor() {
@@ -33,7 +33,7 @@ export default class Game extends Scene {
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
-      if (Mousehandler.mouseDown) {
+      if (MouseListener.mouseDown) {
         this.clickEditor = true;
         if (this.readyClickEditor) {
           this.readyClickEditor = false;
@@ -46,18 +46,25 @@ export default class Game extends Scene {
     } else {
       this.hoverEditor = false;
       this.clickEditor = false;
+    } 
+
+    if (this.openEditor) {
+      this.editor.processInput();    
     }
   }
 
   public override update(deltaTime: number): Scene {
-    // makes sure orbital camera doesnt move when in the editor
     this.player.update(deltaTime);
-    MainCanvas.orbitControls.target = new THREE.Vector3(Player.x, Player.y, Player.z);
-    if (Mousehandler.y2 >= window.innerHeight * 0.8 && this.openEditor) {
-      MainCanvas.orbitControls.enabled = false;
-    } else {
-      MainCanvas.orbitControls.enabled = true;
+    
+    if (this.openEditor) {
+      this.editor.update(deltaTime);    
     }
+    // MainCanvas.orbitControls.target = new THREE.Vector3(Player.x, Player.y, Player.z);
+    // if (MouseListener.y2 >= window.innerHeight * 0.8 && this.openEditor) {
+    //   MainCanvas.orbitControls.enabled = false;
+    // } else {
+    //   MainCanvas.orbitControls.enabled = true;
+    // }
     return this;
   }
 
@@ -73,7 +80,6 @@ export default class Game extends Scene {
     }
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
-      this.editor.processInput()
       this.editor.render(canvas)
     }
   }

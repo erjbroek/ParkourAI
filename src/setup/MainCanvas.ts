@@ -1,10 +1,14 @@
 import * as THREE from "three";
+import * as CANNON from "cannon-es";
 import Scene from "../scenes/Scene.js";
 import Game from "../scenes/Game.js";
 import GUI from "../utilities/GUI.js";
-import Mousehandler from "../utilities/MouseHandler.js";
+import MouseListener from "../utilities/MouseListener.js";
 import UICollision from "../utilities/UICollision.js";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import KeyListener from '../utilities/KeyListener.js';
+import Player from '../objects/Player.js';
+import Parkour from '../objects/Parkour.js';
 
 export default class MainCanvas {
   public static scene: THREE.Scene = new THREE.Scene();
@@ -13,11 +17,13 @@ export default class MainCanvas {
 
   public static renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
 
+  public static gravityConstant = -11;
+  
   public activeScene: Scene;
-
+  
   public clock: THREE.Clock = new THREE.Clock(true);
-
-  public static gravityConstant = 9.81;
+  
+  public static world = new CANNON.World({gravity: new CANNON.Vec3(0, MainCanvas.gravityConstant, 0)});
 
   public static canvas: HTMLCanvasElement;
 
@@ -28,8 +34,9 @@ export default class MainCanvas {
     MainCanvas.camera.position.set(11, 17, 25);
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(MainCanvas.renderer.domElement);
-;
-    new Mousehandler();
+
+    new MouseListener();
+    new KeyListener()
     new UICollision();
 
 
@@ -42,12 +49,12 @@ export default class MainCanvas {
 
     
     MainCanvas.orbitControls = new OrbitControls(MainCanvas.camera, MainCanvas.renderer.domElement);
-    MainCanvas.orbitControls.minPolarAngle = 0;
-	MainCanvas.orbitControls.maxPolarAngle =  Math.PI * 0.5;
-    MainCanvas.orbitControls.enableDamping = true;
-    MainCanvas.orbitControls.dampingFactor = 0.1;
-    MainCanvas.orbitControls.enableZoom = false;
-    MainCanvas.orbitControls.maxDistance = 20;
+    // MainCanvas.orbitControls.minPolarAngle = 0;
+	  // MainCanvas.orbitControls.maxPolarAngle =  Math.PI * 0.5;
+    // MainCanvas.orbitControls.enableDamping = true;
+    // MainCanvas.orbitControls.dampingFactor = 0.1;
+    // MainCanvas.orbitControls.enableZoom = false;
+    // MainCanvas.orbitControls.maxDistance = 20;
 
     this.setupLight();
     this.startRendering();
@@ -82,11 +89,22 @@ export default class MainCanvas {
    */
   public startRendering() {
     MainCanvas.renderer.setAnimationLoop(() => {
+      const deltaTime = this.clock.getDelta();
+
+      // physics
+      MainCanvas.world.step(deltaTime)
+      Player.mesh.position.copy(Player.playerBody.position);
+      Player.mesh.quaternion.copy(Player.playerBody.quaternion);
+
+      // updates position and rotation of player mesh
+      
+      // updates controls
       MainCanvas.orbitControls.update();
-
+      
+      // calls functions of active scene
       this.activeScene.processInput();
-      this.activeScene.update(this.clock.getDelta());
-
+      this.activeScene.update(deltaTime);
+      
       const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
         GUI.getCanvas()
       );

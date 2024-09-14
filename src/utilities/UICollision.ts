@@ -1,4 +1,4 @@
-import Mousehandler from './MouseHandler.js';
+import MouseListener from './MouseListener.js';
 
 export default class UICollision {
   
@@ -13,10 +13,10 @@ export default class UICollision {
    */
   public static checkSquareCollision(xMult: number, yMult: number, width: number, height: number): boolean {
     if (
-      Mousehandler.x2 > window.innerWidth * xMult &&
-      Mousehandler.x2 < window.innerWidth * xMult + window.innerWidth * width &&
-      Mousehandler.y2 > window.innerHeight * yMult &&
-      Mousehandler.y2 < window.innerHeight * yMult + window.innerHeight *height
+      MouseListener.x2 > window.innerWidth * xMult &&
+      MouseListener.x2 < window.innerWidth * xMult + window.innerWidth * width &&
+      MouseListener.y2 > window.innerHeight * yMult &&
+      MouseListener.y2 < window.innerHeight * yMult + window.innerHeight *height
     ) {
       return true;
     } 
