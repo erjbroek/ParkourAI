@@ -38,6 +38,11 @@ export default class Game extends Scene {
         if (this.readyClickEditor) {
           this.readyClickEditor = false;
           this.openEditor = !this.openEditor;
+
+          // makes sure obstacle gets removed if it didn't get saved
+          if (!this.editor.confirmedAdded) {
+            this.editor.removeObstacle()
+          }
         }
       } else {
         this.clickEditor = false;
