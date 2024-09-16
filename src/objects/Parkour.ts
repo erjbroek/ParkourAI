@@ -41,11 +41,11 @@ export default class Parkour {
   public generateParkour(): void {
     Parkour.level1.push(
       this.createObstacle(ParkourPieces.platform, 0, 0, 0),
-      this.createObstacle(ParkourPieces.long2, 0, 0, -18),
-      this.createObstacle(ParkourPieces.normal, -4, 0, -26),
-      this.createObstacle(ParkourPieces.normal, -8, 0, -26),
-      this.createObstacle(ParkourPieces.long2, -8, 0, -36),
-      this.createObstacle(ParkourPieces.checkPoint, -8, 0, -49)
+      this.createObstacle(ParkourPieces.long2, 0, 0, -16),
+      this.createObstacle(ParkourPieces.normal, -4, 0, -24),
+      this.createObstacle(ParkourPieces.normal, -8, 0, -24),
+      this.createObstacle(ParkourPieces.long2, -8, 0, -34),
+      this.createObstacle(ParkourPieces.checkPoint, -8, 0, -48)
     );
 
     this.renderParkour(Parkour.level1);

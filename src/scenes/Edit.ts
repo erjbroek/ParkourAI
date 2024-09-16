@@ -53,6 +53,7 @@ export default class Edit {
             this.removeObstacle()
           }
           this.confirmedAdded = false;
+          (this.mesh.material as THREE.Material).opacity = 0.5;
           this.createObstacle(ParkourPieces.meshes[i].clone());
         }
       }
@@ -60,10 +61,12 @@ export default class Edit {
 
     // "adds" the mesh to the scene
     // technically, it doesnt add it, it just doesn't remove it
+    this.confirmedAdded = false;
     if (KeyListener.keyPressed("KeyE")) {
       this.confirmedAdded = true;
-      (this.mesh.material as THREE.Material).opacity = 1;
       this.transformControls.detach();
+      (this.mesh.material as THREE.Material).opacity = 1;
+      this.createObstacle(this.mesh.clone());
     }
   }
 
@@ -189,11 +192,11 @@ export default class Edit {
       const position = this.mesh.position;
       
       const snapX = 4;
-      const snapY = 1;
+      const snapY = 0.01;
       const snapZ = 4;
 
       position.x = Math.round(position.x / snapX) * 4;
-      position.y = Math.round(position.y / snapY) * 1;
+      position.y = Math.round(position.y / snapY) * 0.01;
       position.z = Math.round(position.z / snapZ) * 4;
 
       this.mesh.position.set(position.x, position.y, position.z);
