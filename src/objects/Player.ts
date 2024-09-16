@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import MainCanvas from '../setup/MainCanvas.js';
 import Obstacle from './Obstacle.js';
 import Parkour from './Parkour.js';
 import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
+import MainCanvas from '../setup/MainCanvas.js';
 
 export default class Player {
   public static x: number = 0;
@@ -43,6 +43,7 @@ export default class Player {
     
     Player.playerBody.linearDamping = 0.4;
     Player.playerBody.angularDamping = 0.1;
+    Player.mesh.castShadow = true;
     MainCanvas.world.addBody(Player.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(Player.mesh);
@@ -50,21 +51,33 @@ export default class Player {
   }
 
   public update(deltaTime: number) {
-    const speed = 10;
+    const speed = 0.5;
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
+    MainCanvas.updateLightPosition()
 
     if (KeyListener.isKeyDown('KeyW')) {
-      Player.playerBody.velocity.z = -speed;  // Move forward
+      Player.playerBody.velocity.z += -speed;  // Move forward
     }
     if (KeyListener.isKeyDown('KeyS')) {
-      Player.playerBody.velocity.z = speed;   // Move backward
+      Player.playerBody.velocity.z += speed;   // Move backward
     }
     if (KeyListener.isKeyDown('KeyA')) {
-      Player.playerBody.velocity.x = -speed;  // Move left
+      Player.playerBody.velocity.x += -speed;  // Move left
     }
     if (KeyListener.isKeyDown('KeyD')) {
-      Player.playerBody.velocity.x = speed;   // Move right
+      Player.playerBody.velocity.x += speed;   // Move right
     }
+
+    if (Player.playerBody.position.y < -10) {
+      Player.playerBody.position.set(0, 10, 0);
+      Player.playerBody.velocity.set(0, 0, 0);
+    }
+
+    const maxSpeed = 20;
+
+    // Clamp the velocity in the x direction
+    Player.playerBody.velocity.x = Math.max(Math.min(Player.playerBody.velocity.x, maxSpeed), -maxSpeed);
+    Player.playerBody.velocity.z = Math.max(Math.min(Player.playerBody.velocity.z, maxSpeed), -maxSpeed);
 
     this.updateMeshes(Parkour.level1);
   }

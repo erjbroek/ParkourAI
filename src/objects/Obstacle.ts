@@ -45,6 +45,7 @@ export default class Obstacle {
     this.mesh = mesh;
     this.mesh.position.set(posX, posY, posZ);
     this.mesh.rotation.set(rotationX, rotationY, rotationZ);
+    this.mesh.receiveShadow = true;
 
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
     const size = this.boundingBox.getSize(new THREE.Vector3());
@@ -54,6 +55,12 @@ export default class Obstacle {
       shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2)),
       position: new CANNON.Vec3(posX, posY, posZ),
       material: Obstacle.material
+    });
+
+    // makes sure physics object is synchronised with the mesh
+    this.mesh.addEventListener('change', () => {
+      this.platformBody.position.copy(new CANNON.Vec3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z));
+      this.platformBody.quaternion.copy(new CANNON.Quaternion(this.mesh.quaternion.x, this.mesh.quaternion.y, this.mesh.quaternion.z, this.mesh.quaternion.w));
     });
 
     MainCanvas.world.addBody(this.platformBody);

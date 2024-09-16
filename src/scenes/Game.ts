@@ -39,6 +39,8 @@ export default class Game extends Scene {
           this.readyClickEditor = false;
           this.openEditor = !this.openEditor;
 
+          Edit.gridHelper.visible = this.openEditor;
+      
           // makes sure obstacle gets removed if it didn't get saved
           if (!this.editor.confirmedAdded) {
             this.editor.removeObstacle()
@@ -64,12 +66,6 @@ export default class Game extends Scene {
     if (this.openEditor) {
       this.editor.update(deltaTime);    
     }
-    // MainCanvas.orbitControls.target = new THREE.Vector3(Player.x, Player.y, Player.z);
-    // if (MouseListener.y2 >= window.innerHeight * 0.8 && this.openEditor) {
-    //   MainCanvas.orbitControls.enabled = false;
-    // } else {
-    //   MainCanvas.orbitControls.enabled = true;
-    // }
     return this;
   }
 

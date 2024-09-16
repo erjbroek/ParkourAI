@@ -9,11 +9,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import KeyListener from '../utilities/KeyListener.js';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
+import CreateBackground from './CreateBackground.js';
 
 export default class MainCanvas {
   public static scene: THREE.Scene = new THREE.Scene();
 
-  public static camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  public static camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
 
   public static renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -29,16 +30,20 @@ export default class MainCanvas {
 
   public static orbitControls: OrbitControls;
 
+  public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
-    MainCanvas.camera.position.set(11, 17, 25);
+    MainCanvas.camera.position.set(9, 9, 24);
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
+    MainCanvas.renderer.shadowMap.enabled = true;
+    MainCanvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
     document.body.appendChild(MainCanvas.renderer.domElement);
 
     new MouseListener();
-    new KeyListener()
+    new KeyListener();
     new UICollision();
-
 
     window.addEventListener("resize", () => this.onWindowResize(), false);
 
@@ -47,16 +52,10 @@ export default class MainCanvas {
     GUI.setCanvas(canvas);
     MainCanvas.canvas = GUI.getCanvas();
 
-    
     MainCanvas.orbitControls = new OrbitControls(MainCanvas.camera, MainCanvas.renderer.domElement);
-    // MainCanvas.orbitControls.minPolarAngle = 0;
-	  // MainCanvas.orbitControls.maxPolarAngle =  Math.PI * 0.5;
-    // MainCanvas.orbitControls.enableDamping = true;
-    // MainCanvas.orbitControls.dampingFactor = 0.1;
-    // MainCanvas.orbitControls.enableZoom = false;
-    // MainCanvas.orbitControls.maxDistance = 20;
 
     this.setupLight();
+    CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
   }
@@ -73,17 +72,38 @@ export default class MainCanvas {
   }
 
   public setupLight() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    MainCanvas.scene.add(ambientLight);
+    const ambientLightTop = new THREE.AmbientLight(0x12a3ff, 0.5);
+    MainCanvas.scene.add(ambientLightTop);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, Math.PI);
-    directionalLight.position.set(101, 50, -30).normalize();
-    MainCanvas.scene.add(directionalLight);
+    const ambientLightBottom = new THREE.AmbientLight(0xffd700, 0.5);
+    MainCanvas.scene.add(ambientLightBottom);
+
+    MainCanvas.directionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);
+    MainCanvas.directionalLight.position.set(70, 140, -140)
+    MainCanvas.directionalLight.castShadow = true;
+    MainCanvas.scene.add(MainCanvas.directionalLight);
   }
+
+  public static updateLightPosition() {
+    this.directionalLight.position.set(
+      Player.mesh.position.x + 70,
+      Player.mesh.position.y + 140,
+      Player.mesh.position.z -140
+    );
+
+    this.directionalLight.target.position.set(
+      Player.mesh.position.x,
+      Player.mesh.position.y,
+      Player.mesh.position.z
+    );
+
+    this.directionalLight.target.updateMatrixWorld();
+  }
+
 
   /*
    * Starts game loop
-   * - proccesses input of active scene
+   * - processes input of active scene
    * - updates active scene
    * - renders active scene
    */
@@ -96,8 +116,6 @@ export default class MainCanvas {
       Player.mesh.position.copy(Player.playerBody.position);
       Player.mesh.quaternion.copy(Player.playerBody.quaternion);
 
-      // updates position and rotation of player mesh
-      
       // updates controls
       MainCanvas.orbitControls.update();
       

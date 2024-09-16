@@ -9,6 +9,8 @@ import Obstacle from "../objects/Obstacle.js";
 import ParkourPieces from "../objects/ParkourPieces.js";
 import Player from "../objects/Player.js";
 import KeyListener from '../utilities/KeyListener.js';
+import { InfiniteGridHelper } from "../InfiniteGridHelper.js"; // Import the InfiniteGridHelper
+
 
 export default class Edit {
   private objectImages: HTMLImageElement[] = [];
@@ -19,15 +21,14 @@ export default class Edit {
 
   public confirmedAdded: boolean = false;
 
-  public opacity: number = 0.5;
+  public static gridHelper = new InfiniteGridHelper(4, 48, 'grey', 8000, 'xzy');
+
+  private height: number = 0;
 
   public mesh: THREE.Mesh = new THREE.Mesh(
     new THREE.BoxGeometry(4, 1, 4),
     new THREE.MeshLambertMaterial({ color: 0xccffcc, transparent: true }) 
   );
-
-  public obstacleBody: CANNON.Body;
-  public obstacleMaterial: CANNON.Material;
 
   public constructor() {
     this.objectImages.push(GUI.loadNewImage("./assets/normalBlock.png"));
@@ -35,6 +36,9 @@ export default class Edit {
     this.objectImages.push(GUI.loadNewImage("./assets/bridgeBlock.png"));
     this.objectImages.push(GUI.loadNewImage("./assets/platformBlock.png"));
     
+    Edit.gridHelper.position.set(18, 0.6, 18)
+    MainCanvas.scene.add(Edit.gridHelper);
+    Edit.gridHelper.visible = false;
     this.setupTransformControls()
   }
 
@@ -64,7 +68,7 @@ export default class Edit {
     this.confirmedAdded = false;
     if (KeyListener.keyPressed("KeyE")) {
       this.confirmedAdded = true;
-      this.transformControls.detach();
+      
       (this.mesh.material as THREE.Material).opacity = 1;
       this.createObstacle(this.mesh.clone());
     }
@@ -79,9 +83,6 @@ export default class Edit {
     if (this.mesh && MainCanvas.scene.children.includes(this.mesh)) {
       MainCanvas.scene.remove(this.mesh);
     }
-    if (this.obstacleBody && MainCanvas.world.bodies.includes(this.obstacleBody)) {
-      MainCanvas.world.removeBody(this.obstacleBody);
-    }
   }
 
   /**
@@ -93,61 +94,16 @@ export default class Edit {
   public createObstacle(mesh: THREE.Mesh): void {
     // updates mesh and updates material with 50% transparent alternative
     this.mesh = mesh;
-    this.mesh.material = new THREE.MeshLambertMaterial({ color: 0xccffcc, transparent: true, opacity: 0.5 });
+    this.mesh.material = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+
     if (!MainCanvas.scene.children.includes(this.mesh)) {
       MainCanvas.scene.add(this.mesh);
+      this.transformControls.attach(mesh);
     }
     
-    // creates physics body for obstacle (used for the physics engine)
-    const { x: width, y: height, z: depth } = new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3());
-    this.obstacleMaterial = new CANNON.Material("obstacleMaterial");
-    this.obstacleBody = new CANNON.Body({
-      mass: 0,
-      shape: new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2)),
-      position: new CANNON.Vec3(
-        this.mesh.position.x,
-        this.mesh.position.y,
-        this.mesh.position.z
-      ),
-      material: this.obstacleMaterial,
-    });
-    MainCanvas.world.addBody(this.obstacleBody);
-
-    // connect the newly created mesh to the transform controls
-    this.transformControls.attach(this.mesh);
-
-    // define what the player should do when it interacts with this newly created mesh
-    const contactMaterial = new CANNON.ContactMaterial(
-      Player.physicsMaterial,
-      this.obstacleMaterial,
-      {
-        friction: 0.0,
-        restitution: 0.0,
-      }
-    );
-    MainCanvas.world.addContactMaterial(contactMaterial);
-  }
-
-  /**
-   * Updates the position of the physics body to match position of mesh
-   * this way, the obstacle actually moves when the mesh is moved
-   * otherwise, the player would fall through
-   */
-  public updateSelectedMesh() {
-    if (this.obstacleBody) {
-      this.obstacleBody.position.set(
-        this.mesh.position.x,
-        this.mesh.position.y,
-        this.mesh.position.z
-      );
-
-      this.obstacleBody.quaternion.set(
-        this.mesh.quaternion.x,
-        this.mesh.quaternion.y,
-        this.mesh.quaternion.z,
-        this.mesh.quaternion.w
-      );
-    }
+    // Creates obstacle class from mesh
+    // here, physics body is automatically added
+    new Obstacle(this.mesh, { posX: this.mesh.position.x, posY: this.mesh.position.y, posZ: this.mesh.position.z });
   }
 
   public update(deltaTime: number) {
@@ -158,9 +114,10 @@ export default class Edit {
    * Renders the editor ui
    */
   public render(canvas: HTMLCanvasElement) {
-    GUI.fillRectangle(canvas, canvas.width * 0.85, canvas.height * 0.72, canvas.width * 0.15, canvas.height * 0.06, 255, 255, 255, 0.5);
-    GUI.fillRectangle(canvas, 0, canvas.height * 0.78, canvas.width, canvas.height * 0.24, 255, 255, 255, 0.5, 5);
-    GUI.fillRectangle(canvas, 0, canvas.height * 0.98, canvas.width, canvas.height * 0.02, 255, 255, 255, 0.8);
+    GUI.fillRectangle(canvas, canvas.width * 0.85, canvas.height * 0.72, canvas.width * 0.15, canvas.height * 0.06, 0, 0, 0, 0.5);
+    GUI.fillRectangle(canvas, 0, canvas.height * 0.78, canvas.width, canvas.height * 0.24, 0, 0, 0, 0.5, 5);
+    GUI.fillRectangle(canvas, 0, canvas.height * 0.98, canvas.width, canvas.height * 0.02, 0, 0, 0, 0.8);
+    GUI.writeText(canvas, `height: ${this.height}`, canvas.width * 0.5, canvas.height * 0.05, "center", "system-ui", 30, "black", 100);
 
     for (let i = 0; i < 4; i++) {
       GUI.fillRectangle(canvas, canvas.width * 0.02 + canvas.width * 0.1 * i, canvas.height * 0.8, canvas.width * 0.09, canvas.height * 0.16, 255, 255, 255, 1, 15);
@@ -176,7 +133,6 @@ export default class Edit {
     this.transformControls.setMode("translate");
     this.transformControls.setRotationSnap(THREE.MathUtils.degToRad(90));
 
-    // this.transformControls.setMode("translate");
     MainCanvas.scene.add(this.transformControls);
 
     this.transformControls.addEventListener("mouseDown", () => {
@@ -188,19 +144,19 @@ export default class Edit {
 
     // this changes snapping behaviour of translationControls, so that it's not the same for all axis
     this.transformControls.addEventListener("objectChange", () => {
-      this.updateSelectedMesh();
       const position = this.mesh.position;
       
       const snapX = 4;
-      const snapY = 0.01;
+      const snapY = 1;
       const snapZ = 4;
 
       position.x = Math.round(position.x / snapX) * 4;
       position.y = Math.round(position.y / snapY) * 1;
       position.z = Math.round(position.z / snapZ) * 4;
 
-      this.mesh.position.set(position.x, position.y, position.z);
+      this.height = position.y;
 
+      this.mesh.position.set(position.x, position.y, position.z);
     });
   }
 }

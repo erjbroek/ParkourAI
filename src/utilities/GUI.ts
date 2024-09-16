@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export default class GUI {
   public static canvas: HTMLCanvasElement;
 
@@ -125,5 +127,24 @@ export default class GUI {
     ctx.fill();
 
     ctx.restore();
+  }
+
+  public static createGradientTexture(): THREE.Texture {
+    const size = 512; // Texture size
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+  
+    if (context) {
+      const gradient = context.createLinearGradient(400, 0, size, size);
+      gradient.addColorStop(0, '#0044ff'); // End color
+      gradient.addColorStop(1, '#add8e6'); // Start color (light blue)
+  
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, size, size);
+    }
+  
+    return new THREE.CanvasTexture(canvas);
   }
 }
