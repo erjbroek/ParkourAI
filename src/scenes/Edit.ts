@@ -196,7 +196,7 @@ export default class Edit {
       const snapZ = 4;
 
       position.x = Math.round(position.x / snapX) * 4;
-      position.y = Math.round(position.y / snapY) * 0.01;
+      position.y = Math.round(position.y / snapY) * 1;
       position.z = Math.round(position.z / snapZ) * 4;
 
       this.mesh.position.set(position.x, position.y, position.z);
