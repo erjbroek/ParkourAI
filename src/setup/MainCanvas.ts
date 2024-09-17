@@ -84,7 +84,7 @@ export default class MainCanvas {
     MainCanvas.scene.add(MainCanvas.directionalLight);
   }
 
-  public static updateLightPosition() {
+  public static updateLightAndCameraPosition() {
     this.directionalLight.position.set(
       Player.mesh.position.x + 70,
       Player.mesh.position.y + 140,
@@ -98,6 +98,20 @@ export default class MainCanvas {
     );
 
     this.directionalLight.target.updateMatrixWorld();
+  }
+
+  public static updateCamera(deltaTime: number) {
+    if (Player.mesh.position.y < -10) {
+        const cameraOffset = new THREE.Vector3(9, 0, 24);
+        this.camera.position.copy(Player.playerBody.position).add(cameraOffset);
+    }
+    const scaledVelocity = new THREE.Vector3(Player.playerBody.velocity.x, 0, Player.playerBody.velocity.z).multiplyScalar(deltaTime);
+    this.orbitControls.target.copy(Player.mesh.position);
+
+    // this makes sure the camera follows the position of the player
+    this.camera.position.add(scaledVelocity);
+
+    this.orbitControls.update();
   }
 
 
@@ -122,6 +136,7 @@ export default class MainCanvas {
       // calls functions of active scene
       this.activeScene.processInput();
       this.activeScene.update(deltaTime);
+      MainCanvas.updateCamera(deltaTime)
       
       const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
         GUI.getCanvas()
