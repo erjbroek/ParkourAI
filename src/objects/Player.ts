@@ -5,6 +5,7 @@ import Parkour from './Parkour.js';
 import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import ParkourPieces from './ParkourPieces.js';
 
 export default class Player {
   public static x: number = 0;
@@ -26,12 +27,16 @@ export default class Player {
   public static playerBody: CANNON.Body;
 
   public static physicsMaterial: CANNON.Material = new CANNON.Material()
-  
+
+  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+
+  public boundingBox: THREE.Box3;
+
   public obstacleMaterial: CANNON.Material;
 
 
   public constructor() {
-    Player.mesh.position.set(0, 2, 0);
+    Player.mesh.position.set(0, 5, 0);
     
     Player.playerBody = new CANNON.Body({ 
       mass: 1, 
@@ -48,6 +53,8 @@ export default class Player {
     MainCanvas.world.addBody(Player.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(Player.mesh);
+
+    this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
 
   }
 
@@ -81,7 +88,6 @@ export default class Player {
       Player.playerBody.velocity.z += speed * right.z;   // Move right
     }
 
-    
     const maxSpeed = 20;
     
     // Clamp the velocity in the x direction
@@ -89,10 +95,14 @@ export default class Player {
     Player.playerBody.velocity.z = Math.max(Math.min(Player.playerBody.velocity.z, maxSpeed), -maxSpeed);
     
     if (Player.playerBody.position.y < -10) {
-      Player.playerBody.position.set(0, 10, 0);
+      Player.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
       Player.playerBody.velocity.set(0, 0, 0);
+      Player.playerBody.angularVelocity.set(0, 0, 0);
+      Player.playerBody.quaternion.set(0, 0, 0, 1);
       MainCanvas.updateCamera(deltaTime)
     }
+    
+    this.boundingBox.setFromObject(Player.mesh);
     this.updateMeshes(Parkour.level1);
   }
 
@@ -103,6 +113,19 @@ export default class Player {
     obstacles.forEach((obstacle) => {
       obstacle.mesh.position.copy(obstacle.platformBody.position);
       obstacle.mesh.quaternion.copy(obstacle.platformBody.quaternion);
+    });
+  }
+
+  public checkCollision(level: Obstacle[]) {
+    level.forEach((object) => {
+      if (object.isCheckpoint) {
+        if (object.boundingBox.intersectsBox(this.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
+          // Turn the checkpoint green
+          object.mesh.material = ParkourPieces.checkPointActive;
+          const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
+          this.spawnPoint = new THREE.Vector3(object.mesh.position.x, object.mesh.position.y - objectHeight / 2, object.mesh.position.z)
+        }
+      }
     });
   }
 }

@@ -8,6 +8,7 @@ import UICollision from '../utilities/UICollision.js';
 import Edit from './Edit.js';
 import MouseListener from '../utilities/MouseListener.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import Obstacle from '../objects/Obstacle.js';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -23,6 +24,8 @@ export default class Game extends Scene {
   private player: Player = new Player();
   
   public parkour: Parkour = new Parkour();
+
+  public activeLevel: Obstacle[] = []
 
   public constructor() {
     super();
@@ -62,6 +65,8 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.player.update(deltaTime);
+    this.activeLevel = Parkour.level1
+    this.player.checkCollision(this.activeLevel)
     
     if (this.openEditor) {
       this.editor.update(deltaTime);    
