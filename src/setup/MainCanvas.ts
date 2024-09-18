@@ -18,7 +18,7 @@ export default class MainCanvas {
 
   public static renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
 
-  public static gravityConstant = -11;
+  public static gravityConstant = -25;
   
   public activeScene: Scene;
   

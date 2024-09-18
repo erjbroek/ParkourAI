@@ -34,6 +34,7 @@ export default class Player {
 
   public obstacleMaterial: CANNON.Material;
 
+  public onGround: boolean = false;
 
   public constructor() {
     Player.mesh.position.set(0, 5, 0);
@@ -59,6 +60,11 @@ export default class Player {
   }
 
   public update(deltaTime: number) {
+    
+    this.boundingBox.setFromObject(Player.mesh);
+    this.updateMeshes(Parkour.level1);
+
+
     const speed = 0.5;
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
     MainCanvas.updateLightAndCameraPosition()
@@ -87,6 +93,10 @@ export default class Player {
       Player.playerBody.velocity.x += speed * right.x;
       Player.playerBody.velocity.z += speed * right.z;   // Move right
     }
+    if (KeyListener.isKeyDown('Space') && this.onGround) {
+      console.log('jump')
+      this.jump();
+    }
 
     const maxSpeed = 20;
     
@@ -101,9 +111,11 @@ export default class Player {
       Player.playerBody.quaternion.set(0, 0, 0, 1);
       MainCanvas.updateCamera(deltaTime)
     }
-    
-    this.boundingBox.setFromObject(Player.mesh);
-    this.updateMeshes(Parkour.level1);
+  }
+
+  public jump() {
+    const jumpForce = 20;
+    Player.playerBody.velocity.y = jumpForce;
   }
 
   /**
@@ -117,6 +129,7 @@ export default class Player {
   }
 
   public checkCollision(level: Obstacle[]) {
+    this.onGround = false;
     level.forEach((object) => {
       if (object.isCheckpoint) {
         if (object.boundingBox.intersectsBox(this.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
@@ -124,6 +137,13 @@ export default class Player {
           object.mesh.material = ParkourPieces.checkPointActive;
           const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
           this.spawnPoint = new THREE.Vector3(object.mesh.position.x, object.mesh.position.y - objectHeight / 2, object.mesh.position.z)
+        }
+      } else {
+        const obstacleTopY = object.mesh.position.y + object.boundingBox.max.y;
+        const playerBottomY = Player.mesh.position.y - Player.height / 2;
+
+        if (object.boundingBox.intersectsBox(this.boundingBox) && Math.abs(playerBottomY - obstacleTopY) <= 0.1) {
+          this.onGround = true;
         }
       }
     });
