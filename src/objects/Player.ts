@@ -139,10 +139,11 @@ export default class Player {
           this.spawnPoint = new THREE.Vector3(object.mesh.position.x, object.mesh.position.y - objectHeight / 2, object.mesh.position.z)
         }
       } else {
-        const obstacleTopY = object.mesh.position.y + object.boundingBox.max.y;
-        const playerBottomY = Player.mesh.position.y - Player.height / 2;
-
-        if (object.boundingBox.intersectsBox(this.boundingBox) && Math.abs(playerBottomY - obstacleTopY) <= 0.1) {
+        const obstacleTopY = object.boundingBox.max.y;
+        const playerMinY = this.boundingBox.min.y;
+        
+        if (object.boundingBox.intersectsBox(this.boundingBox) &&
+            playerMinY >= (obstacleTopY - 0.1)) {
           this.onGround = true;
         }
       }
