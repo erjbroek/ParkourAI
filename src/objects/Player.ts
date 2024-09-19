@@ -22,7 +22,7 @@ export default class Player {
 
   public static radius: number = 1;
 
-  public static mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 2.3, 1), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
+  public static mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
 
   public static playerBody: CANNON.Body;
 
@@ -36,19 +36,25 @@ export default class Player {
 
   public onGround: boolean = false;
 
+  private moving: boolean = false
+
+  private forward: THREE.Vector3 = new THREE.Vector3();
+
+  private right: THREE.Vector3 = new THREE.Vector3();
+
   public constructor() {
     Player.mesh.position.set(0, 5, 0);
     
     Player.playerBody = new CANNON.Body({ 
       mass: 1, 
-      shape: new CANNON.Box(new CANNON.Vec3(0.5, 1.15, 0.5)), 
+      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
       position: new CANNON.Vec3(0, 5, 0),
       material: Player.physicsMaterial
     })
     
-    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0.0, restitution: 0.0 });
+    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0.0 });
     
-    Player.playerBody.linearDamping = 0.4;
+    // Player.playerBody.linearDamping = 1;
     Player.playerBody.angularDamping = 0.1;
     Player.mesh.castShadow = true;
     MainCanvas.world.addBody(Player.playerBody);
@@ -60,50 +66,53 @@ export default class Player {
   }
 
   public update(deltaTime: number) {
-    
     this.boundingBox.setFromObject(Player.mesh);
     this.updateMeshes(Parkour.level1);
 
-
-    const speed = 0.5;
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
     MainCanvas.updateLightAndCameraPosition()
+    this.updateMovement(deltaTime);
 
-    const forward = new THREE.Vector3();
-    MainCanvas.camera.getWorldDirection(forward);
-    forward.y = 0;
-    forward.normalize();
+  }
 
-    const right = new THREE.Vector3();
-    right.crossVectors(forward, MainCanvas.camera.up).normalize();
-
+  public updateMovement(deltaTime: number) {
+    // calculatesplayer direction based on camera azimuth
+    this.forward = new THREE.Vector3();
+    MainCanvas.camera.getWorldDirection(this.forward);
+    this.forward.y = 0;
+    this.forward.normalize();
+    this.right = new THREE.Vector3();
+    this.right.crossVectors(this.forward, MainCanvas.camera.up).normalize();
+    
+    // player movement based on inputs
+    const speed = 0.5;
+    this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
-      Player.playerBody.velocity.x += -speed * forward.x;
-      Player.playerBody.velocity.z += -speed * forward.z;  // Move backwards
+      Player.playerBody.velocity.x += -speed * this.forward.x;
+      Player.playerBody.velocity.z += -speed * this.forward.z;
+      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyW')) {
-      Player.playerBody.velocity.x += speed * forward.x;
-      Player.playerBody.velocity.z += speed * forward.z;   // Move forwards
+      Player.playerBody.velocity.x += speed * this.forward.x;
+      Player.playerBody.velocity.z += speed * this.forward.z;
+      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyA')) {
-      Player.playerBody.velocity.x += -speed * right.x;
-      Player.playerBody.velocity.z += -speed * right.z;  // Move left
+      Player.playerBody.velocity.x += -speed * this.right.x;
+      Player.playerBody.velocity.z += -speed * this.right.z;
+      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyD')) {
-      Player.playerBody.velocity.x += speed * right.x;
-      Player.playerBody.velocity.z += speed * right.z;   // Move right
+      Player.playerBody.velocity.x += speed * this.right.x;
+      Player.playerBody.velocity.z += speed * this.right.z;
+      this.moving = true;
     }
     if (KeyListener.isKeyDown('Space') && this.onGround) {
       console.log('jump')
       this.jump();
     }
 
-    const maxSpeed = 20;
-    
-    // Clamp the velocity in the x direction
-    Player.playerBody.velocity.x = Math.max(Math.min(Player.playerBody.velocity.x, maxSpeed), -maxSpeed);
-    Player.playerBody.velocity.z = Math.max(Math.min(Player.playerBody.velocity.z, maxSpeed), -maxSpeed);
-    
+    // if player falls, reset position to last reached checkpoint
     if (Player.playerBody.position.y < -10) {
       Player.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
       Player.playerBody.velocity.set(0, 0, 0);
@@ -111,10 +120,20 @@ export default class Player {
       Player.playerBody.quaternion.set(0, 0, 0, 1);
       MainCanvas.updateCamera(deltaTime)
     }
+
+    // apply friction when player is not moving
+    if (!this.moving && this.onGround) {
+      Player.playerBody.velocity.x *= 0.92;
+      Player.playerBody.velocity.z *= 0.92;
+      Player.playerBody.angularVelocity.y *= 0.95;
+    }
+    Player.playerBody.velocity.x *= 0.985;
+    Player.playerBody.velocity.z *= 0.985;
+
   }
 
   public jump() {
-    const jumpForce = 20;
+    const jumpForce = 14;
     Player.playerBody.velocity.y = jumpForce;
   }
 
@@ -141,10 +160,10 @@ export default class Player {
       } else {
         const obstacleTopY = object.boundingBox.max.y;
         const playerMinY = this.boundingBox.min.y;
-        
-        if (object.boundingBox.intersectsBox(this.boundingBox) &&
-            playerMinY >= (obstacleTopY - 0.1)) {
-          this.onGround = true;
+
+        // player is touching ground, applies friction and enables flag
+        if (object.boundingBox.intersectsBox(this.boundingBox) && playerMinY >= (obstacleTopY - 0.1)) {
+            this.onGround = true;
         }
       }
     });

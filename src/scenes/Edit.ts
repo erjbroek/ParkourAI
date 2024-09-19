@@ -25,6 +25,8 @@ export default class Edit {
 
   private height: number = 0;
 
+  private activePosition: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
+
   public mesh: THREE.Mesh = new THREE.Mesh(
     new THREE.BoxGeometry(4, 1, 4),
     new THREE.MeshLambertMaterial({ color: 0xccffcc, transparent: true }) 
@@ -72,6 +74,14 @@ export default class Edit {
       (this.mesh.material as THREE.Material).opacity = 1;
       this.createObstacle(this.mesh.clone());
     }
+
+    // changing transformcontrols mode
+    if (KeyListener.keyPressed("KeyQ")) {
+      this.transformControls.setMode("translate");
+    }
+    if (KeyListener.keyPressed("KeyR")) {
+      this.transformControls.setMode("rotate");
+    }
   }
 
   /**
@@ -118,6 +128,7 @@ export default class Edit {
     GUI.fillRectangle(canvas, 0, canvas.height * 0.78, canvas.width, canvas.height * 0.24, 0, 0, 0, 0.5, 5);
     GUI.fillRectangle(canvas, 0, canvas.height * 0.98, canvas.width, canvas.height * 0.02, 0, 0, 0, 0.8);
     GUI.writeText(canvas, `height: ${this.height}`, canvas.width * 0.5, canvas.height * 0.05, "center", "system-ui", 30, "black", 100);
+    GUI.writeText(canvas, `Position mesh: ${this.activePosition.x}, ${this.activePosition.y}, ${this.activePosition.z}`, canvas.width * 0.5, canvas.height * 0.08, "center", "system-ui", 30, "black", 100);
 
     for (let i = 0; i < 4; i++) {
       GUI.fillRectangle(canvas, canvas.width * 0.02 + canvas.width * 0.1 * i, canvas.height * 0.8, canvas.width * 0.09, canvas.height * 0.16, 255, 255, 255, 1, 15);
@@ -157,6 +168,7 @@ export default class Edit {
       this.height = position.y;
 
       this.mesh.position.set(position.x, position.y, position.z);
+      this.activePosition = { x: position.x, y: position.y, z: position.z };
     });
   }
 }
