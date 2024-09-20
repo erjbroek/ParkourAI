@@ -71,6 +71,7 @@ export default class MainCanvas {
     MainCanvas.canvas.height = window.innerHeight;
   }
 
+  // sets up initial lights
   public setupLight() {
     const ambientLightTop = new THREE.AmbientLight(0x12a3ff, 0.5);
     MainCanvas.scene.add(ambientLightTop);
