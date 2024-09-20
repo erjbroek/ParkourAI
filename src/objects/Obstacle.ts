@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import MainCanvas from '../setup/MainCanvas.js';
 import Edit from '../scenes/Edit.js';
+import ParkourPieces from './ParkourPieces.js';
 
 export default class Obstacle {
 
@@ -66,7 +67,7 @@ export default class Obstacle {
       });
       
       // turns off physics collision if its a checkpoint
-      if (size.y != 12) {
+      if (mesh.geometry !== ParkourPieces.checkPoint.geometry) {
         MainCanvas.world.addBody(this.platformBody);
       } else {
         this.isCheckpoint = true;

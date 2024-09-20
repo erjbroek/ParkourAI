@@ -102,10 +102,10 @@ export default class MainCanvas {
 
   public static updateCamera(deltaTime: number) {
     if (Player.mesh.position.y < -10) {
-        const cameraOffset = new THREE.Vector3(9, 0, 24);
+        const cameraOffset = new THREE.Vector3(9, 9, 24);
         this.camera.position.copy(Player.playerBody.position).add(cameraOffset);
     }
-    const scaledVelocity = new THREE.Vector3(Player.playerBody.velocity.x, 0, Player.playerBody.velocity.z).multiplyScalar(deltaTime);
+    const scaledVelocity = new THREE.Vector3(Player.playerBody.velocity.x, Player.playerBody.velocity.y, Player.playerBody.velocity.z).multiplyScalar(deltaTime);
     this.orbitControls.target.copy(Player.mesh.position);
 
     // this makes sure the camera follows the position of the player

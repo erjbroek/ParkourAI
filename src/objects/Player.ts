@@ -63,10 +63,10 @@ export default class Player {
     MainCanvas.scene.add(Player.mesh);
 
     // testing values
-    // Player.playerBody.position.set(16, 5, -162);
+    // Player.playerBody.position.set(8, 5, -290);
     // this.spawnPoint.set(16, 5, -162);
-    // MainCanvas.camera.position.set(28, 12, -142);
-    // Parkour.activeLevel = 2
+    // MainCanvas.camera.position.set(20, 12, -270);
+    // Parkour.activeLevel = 3
 
     this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
   }
@@ -91,7 +91,7 @@ export default class Player {
     this.right.crossVectors(this.forward, MainCanvas.camera.up).normalize();
     
     // player movement based on inputs
-    const speed = 0.5;
+    const speed = 0.8;
     this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
       Player.playerBody.velocity.x += -speed * this.forward.x;
@@ -129,12 +129,12 @@ export default class Player {
 
     // apply friction when player is not moving
     if (!this.moving && this.onGround) {
-      Player.playerBody.velocity.x *= 0.9;
-      Player.playerBody.velocity.z *= 0.9;
+      Player.playerBody.velocity.x *= 0.87;
+      Player.playerBody.velocity.z *= 0.87;
       Player.playerBody.angularVelocity.y *= 0.95;
     }
-    Player.playerBody.velocity.x *= 0.97;
-    Player.playerBody.velocity.z *= 0.97;
+    Player.playerBody.velocity.x *= 0.95;
+    Player.playerBody.velocity.z *= 0.95;
 
   }
 
