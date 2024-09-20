@@ -34,7 +34,7 @@ export default class MainCanvas {
 
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
-    MainCanvas.camera.position.set(9, 9, 44);
+    MainCanvas.camera.position.set(5, 11, 36);
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
     MainCanvas.renderer.shadowMap.enabled = true;
     MainCanvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -84,7 +84,7 @@ export default class MainCanvas {
     MainCanvas.scene.add(MainCanvas.directionalLight);
   }
 
-  public static updateLightAndCameraPosition() {
+  public static updateLight() {
     this.directionalLight.position.set(
       Player.mesh.position.x + 70,
       Player.mesh.position.y + 140,
@@ -102,7 +102,7 @@ export default class MainCanvas {
 
   public static updateCamera(deltaTime: number) {
     if (Player.mesh.position.y < -10) {
-        const cameraOffset = new THREE.Vector3(9, 9, 24);
+        const cameraOffset = new THREE.Vector3(5, 6, 16);
         this.camera.position.copy(Player.playerBody.position).add(cameraOffset);
     }
     const scaledVelocity = new THREE.Vector3(Player.playerBody.velocity.x, Player.playerBody.velocity.y, Player.playerBody.velocity.z).multiplyScalar(deltaTime);

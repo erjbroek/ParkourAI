@@ -28,7 +28,7 @@ export default class Player {
 
   public static physicsMaterial: CANNON.Material = new CANNON.Material()
 
-  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 5, 20)
 
   public boundingBox: THREE.Box3;
 
@@ -63,10 +63,10 @@ export default class Player {
     MainCanvas.scene.add(Player.mesh);
 
     // testing values
-    // Player.playerBody.position.set(8, 5, -290);
+    // Player.playerBody.position.set(-28, 15, -360);
     // this.spawnPoint.set(16, 5, -162);
-    // MainCanvas.camera.position.set(20, 12, -270);
-    // Parkour.activeLevel = 3
+    // MainCanvas.camera.position.set(-20, 20, -340);
+    // Parkour.activeLevel = 4
 
     this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
   }
@@ -76,7 +76,7 @@ export default class Player {
     // this.updateMeshes(Parkour.level[Parkour.activeLevel]);
 
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
-    MainCanvas.updateLightAndCameraPosition()
+    MainCanvas.updateLight()
     this.updateMovement(deltaTime);
 
   }
@@ -180,6 +180,10 @@ export default class Player {
   
           // Player is touching ground, applies friction and enables flag
           if (object.boundingBox.intersectsBox(this.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
+            // makes sure player doesnt start spinning fastly when continuously jumping
+            Player.playerBody.angularVelocity.y *= 0.5;
+            Player.playerBody.angularVelocity.x *= 0.5;
+            Player.playerBody.angularVelocity.z *= 0.5;
             this.onGround = true;  // Set onGround to true if any collision places player on ground
           }
         }
