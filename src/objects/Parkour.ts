@@ -20,13 +20,13 @@ export default class Parkour {
 
   }
 
-    /**
-   * Creates obstacle
-   * 
-   * Instead of using mesh, it is used as Obstacle 
-   * this way, controlling the parkour jumps is easier
-   * think of things like moving obstacles, ect.
-   */
+  /**
+ * Creates obstacle
+ * 
+ * Instead of using mesh, it is used as Obstacle 
+ * this way, controlling the parkour jumps is easier
+ * think of things like moving obstacles, ect.
+ */
   private createObstacle(mesh: THREE.Mesh, posX: number, posY: number, posZ: number, rotationX = 0, rotationY = 0, rotationZ = 0): Obstacle {
     return new Obstacle(mesh.clone(), { posX, posY, posZ, rotationX, rotationY, rotationZ });
   }
@@ -36,6 +36,7 @@ export default class Parkour {
    */
   public generateParkour(): void {
     Parkour.level.push([
+      this.createObstacle(ParkourPieces.platform, 0, 0, 16),
       this.createObstacle(ParkourPieces.platform, 0, 0, 0),
       this.createObstacle(ParkourPieces.long2, 0, 0, -16),
       this.createObstacle(ParkourPieces.long2, 0, 0, -34),
@@ -51,20 +52,33 @@ export default class Parkour {
       this.createObstacle(ParkourPieces.long1, 16, 0, -100, 0),
       this.createObstacle(ParkourPieces.platform, 16, 0, -112),
       this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -112),
-      ]
+    ]
     )
 
     Parkour.level.push([
-      this.createObstacle(ParkourPieces.long2, 16, 0, -130),
-      this.createObstacle(ParkourPieces.long1, 16, 0, -154),  
-      this.createObstacle(ParkourPieces.platform, 16, 0, -170),
-      this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -170)
+      this.createObstacle(ParkourPieces.long2, 16, 0, -128),
+      this.createObstacle(ParkourPieces.long2, 16, 0, -156),
+      this.createObstacle(ParkourPieces.platform, 16, 0, -172),
+      this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -172)
     ]
     );
 
+    Parkour.level.push([
+      this.createObstacle(ParkourPieces.long1, 16, 0, -188),
+      this.createObstacle(ParkourPieces.long1, 16, 0, -208),
+      this.createObstacle(ParkourPieces.long1, 16, 0, -228),
+      this.createObstacle(ParkourPieces.long1, 12, 0, -232, 0, Math.PI / 2),
+      this.createObstacle(ParkourPieces.long1, 8, 0, -236, 0),
+      this.createObstacle(ParkourPieces.long1, 8, 0, -256, 0),
+      this.createObstacle(ParkourPieces.long1, 8, 0, -276, 0),
+      this.createObstacle(ParkourPieces.platform, 8, 0, -292),
+      this.createObstacle(ParkourPieces.checkPoint, 8, 6.51, -292)
+    ])
+
     this.renderParkour(Parkour.level[0]);
     this.renderParkour(Parkour.level[1]);
-    this.renderParkour(Parkour.level[2])
+    this.renderParkour(Parkour.level[2]);
+    this.renderParkour(Parkour.level[3]);
   }
 
   /**

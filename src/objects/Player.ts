@@ -44,12 +44,12 @@ export default class Player {
 
   public constructor() {
 
-    Player.mesh.position.set(0, 5, 0);
+    // Player.mesh.position.set(0, 0, 0);
     
     Player.playerBody = new CANNON.Body({ 
       mass: 1, 
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
-      position: new CANNON.Vec3(0, 5, 0),
+      position: new CANNON.Vec3(0, 5, 20),
       material: Player.physicsMaterial
     })
     
@@ -63,8 +63,9 @@ export default class Player {
     MainCanvas.scene.add(Player.mesh);
 
     // testing values
-    // Player.playerBody.position.set(16, 5, -112);
-    // MainCanvas.camera.position.set(28, 12, -92);
+    // Player.playerBody.position.set(16, 5, -162);
+    // this.spawnPoint.set(16, 5, -162);
+    // MainCanvas.camera.position.set(28, 12, -142);
     // Parkour.activeLevel = 2
 
     this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
@@ -128,8 +129,8 @@ export default class Player {
 
     // apply friction when player is not moving
     if (!this.moving && this.onGround) {
-      Player.playerBody.velocity.x *= 0.93;
-      Player.playerBody.velocity.z *= 0.93;
+      Player.playerBody.velocity.x *= 0.9;
+      Player.playerBody.velocity.z *= 0.9;
       Player.playerBody.angularVelocity.y *= 0.95;
     }
     Player.playerBody.velocity.x *= 0.97;
