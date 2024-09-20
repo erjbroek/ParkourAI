@@ -113,7 +113,7 @@ export default class Edit {
     
     // Creates obstacle class from mesh
     // here, physics body is automatically added
-    new Obstacle(this.mesh, { posX: this.mesh.position.x, posY: this.mesh.position.y, posZ: this.mesh.position.z });
+    Parkour.addedParkour[0].push(new Obstacle(this.mesh, { posX: this.mesh.position.x, posY: this.mesh.position.y, posZ: this.mesh.position.z }));
   }
 
   public update(deltaTime: number) {

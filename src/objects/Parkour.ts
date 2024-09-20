@@ -11,7 +11,7 @@ export default class Parkour {
 
   public static activeLevel: number = 0;
 
-  public static addedParkour: [Obstacle[]]
+  public static addedParkour: Obstacle[][] = [[]];
 
   // used to display all different objects in the parkour
   public objectArray: Obstacle[] = [];

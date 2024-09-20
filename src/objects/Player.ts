@@ -72,7 +72,7 @@ export default class Player {
 
   public update(deltaTime: number) {
     this.boundingBox.setFromObject(Player.mesh);
-    // this.updateMeshes(Parkour.level[Parkour.currentLevel]);
+    // this.updateMeshes(Parkour.level[Parkour.activeLevel]);
 
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
     MainCanvas.updateLightAndCameraPosition()
@@ -155,7 +155,7 @@ export default class Player {
   public checkCollision(levels: Obstacle[][]): void {
     // Reset onGround flag initially
     this.onGround = false;
-  
+
     // Loop through each level
     levels.forEach((level) => {
       level.forEach((object) => {
@@ -164,7 +164,7 @@ export default class Player {
             if (Parkour.level[Parkour.activeLevel + 1]) {
               Parkour.activeLevel++;
             }
-            // Turn the checkpoint green
+            // Turn the checkpoint green and update spawnpoint of player
             object.mesh.material = ParkourPieces.checkPointActive;
             const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
             this.spawnPoint = new THREE.Vector3(
