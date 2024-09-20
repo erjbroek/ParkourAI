@@ -100,6 +100,8 @@ export default class MainCanvas {
     this.directionalLight.target.updateMatrixWorld();
   }
 
+  // updates position of the camera
+  // resets position if player falls 
   public static updateCamera(deltaTime: number) {
     if (Player.mesh.position.y < -10) {
         const cameraOffset = new THREE.Vector3(5, 6, 16);
