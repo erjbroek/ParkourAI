@@ -63,10 +63,10 @@ export default class Player {
     MainCanvas.scene.add(Player.mesh);
 
     // testing values
-    // Player.playerBody.position.set(-28, 15, -360);
-    // this.spawnPoint.set(16, 5, -162);
-    // MainCanvas.camera.position.set(-20, 20, -340);
-    // Parkour.activeLevel = 4
+    Player.playerBody.position.set(-28, 15, -360);
+    this.spawnPoint.set(16, 5, -162);
+    MainCanvas.camera.position.set(-20, 20, -340);
+    Parkour.activeLevel = 4
 
     this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
   }
