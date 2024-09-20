@@ -43,6 +43,7 @@ export default class Player {
   private right: THREE.Vector3 = new THREE.Vector3();
 
   public constructor() {
+
     Player.mesh.position.set(0, 5, 0);
     
     Player.playerBody = new CANNON.Body({ 
@@ -61,13 +62,17 @@ export default class Player {
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(Player.mesh);
 
-    this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
+    // testing values
+    // Player.playerBody.position.set(16, 5, -112);
+    // MainCanvas.camera.position.set(28, 12, -92);
+    // Parkour.activeLevel = 2
 
+    this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
   }
 
   public update(deltaTime: number) {
     this.boundingBox.setFromObject(Player.mesh);
-    this.updateMeshes(Parkour.level1);
+    // this.updateMeshes(Parkour.level[Parkour.currentLevel]);
 
     Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
     MainCanvas.updateLightAndCameraPosition()
@@ -123,12 +128,12 @@ export default class Player {
 
     // apply friction when player is not moving
     if (!this.moving && this.onGround) {
-      Player.playerBody.velocity.x *= 0.92;
-      Player.playerBody.velocity.z *= 0.92;
+      Player.playerBody.velocity.x *= 0.93;
+      Player.playerBody.velocity.z *= 0.93;
       Player.playerBody.angularVelocity.y *= 0.95;
     }
-    Player.playerBody.velocity.x *= 0.985;
-    Player.playerBody.velocity.z *= 0.985;
+    Player.playerBody.velocity.x *= 0.97;
+    Player.playerBody.velocity.z *= 0.97;
 
   }
 
@@ -147,25 +152,37 @@ export default class Player {
     });
   }
 
-  public checkCollision(level: Obstacle[]) {
+  public checkCollision(levels: Obstacle[][]): void {
+    // Reset onGround flag initially
     this.onGround = false;
-    level.forEach((object) => {
-      if (object.isCheckpoint) {
-        if (object.boundingBox.intersectsBox(this.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
-          // Turn the checkpoint green
-          object.mesh.material = ParkourPieces.checkPointActive;
-          const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
-          this.spawnPoint = new THREE.Vector3(object.mesh.position.x, object.mesh.position.y - objectHeight / 2, object.mesh.position.z)
+  
+    // Loop through each level
+    levels.forEach((level) => {
+      level.forEach((object) => {
+        if (object.isCheckpoint) {
+          if (object.boundingBox.intersectsBox(this.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
+            if (Parkour.level[Parkour.activeLevel + 1]) {
+              Parkour.activeLevel++;
+            }
+            // Turn the checkpoint green
+            object.mesh.material = ParkourPieces.checkPointActive;
+            const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
+            this.spawnPoint = new THREE.Vector3(
+              object.mesh.position.x,
+              object.mesh.position.y - objectHeight / 2,
+              object.mesh.position.z
+            );
+          }
+        } else {
+          const obstacleTopY = object.boundingBox.max.y;
+          const playerMinY = this.boundingBox.min.y;
+  
+          // Player is touching ground, applies friction and enables flag
+          if (object.boundingBox.intersectsBox(this.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
+            this.onGround = true;  // Set onGround to true if any collision places player on ground
+          }
         }
-      } else {
-        const obstacleTopY = object.boundingBox.max.y;
-        const playerMinY = this.boundingBox.min.y;
-
-        // player is touching ground, applies friction and enables flag
-        if (object.boundingBox.intersectsBox(this.boundingBox) && playerMinY >= (obstacleTopY - 0.1)) {
-            this.onGround = true;
-        }
-      }
+      });
     });
   }
 }

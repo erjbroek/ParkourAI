@@ -5,7 +5,7 @@ export default class ParkourPieces {
 
   public static checkPointInactive: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, transparent: true, opacity: 0.4 });
 
-  public static checkPointActive: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, transparent: true, opacity: 0.4 });
+  public static checkPointActive: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, transparent: true, opacity: 0.2 });
 
   public static normal: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), this.material);
 

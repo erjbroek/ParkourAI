@@ -25,8 +25,6 @@ export default class Game extends Scene {
   
   public parkour: Parkour = new Parkour();
 
-  public activeLevel: Obstacle[] = []
-
   public constructor() {
     super();
     this.parkour.generateParkour();
@@ -65,8 +63,15 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.player.update(deltaTime);
-    this.activeLevel = Parkour.level1
-    this.player.checkCollision(this.activeLevel)
+
+
+    if (Parkour.activeLevel == 0) {
+      this.player.checkCollision([Parkour.level[Parkour.activeLevel]]);
+    } else {
+      this.player.checkCollision([Parkour.level[Parkour.activeLevel], Parkour.level[Parkour.activeLevel - 1]]);
+    }
+    console.log(Parkour.activeLevel)
+
     
     if (this.openEditor) {
       this.editor.update(deltaTime);    
