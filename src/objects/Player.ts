@@ -153,6 +153,8 @@ export default class Player {
     });
   }
 
+  // checks collision between the player and specified levels
+  // is used to check if the player can jump and if checkpoint is reached
   public checkCollision(levels: Obstacle[][]): void {
     // Reset onGround flag initially
     this.onGround = false;
