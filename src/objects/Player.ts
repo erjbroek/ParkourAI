@@ -57,7 +57,7 @@ export default class Player {
       material: Player.physicsMaterial
     })
     
-    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0.0 });
+    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     
     // Player.playerBody.linearDamping = 1;
     Player.playerBody.angularDamping = 0.1;
@@ -67,10 +67,10 @@ export default class Player {
     MainCanvas.scene.add(Player.mesh);
 
     // testing values
-    Player.playerBody.position.set(338, 60, -248  );
-    this.spawnPoint.set(116, 15, -296);
-    MainCanvas.camera.position.set(326, 68, -276);
-    Parkour.activeLevel = 8
+    // Player.playerBody.position.set(338, 60, -68);
+    // this.spawnPoint.set(116, 15, -296);
+    // MainCanvas.camera.position.set(326, 68, -88);
+    // Parkour.activeLevel = 9
 
     this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
   }
