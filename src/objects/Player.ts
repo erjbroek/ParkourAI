@@ -60,7 +60,7 @@ export default class Player {
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     
     // Player.playerBody.linearDamping = 1;
-    Player.playerBody.angularDamping = 0.1;
+    Player.playerBody.angularDamping;
     Player.mesh.castShadow = true;
     MainCanvas.world.addBody(Player.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
@@ -161,46 +161,6 @@ export default class Player {
     obstacles.forEach((obstacle) => {
       obstacle.mesh.position.copy(obstacle.platformBody.position);
       obstacle.mesh.quaternion.copy(obstacle.platformBody.quaternion);
-    });
-  }
-
-  // checks collision between the player and specified levels
-  // is used to check if the player can jump and if checkpoint is reached
-  public checkCollision(levels: Obstacle[][]): void {
-    // Reset onGround flag initially
-    this.onGround = false;
-
-    // Loop through each level
-    levels.forEach((level) => {
-      level.forEach((object) => {
-        if (object.isCheckpoint) {
-          if (object.boundingBox.intersectsBox(this.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
-            if (Parkour.level[Parkour.activeLevel + 1]) {
-              Parkour.activeLevel++;
-            }
-            // Turn the checkpoint green and update spawnpoint of player
-            object.mesh.material = ParkourPieces.checkPointActive;
-            const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
-            this.spawnPoint = new THREE.Vector3(
-              object.mesh.position.x,
-              object.mesh.position.y - objectHeight / 2,
-              object.mesh.position.z
-            );
-          }
-        } else {
-          const obstacleTopY = object.boundingBox.max.y;
-          const playerMinY = this.boundingBox.min.y;
-  
-          // Player is touching ground, applies friction and enables flag
-          if (object.boundingBox.intersectsBox(this.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
-            // makes sure player doesnt start spinning fastly when continuously jumping
-            Player.playerBody.angularVelocity.y *= 0.5;
-            Player.playerBody.angularVelocity.x *= 0.5;
-            Player.playerBody.angularVelocity.z *= 0.5;
-            this.onGround = true;  // Set onGround to true if any collision places player on ground
-          }
-        }
-      });
     });
   }
 }

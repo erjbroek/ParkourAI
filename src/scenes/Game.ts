@@ -62,12 +62,8 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.player.update(deltaTime);
+    this.parkour.checkCollision(this.player);
 
-    if (Parkour.activeLevel == 0) {
-      this.player.checkCollision([Parkour.level[Parkour.activeLevel]]);
-    } else {
-      this.player.checkCollision([Parkour.level[Parkour.activeLevel], Parkour.level[Parkour.activeLevel - 1]]);
-    }
 
     if (this.openEditor) {
       this.editor.update(deltaTime);    

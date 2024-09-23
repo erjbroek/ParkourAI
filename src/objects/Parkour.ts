@@ -5,11 +5,12 @@ import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import Edit from '../scenes/Edit.js';
+import Player from './Player.js';
 
 export default class Parkour {
   public static level: Obstacle[][] = []
 
-  public static activeLevel: number = 0;
+  public activeLevel: number = 0;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -181,6 +182,56 @@ export default class Parkour {
     this.renderParkour(Parkour.level[8]);
     this.renderParkour(Parkour.level[9]);
     this.renderParkour(Parkour.level[10])
+  }
+
+   // checks collision between the player and specified levels
+  // is used to check if the player can jump and if checkpoint is reached
+  public checkCollision(player: Player): void {
+    // Reset onGround flag initially
+    
+    let levels: Obstacle[][] = [];
+    if (this.activeLevel == 0) {
+      levels = [Parkour.level[this.activeLevel]];
+    } else {
+      levels = [Parkour.level[this.activeLevel], Parkour.level[this.activeLevel - 1]]
+    }
+
+    // Loop through each level
+    player.onGround = false;
+    levels.forEach((level) => {
+      level.forEach((object) => {
+        if (object.isCheckpoint) {
+          // if player collides with checkpoint
+          if (object.boundingBox.intersectsBox(player.boundingBox) && object.mesh.material != ParkourPieces.checkPointActive) {
+            if (Parkour.level[this.activeLevel + 1]) {
+              this.activeLevel++;
+            }
+
+            // Turn the checkpoint green and update spawnpoint of player
+            object.mesh.material = ParkourPieces.checkPointActive;
+            const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
+            player.spawnPoint = new THREE.Vector3(
+              object.mesh.position.x,
+              object.mesh.position.y - objectHeight / 2,
+              object.mesh.position.z
+            );
+          }
+        } else {
+          // checking collision with other shapes (to update friction ect)
+          const obstacleTopY = object.boundingBox.max.y;
+          const playerMinY = player.boundingBox.min.y;
+  
+          // Player is touching ground, applies friction and enables flag
+          if (object.boundingBox.intersectsBox(player.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
+            // makes sure player doesnt start spinning fastly when continuously jumping
+            Player.playerBody.angularVelocity.y *= 0.5;
+            Player.playerBody.angularVelocity.x *= 0.5;
+            Player.playerBody.angularVelocity.z *= 0.5;
+            player.onGround = true;  // Set onGround to true if any collision places player on ground
+          }
+        }
+      });
+    });
   }
 
   /**
