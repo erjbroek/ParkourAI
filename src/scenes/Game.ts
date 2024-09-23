@@ -100,7 +100,7 @@ export default class Game extends Scene {
   public updateCamera(deltaTime: number) {
     if (this.players[0].mesh.position.y < -10) {
         const cameraOffset = new THREE.Vector3(5, 6, 16);
-        MainCanvas.camera.position.copy(this.players[0].mesh.position).add(cameraOffset);
+        MainCanvas.camera.position.copy(this.players[0].playerBody.position).add(cameraOffset);
     }
     const scaledVelocity = new THREE.Vector3(this.players[0].playerBody.velocity.x, this.players[0].playerBody.velocity.y, this.players[0].playerBody.velocity.z).multiplyScalar(deltaTime);
     MainCanvas.orbitControls.target.copy(this.players[0].mesh.position);
