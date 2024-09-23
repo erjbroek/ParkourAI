@@ -20,7 +20,7 @@ export default class Game extends Scene {
   
   private readyClickEditor: boolean = true;
   
-  private player: Player = new Player();
+  private players: Player[] = [new Player()];
   
   public parkour: Parkour = new Parkour();
 
@@ -61,8 +61,10 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-    this.player.update(deltaTime);
-    this.parkour.checkCollision(this.player);
+    this.players.forEach(player => {
+      player.update(deltaTime);
+      this.parkour.checkCollision(player);
+    });
 
 
     if (this.openEditor) {
