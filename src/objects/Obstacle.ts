@@ -5,7 +5,6 @@ import Edit from '../scenes/Edit.js';
 import ParkourPieces from './ParkourPieces.js';
 
 export default class Obstacle {
-
   public moving: boolean;
 
   public movingSpeed: number;

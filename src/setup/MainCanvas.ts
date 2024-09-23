@@ -20,7 +20,7 @@ export default class MainCanvas {
 
   public static gravityConstant = -25;
   
-  public activeScene: Scene;
+  public activeScene: Game;
   
   public clock: THREE.Clock = new THREE.Clock(true);
   
@@ -85,37 +85,6 @@ export default class MainCanvas {
     MainCanvas.scene.add(MainCanvas.directionalLight);
   }
 
-  public static updateLight() {
-    this.directionalLight.position.set(
-      Player.mesh.position.x + 70,
-      Player.mesh.position.y + 140,
-      Player.mesh.position.z -140
-    );
-
-    this.directionalLight.target.position.set(
-      Player.mesh.position.x,
-      Player.mesh.position.y,
-      Player.mesh.position.z
-    );
-
-    this.directionalLight.target.updateMatrixWorld();
-  }
-
-  // updates position of the camera
-  // resets position if player falls 
-  public static updateCamera(deltaTime: number) {
-    if (Player.mesh.position.y < -10) {
-        const cameraOffset = new THREE.Vector3(5, 6, 16);
-        this.camera.position.copy(Player.playerBody.position).add(cameraOffset);
-    }
-    const scaledVelocity = new THREE.Vector3(Player.playerBody.velocity.x, Player.playerBody.velocity.y, Player.playerBody.velocity.z).multiplyScalar(deltaTime);
-    this.orbitControls.target.copy(Player.mesh.position);
-
-    // this makes sure the camera follows the position of the player
-    this.camera.position.add(scaledVelocity);
-
-    this.orbitControls.update();
-  }
 
 
   /*
@@ -127,11 +96,17 @@ export default class MainCanvas {
   public startRendering() {
     MainCanvas.renderer.setAnimationLoop(() => {
       const deltaTime = this.clock.getDelta();
+      if (deltaTime > 0) {
+        MainCanvas.world.step(deltaTime)
+
+      }
 
       // physics
-      MainCanvas.world.step(deltaTime)
-      Player.mesh.position.copy(Player.playerBody.position);
-      Player.mesh.quaternion.copy(Player.playerBody.quaternion);
+      this.activeScene.players.forEach((player: Player) => {
+        player.mesh.position.copy(player.playerBody.position);
+        player.mesh.quaternion.copy(player.playerBody.quaternion);
+        this.activeScene.parkour.checkCollision(player);
+      })
 
       // updates controls
       MainCanvas.orbitControls.update();
@@ -139,7 +114,6 @@ export default class MainCanvas {
       // calls functions of active scene
       this.activeScene.processInput();
       this.activeScene.update(deltaTime);
-      MainCanvas.updateCamera(deltaTime)
       
       const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
         GUI.getCanvas()

@@ -224,9 +224,9 @@ export default class Parkour {
           // Player is touching ground, applies friction and enables flag
           if (object.boundingBox.intersectsBox(player.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
             // makes sure player doesnt start spinning fastly when continuously jumping
-            Player.playerBody.angularVelocity.y *= 0.5;
-            Player.playerBody.angularVelocity.x *= 0.5;
-            Player.playerBody.angularVelocity.z *= 0.5;
+            player.playerBody.angularVelocity.y *= 0.5;
+            player.playerBody.angularVelocity.x *= 0.5;
+            player.playerBody.angularVelocity.z *= 0.5;
             player.onGround = true;  // Set onGround to true if any collision places player on ground
           }
         }

@@ -6,27 +6,28 @@ import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
+import Game from '../scenes/Game.js';
 
 export default class Player {
-  public static x: number = 0;
+  public x: number = 0;
 
-  public static y: number = 12.7;
+  public y: number = 5;
 
-  public static z: number = 0;
+  public z: number = 20;
 
-  public static velocity: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
+  public velocity: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
 
-  public static rotation: number = Math.PI * 1.5;
+  public rotation: number = Math.PI * 1.5;
 
-  public static height: number = 2.3;
+  public height: number = 2.3;
 
-  public static radius: number = 1;
+  public radius: number = 1;
 
-  public static mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
+  public mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
 
-  public static playerBody: CANNON.Body;
-
-  public static physicsMaterial: CANNON.Material = new CANNON.Material()
+  public physicsMaterial: CANNON.Material = new CANNON.Material();
+  
+  public playerBody: CANNON.Body;
 
   public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 5, 20)
 
@@ -46,25 +47,22 @@ export default class Player {
   
   private jumpBuffer: number = 0.1;
 
-  public constructor() {
-
-    // Player.mesh.position.set(0, 0, 0);
-    
-    Player.playerBody = new CANNON.Body({ 
+  public constructor(index: number) {
+    this.playerBody = new CANNON.Body({ 
       mass: 1, 
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
-      position: new CANNON.Vec3(0, 5, 20),
-      material: Player.physicsMaterial
-    })
+      position: new CANNON.Vec3(0 + index * 2, this.y, this.z), // Offset positions based on index
+      material: this.physicsMaterial
+    });
     
-    const platformPlaterContactMaterial = new CANNON.ContactMaterial(Player.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
+    const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     
     // Player.playerBody.linearDamping = 1;
-    Player.playerBody.angularDamping;
-    Player.mesh.castShadow = true;
-    MainCanvas.world.addBody(Player.playerBody);
+    this.playerBody.angularDamping;
+    this.mesh.castShadow = true;
+    MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
-    MainCanvas.scene.add(Player.mesh);
+    MainCanvas.scene.add(this.mesh);
 
     // testing values
     // Player.playerBody.position.set(338, 60, -68);
@@ -72,16 +70,16 @@ export default class Player {
     // MainCanvas.camera.position.set(326, 68, -88);
     // Parkour.activeLevel = 9
 
-    this.boundingBox = new THREE.Box3().setFromObject(Player.mesh);
+    this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 
   public update(deltaTime: number) {
-    this.boundingBox.setFromObject(Player.mesh);
-    // this.updateMeshes(Parkour.level[Parkour.activeLevel]);
-
-    Player.rotation = MainCanvas.orbitControls.getAzimuthalAngle();
-    MainCanvas.updateLight()
+    console.log(`Player Position Before Update: ${this.playerBody.position}`);
+    
+    this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
+    
+    console.log(`Player Position After Update: ${this.playerBody.position}`);
 
   }
 
@@ -98,23 +96,23 @@ export default class Player {
     const speed = 0.8;
     this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
-      Player.playerBody.velocity.x += -speed * this.forward.x;
-      Player.playerBody.velocity.z += -speed * this.forward.z;
+      this.playerBody.velocity.x += -speed * this.forward.x;
+      this.playerBody.velocity.z += -speed * this.forward.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyW')) {
-      Player.playerBody.velocity.x += speed * this.forward.x;
-      Player.playerBody.velocity.z += speed * this.forward.z;
+      this.playerBody.velocity.x += speed * this.forward.x;
+      this.playerBody.velocity.z += speed * this.forward.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyA')) {
-      Player.playerBody.velocity.x += -speed * this.right.x;
-      Player.playerBody.velocity.z += -speed * this.right.z;
+      this.playerBody.velocity.x += -speed * this.right.x;
+      this.playerBody.velocity.z += -speed * this.right.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyD')) {
-      Player.playerBody.velocity.x += speed * this.right.x;
-      Player.playerBody.velocity.z += speed * this.right.z;
+      this.playerBody.velocity.x += speed * this.right.x;
+      this.playerBody.velocity.z += speed * this.right.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('Space')) {
@@ -130,28 +128,27 @@ export default class Player {
     
 
     // if player falls, reset position to last reached checkpoint
-    if (Player.playerBody.position.y < -10) {
-      Player.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
-      Player.playerBody.velocity.set(0, 0, 0);
-      Player.playerBody.angularVelocity.set(0, 0, 0);
-      Player.playerBody.quaternion.set(0, 0, 0, 1);
-      MainCanvas.updateCamera(deltaTime)
+    if (this.playerBody.position.y < -10) {
+      this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
+      this.playerBody.velocity.set(0, 0, 0);
+      this.playerBody.angularVelocity.set(0, 0, 0);
+      this.playerBody.quaternion.set(0, 0, 0, 1);
     }
 
     // apply friction when player is not moving
     if (!this.moving && this.onGround) {
-      Player.playerBody.velocity.x *= 0.87;
-      Player.playerBody.velocity.z *= 0.87;
-      Player.playerBody.angularVelocity.y *= 0.95;
+      this.playerBody.velocity.x *= 0.87;
+      this.playerBody.velocity.z *= 0.87;
+      this.playerBody.angularVelocity.y *= 0.95;
     }
-    Player.playerBody.velocity.x *= 0.95;
-    Player.playerBody.velocity.z *= 0.95;
+    this.playerBody.velocity.x *= 0.95;
+    this.playerBody.velocity.z *= 0.95;
 
   }
 
   public jump() {
     const jumpForce = 14;
-    Player.playerBody.velocity.y = jumpForce;
+    this.playerBody.velocity.y = jumpForce;
   }
 
   /**
