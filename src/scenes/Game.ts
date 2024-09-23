@@ -26,7 +26,7 @@ export default class Game extends Scene {
 
   public constructor() {
     super();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       this.players.push(new Player(i));
     }
     this.parkour.generateParkour();
@@ -64,6 +64,7 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
+    // console.log(this.players[0].currentLevel)
     this.players.forEach((player) => {
       player.update(deltaTime);
       this.parkour.checkCollision(player);

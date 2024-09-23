@@ -47,11 +47,13 @@ export default class Player {
   
   private jumpBuffer: number = 0.1;
 
+  public currentLevel: number = 0;
+
   public constructor(index: number) {
     this.playerBody = new CANNON.Body({ 
       mass: 1, 
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
-      position: new CANNON.Vec3(0 + index * 2, this.y, this.z), // Offset positions based on index
+      position: new CANNON.Vec3(this.x, this.y * (index + 1), this.z), // Offset positions based on index
       material: this.physicsMaterial
     });
     
@@ -74,12 +76,8 @@ export default class Player {
   }
 
   public update(deltaTime: number) {
-    console.log(`Player Position Before Update: ${this.playerBody.position}`);
-    
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
-    
-    console.log(`Player Position After Update: ${this.playerBody.position}`);
 
   }
 
