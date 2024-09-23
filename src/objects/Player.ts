@@ -26,7 +26,7 @@ export default class Player {
   public mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
 
   public physicsMaterial: CANNON.Material = new CANNON.Material();
-  
+
   public playerBody: CANNON.Body;
 
   public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 5, 20)
@@ -44,28 +44,28 @@ export default class Player {
   private right: THREE.Vector3 = new THREE.Vector3();
 
   private jumpStatus: boolean = false;
-  
+
   private jumpBuffer: number = 0.1;
 
   public currentLevel: number = 0;
 
   public constructor(index: number) {
-    this.playerBody = new CANNON.Body({ 
-      mass: 1, 
-      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
+    this.playerBody = new CANNON.Body({
+      mass: 1,
+      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
       position: new CANNON.Vec3(this.x + index * 3, this.y + index * 3, this.z), // Offset positions based on index
       material: this.physicsMaterial
     });
-    
+
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
-    
+
     // Player.playerBody.linearDamping = 1;
     this.playerBody.angularDamping;
     this.mesh.castShadow = true;
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(this.mesh);
-    this.rotation.y = Math.PI ;
+    this.rotation.y = Math.PI;
 
     // testing values
     // Player.playerBody.position.set(338, 60, -68);
@@ -93,7 +93,7 @@ export default class Player {
 
     this.forward.set(Math.sin(this.rotation.y), 0, Math.cos(this.rotation.y)).normalize();
     this.right.set(Math.sin(this.rotation.y + Math.PI / 2), 0, Math.cos(this.rotation.y + Math.PI / 2)).normalize();
-    
+
     // player movement based on inputs
     const speed = 0.8;
     this.moving = false;
@@ -123,14 +123,14 @@ export default class Player {
       this.jumpBuffer = 0.1;
       this.jumpStatus = true;
     }
-    
+
     // jumpbuffer allows for jump to be triggered even when the key is pressed a little too early
     this.jumpBuffer -= deltaTime;
     if (this.jumpStatus && this.jumpBuffer > 0 && this.onGround) {
       this.jump();
       this.jumpStatus = false;
     }
-    
+
     // if player falls, reset position to last reached checkpoint
     if (this.playerBody.position.y < -10) {
       this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
@@ -138,7 +138,7 @@ export default class Player {
       this.playerBody.angularVelocity.set(0, 0, 0);
       this.playerBody.quaternion.set(0, 0, 0, 1);
     }
-    
+
     // apply friction when player is not moving
     if (!this.moving && this.onGround) {
       this.playerBody.velocity.x *= 0.87;
@@ -156,15 +156,34 @@ export default class Player {
   }
 
   public moveLeftRight(amount: number) {
-    const speed = 0.8
+    const speed = 0.8;
+
     this.playerBody.velocity.x += amount * -speed * this.right.x;
     this.playerBody.velocity.z += amount * -speed * this.right.z;
+    this.normalizeVelocity();
   }
-  
+
   public moveForwardBackward(amount: number) {
     const speed = 0.8;
+
     this.playerBody.velocity.x += amount * speed * this.forward.x;
     this.playerBody.velocity.z += amount * speed * this.forward.z;
+    this.normalizeVelocity();
+  }
+
+  // makes sure the player doesn't go over max speed
+  private normalizeVelocity() {
+    const maxSpeed = 16;
+    const speed = Math.sqrt(
+      this.playerBody.velocity.x * this.playerBody.velocity.x +
+      this.playerBody.velocity.z * this.playerBody.velocity.z
+    );
+
+    if (speed > maxSpeed) {
+      const scale = maxSpeed / speed;
+      this.playerBody.velocity.x *= scale;
+      this.playerBody.velocity.z *= scale;
+    }
   }
 
   public rotate(amount: number) {
