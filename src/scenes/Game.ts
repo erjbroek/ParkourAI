@@ -19,9 +19,9 @@ export default class Game extends Scene {
   private clickEditor: boolean = false;
   
   private readyClickEditor: boolean = true;
-  
+ 
   public players: Player[] = [];
-  
+
   public parkour: Parkour = new Parkour();
 
   public constructor() {
@@ -64,12 +64,10 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-    console.log(`${this.players[3].playerBody.position}`)
     this.players.forEach((player) => {
       player.update(deltaTime);
       this.parkour.checkCollision(player);
-    })
-
+    });
 
     this.updateLight();
     this.updateCamera(deltaTime);
