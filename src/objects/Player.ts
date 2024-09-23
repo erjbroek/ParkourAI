@@ -155,6 +155,11 @@ export default class Player {
     this.playerBody.velocity.y = jumpForce;
   }
 
+  /**
+   * moves player left or right based on player rotation
+   * 
+   * @param amount is the multiplier for the speed of the player between -1 and 1
+   */
   public moveLeftRight(amount: number) {
     const speed = 0.8;
 
@@ -163,6 +168,11 @@ export default class Player {
     this.normalizeVelocity();
   }
 
+  /**
+   * moves player forwards or backwards based on player rotation
+   * 
+   * @param amount is the multiplier for the speed of the player between -1 and 1
+   */
   public moveForwardBackward(amount: number) {
     const speed = 0.8;
 
@@ -171,7 +181,10 @@ export default class Player {
     this.normalizeVelocity();
   }
 
-  // makes sure the player doesn't go over max speed
+  /**
+   * normalizes player velocity to prevent player from moving faster than max speed
+   * this is the case when the player is moving diagonally relative to player rotation
+   */
   private normalizeVelocity() {
     const maxSpeed = 16;
     const speed = Math.sqrt(
