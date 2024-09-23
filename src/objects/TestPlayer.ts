@@ -8,7 +8,11 @@ import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import Game from '../scenes/Game.js';
 
-export default class Player {
+// this class is not used yet
+// since the normal player class uses a movement system based on the output of the neural network, 
+// this class has a movement system thats more user friendly
+// might be used in the future for when the user wants to race one of the 
+export default class TestPlayer {
   public x: number = 0;
 
   public y: number = 5;
@@ -53,7 +57,7 @@ export default class Player {
     this.playerBody = new CANNON.Body({ 
       mass: 1, 
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)), 
-      position: new CANNON.Vec3(this.x + index * 3, this.y + index * 3, this.z), // Offset positions based on index
+      position: new CANNON.Vec3(this.x, this.y * (index + 1), this.z), // Offset positions based on index
       material: this.physicsMaterial
     });
     
@@ -65,7 +69,6 @@ export default class Player {
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(this.mesh);
-    this.rotation.y = Math.PI ;
 
     // testing values
     // Player.playerBody.position.set(338, 60, -68);
@@ -83,53 +86,54 @@ export default class Player {
 
   public updateMovement(deltaTime: number) {
     // calculatesplayer direction based on camera azimuth
-    const rotationSpeed = 2.5;
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.rotation.y += rotationSpeed * deltaTime;
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.rotation.y -= rotationSpeed * deltaTime;
-    }
-
-    this.forward.set(Math.sin(this.rotation.y), 0, Math.cos(this.rotation.y)).normalize();
-    this.right.set(Math.sin(this.rotation.y + Math.PI / 2), 0, Math.cos(this.rotation.y + Math.PI / 2)).normalize();
+    this.forward = new THREE.Vector3();
+    MainCanvas.camera.getWorldDirection(this.forward);
+    this.forward.y = 0;
+    this.forward.normalize();
+    this.right = new THREE.Vector3();
+    this.right.crossVectors(this.forward, this.rotation).normalize();
+    
+    // Ensure player rotation matches the camera rotation
+    const cameraDirection = new THREE.Vector3();
+    MainCanvas.camera.getWorldDirection(cameraDirection);
+    cameraDirection.y = 0;
+    cameraDirection.normalize();
+    this.rotation.y = Math.atan2(cameraDirection.x, cameraDirection.z) + Math.PI;
     
     // player movement based on inputs
     const speed = 0.8;
     this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
-      this.moveForwardBackward(-1);
+      this.playerBody.velocity.x += -speed * this.forward.x;
+      this.playerBody.velocity.z += -speed * this.forward.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyW')) {
-      this.moveForwardBackward(1);
+      this.playerBody.velocity.x += speed * this.forward.x;
+      this.playerBody.velocity.z += speed * this.forward.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyA')) {
-      this.moveLeftRight(-1);
+      this.playerBody.velocity.x += -speed * this.right.x;
+      this.playerBody.velocity.z += -speed * this.right.z;
       this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyD')) {
-      this.moveLeftRight(1);
+      this.playerBody.velocity.x += speed * this.right.x;
+      this.playerBody.velocity.z += speed * this.right.z;
       this.moving = true;
-    }
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.rotate(1);
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.rotate(-1);
     }
     if (KeyListener.isKeyDown('Space')) {
       this.jumpBuffer = 0.1;
       this.jumpStatus = true;
     }
     
-    // jumpbuffer allows for jump to be triggered even when the key is pressed a little too early
     this.jumpBuffer -= deltaTime;
     if (this.jumpStatus && this.jumpBuffer > 0 && this.onGround) {
       this.jump();
       this.jumpStatus = false;
     }
+    
     
     // if player falls, reset position to last reached checkpoint
     if (this.playerBody.position.y < -10) {
@@ -153,23 +157,6 @@ export default class Player {
   public jump() {
     const jumpForce = 14;
     this.playerBody.velocity.y = jumpForce;
-  }
-
-  public moveLeftRight(amount: number) {
-    const speed = 0.8
-    this.playerBody.velocity.x += amount * -speed * this.right.x;
-    this.playerBody.velocity.z += amount * -speed * this.right.z;
-  }
-  
-  public moveForwardBackward(amount: number) {
-    const speed = 0.8;
-    this.playerBody.velocity.x += amount * speed * this.forward.x;
-    this.playerBody.velocity.z += amount * speed * this.forward.z;
-  }
-
-  public rotate(amount: number) {
-    const speed: number = 0.07;
-    this.rotation.y += amount * speed;
   }
 
   /**
