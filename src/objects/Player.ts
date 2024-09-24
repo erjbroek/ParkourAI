@@ -8,6 +8,9 @@ import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import Game from '../scenes/Game.js';
 
+const PLAYER_GROUP = 1 << 0; // 0001
+const OBSTACLE_GROUP = 1 << 1; // 0010
+
 export default class Player {
   public rotation: THREE.Vector3 = new THREE.Vector3(0, Math.PI * 1.5, 0);
 
@@ -45,7 +48,9 @@ export default class Player {
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
       position: new CANNON.Vec3(0 + index * 3, 5 + index * 3, 20),
-      material: this.physicsMaterial
+      material: this.physicsMaterial,
+      collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
+      collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
     });
 
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
@@ -140,9 +145,8 @@ export default class Player {
     this.playerBody.velocity.x *= 0.95;
     this.playerBody.velocity.z *= 0.95;
 
-    if (this.moving && (KeyListener.isKeyDown('ArrowLeft') || KeyListener.isKeyDown('ArrowRight'))) {
-      this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
-    }
+    // needs to be fixed someday, since it causes non-realistic physics/ collisions
+    this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
 
     if (this.index == 0) {
       this.calculateDistance()

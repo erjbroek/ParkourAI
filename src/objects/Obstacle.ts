@@ -4,6 +4,9 @@ import MainCanvas from '../setup/MainCanvas.js';
 import Edit from '../scenes/Edit.js';
 import ParkourPieces from './ParkourPieces.js';
 
+const PLAYER_GROUP = 1 << 0; // 0001
+const OBSTACLE_GROUP = 1 << 1; // 0010
+
 export default class Obstacle {
   public moving: boolean;
 
@@ -56,7 +59,9 @@ export default class Obstacle {
         mass: 0,
         shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2)),
         position: new CANNON.Vec3(posX, posY, posZ),
-        material: Obstacle.material
+        material: Obstacle.material,
+        collisionFilterGroup: OBSTACLE_GROUP, // Obstacle belongs to OBSTACLE_GROUP
+        collisionFilterMask: PLAYER_GROUP, // Obstacle can collide with PLAYER_GROUP
       });
 
       // makes sure physics object is synchronised with the mesh
