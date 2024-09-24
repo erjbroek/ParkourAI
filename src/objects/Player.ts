@@ -9,19 +9,7 @@ import ParkourPieces from './ParkourPieces.js';
 import Game from '../scenes/Game.js';
 
 export default class Player {
-  public x: number = 0;
-
-  public y: number = 5;
-
-  public z: number = 20;
-
-  public velocity: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
-
   public rotation: THREE.Vector3 = new THREE.Vector3(0, Math.PI * 1.5, 0);
-
-  public height: number = 2.3;
-
-  public radius: number = 1;
 
   public mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
 
@@ -53,7 +41,7 @@ export default class Player {
     this.playerBody = new CANNON.Body({
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-      position: new CANNON.Vec3(this.x + index * 3, this.y + index * 3, this.z), // Offset positions based on index
+      position: new CANNON.Vec3(0 + index * 3, 5 + index * 3, 20), // Offset positions based on index
       material: this.physicsMaterial
     });
 
