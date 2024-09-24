@@ -37,11 +37,14 @@ export default class Player {
 
   public currentLevel: number = 0;
 
+  public index: number = 0;
+
   public constructor(index: number) {
+    this.index = index;
     this.playerBody = new CANNON.Body({
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-      position: new CANNON.Vec3(0 + index * 3, 5 + index * 3, 20), // Offset positions based on index
+      position: new CANNON.Vec3(0 + index * 3, 5 + index * 3, 20),
       material: this.physicsMaterial
     });
 
@@ -70,6 +73,7 @@ export default class Player {
   }
 
   public updateMovement(deltaTime: number) {
+
     // calculatesplayer direction based on camera azimuth
     const rotationSpeed = 2.5;
     if (KeyListener.isKeyDown('ArrowLeft')) {
@@ -135,7 +139,51 @@ export default class Player {
     }
     this.playerBody.velocity.x *= 0.95;
     this.playerBody.velocity.z *= 0.95;
-    this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
+
+    if (this.moving && (KeyListener.isKeyDown('ArrowLeft') || KeyListener.isKeyDown('ArrowRight'))) {
+      this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
+    }
+
+    if (this.index == 0) {
+      this.calculateDistance()
+      this.calculateFitness()
+    }
+  }
+
+  public calculateDistance(): number {
+    const checkpoint = Parkour.levels[this.currentLevel][Parkour.levels[this.currentLevel].length - 1];
+
+    const spawnPoint = this.spawnPoint;
+
+    const maxDistance = Math.sqrt(
+        (spawnPoint.x - checkpoint.mesh.position.x) ** 2 +
+        (spawnPoint.y - checkpoint.mesh.position.y) ** 2 +
+        (spawnPoint.z - checkpoint.mesh.position.z) ** 2
+    );
+    const currentDistance = Math.sqrt(
+        (this.playerBody.position.x - checkpoint.mesh.position.x) ** 2 +
+        (this.playerBody.position.y - checkpoint.mesh.position.y) ** 2 +
+        (this.playerBody.position.z - checkpoint.mesh.position.z) ** 2
+    );
+
+    const distanceFitness = currentDistance / maxDistance;
+
+    return (1 - distanceFitness) * 100;
+  }
+
+  /**
+   * the fitness of the player is based on progress in the course
+   * 
+   * @returns the fitness of the player
+   */
+  public calculateFitness(): number {
+    let fitness = 0;
+    // progress in level
+    fitness += this.calculateDistance()
+    fitness += this.currentLevel * 100
+    
+    console.log(fitness)
+    return fitness;
   }
 
   public jump() {
