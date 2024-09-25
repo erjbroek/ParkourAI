@@ -7,6 +7,8 @@ import Edit from '../scenes/Edit.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import Game from '../scenes/Game.js';
+import * as neat from 'neataptic';
+
 
 const PLAYER_GROUP = 1 << 0; // 0001
 const OBSTACLE_GROUP = 1 << 1; // 0010
@@ -186,7 +188,7 @@ export default class Player {
     fitness += this.calculateDistance()
     fitness += this.currentLevel * 100
     
-    console.log(fitness)
+    // console.log(fitness)
     return fitness;
   }
 
