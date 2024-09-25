@@ -29,10 +29,10 @@ export default class Game extends Scene {
 
   public constructor() {
     super();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 1; i++) {
       this.players.push(new Player(i));
     }
-    
+
     // sets up the neat manager and adds neural network to each player
     Game.neat = new NeatManager(this.players)
     this.parkour.generateParkour();

@@ -224,9 +224,7 @@ export default class Parkour {
             player.playerBody.angularVelocity.z *= 0.5;
             object.isColliding = true;
             player.onGround = true;
-            if (player.index == 0) {
-              console.log(`colliding with object ${level.indexOf(object)}`);
-            }
+            console.log(`colliding with object ${level.indexOf(object)}`);
           } else {
             object.isColliding = false;
           }
