@@ -13,6 +13,9 @@ import * as neat from 'neataptic';
 const PLAYER_GROUP = 1 << 0; // 0001
 const OBSTACLE_GROUP = 1 << 1; // 0010
 
+const Neat = neat.Neat;
+const Methods = neat.methods;
+
 export default class Player {
   public rotation: THREE.Vector3 = new THREE.Vector3(0, Math.PI * 1.5, 0);
 
@@ -43,6 +46,8 @@ export default class Player {
   public currentLevel: number = 0;
 
   public index: number = 0;
+
+  public brain: any;
 
   public constructor(index: number) {
     this.index = index;
@@ -162,14 +167,14 @@ export default class Player {
     const spawnPoint = this.spawnPoint;
 
     const maxDistance = Math.sqrt(
-        (spawnPoint.x - checkpoint.mesh.position.x) ** 2 +
-        (spawnPoint.y - checkpoint.mesh.position.y) ** 2 +
-        (spawnPoint.z - checkpoint.mesh.position.z) ** 2
+      (spawnPoint.x - checkpoint.mesh.position.x) ** 2 +
+      (spawnPoint.y - checkpoint.mesh.position.y) ** 2 +
+      (spawnPoint.z - checkpoint.mesh.position.z) ** 2
     );
     const currentDistance = Math.sqrt(
-        (this.playerBody.position.x - checkpoint.mesh.position.x) ** 2 +
-        (this.playerBody.position.y - checkpoint.mesh.position.y) ** 2 +
-        (this.playerBody.position.z - checkpoint.mesh.position.z) ** 2
+      (this.playerBody.position.x - checkpoint.mesh.position.x) ** 2 +
+      (this.playerBody.position.y - checkpoint.mesh.position.y) ** 2 +
+      (this.playerBody.position.z - checkpoint.mesh.position.z) ** 2
     );
 
     const distanceFitness = currentDistance / maxDistance;
@@ -187,7 +192,7 @@ export default class Player {
     // progress in level
     fitness += this.calculateDistance()
     fitness += this.currentLevel * 100
-    
+
     // console.log(fitness)
     return fitness;
   }

@@ -8,6 +8,7 @@ import UICollision from '../utilities/UICollision.js';
 import Edit from './Edit.js';
 import MouseListener from '../utilities/MouseListener.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import NeatManager from '../utilities/NeatManager.js';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -23,12 +24,15 @@ export default class Game extends Scene {
   public players: Player[] = [];
 
   public parkour: Parkour = new Parkour();
+  
+  public static neat: any;
 
   public constructor() {
     super();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       this.players.push(new Player(i));
     }
+    Game.neat = new NeatManager(this.players)
     this.parkour.generateParkour();
   }
 
