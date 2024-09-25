@@ -1,5 +1,19 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./types"]
-  }
+    "outDir": "./build",             // Output directory for compiled JS files
+    "rootDir": "./src",              // Root directory of TypeScript files
+    "target": "ES6",                 // Specify the JavaScript version for the output (e.g., ES5, ES6)
+    "module": "ESNext",              // Use ES modules or CommonJS, depending on your environment
+    "moduleResolution": "node",      // Resolve modules like Node.js does
+    "removeComments": true,          // Remove comments from output
+    "noEmitOnError": false,          // Emit JS files even if there are type errors
+    "allowJs": true,                 // Allow JavaScript files in the project
+    "esModuleInterop": true,         // Enable interoperability between CommonJS and ES6 modules
+    "skipLibCheck": true,            // Skip type checking of declaration files
+    "resolveJsonModule": true,       // Allow importing JSON files
+    "sourceMap": false,              // Disable source maps if you don't need them for debugging
+    "strict": false                  // Disable strict type checking to avoid errors
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
