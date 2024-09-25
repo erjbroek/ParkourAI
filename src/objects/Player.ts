@@ -51,6 +51,9 @@ export default class Player {
 
   public constructor(index: number) {
     this.index = index;
+    if (this.index == 0) {
+      this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
+    }
     this.playerBody = new CANNON.Body({
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
@@ -99,7 +102,6 @@ export default class Player {
     this.right.set(Math.sin(this.rotation.y + Math.PI / 2), 0, Math.cos(this.rotation.y + Math.PI / 2)).normalize();
 
     // player movement based on inputs
-    const speed = 0.8;
     this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
       this.moveForwardBackward(-1);
@@ -208,7 +210,7 @@ export default class Player {
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveLeftRight(amount: number) {
-    const speed = 0.8;
+    const speed = 1;
 
     this.playerBody.velocity.x += amount * -speed * this.right.x;
     this.playerBody.velocity.z += amount * -speed * this.right.z;
@@ -221,7 +223,7 @@ export default class Player {
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveForwardBackward(amount: number) {
-    const speed = 0.8;
+    const speed = 1;
 
     this.playerBody.velocity.x += amount * speed * this.forward.x;
     this.playerBody.velocity.z += amount * speed * this.forward.z;

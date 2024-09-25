@@ -24,6 +24,8 @@ export default class Obstacle {
 
   public isCheckpoint: boolean = false;
 
+  public isColliding: boolean = false;
+
   public static material: CANNON.Material = new CANNON.Material();
 
   public constructor(

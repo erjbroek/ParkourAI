@@ -40,10 +40,10 @@ export default class Parkour {
     Parkour.levels.push([
       this.createObstacle(ParkourPieces.platform, 0, 0, 16),
       this.createObstacle(ParkourPieces.platform, 0, 0, 0),
-      this.createObstacle(ParkourPieces.long2, 0, 0, -16),
-      this.createObstacle(ParkourPieces.long2, 0, 0, -34),
-      this.createObstacle(ParkourPieces.checkPoint, 0, 6.51, -52),
+      this.createObstacle(ParkourPieces.long2, 0, 0, -20),
+      this.createObstacle(ParkourPieces.long1, 0, 0, -36),
       this.createObstacle(ParkourPieces.platform, 0, 0, -52),
+      this.createObstacle(ParkourPieces.checkPoint, 0, 6.51, -52),
     ]
     );
 
@@ -181,7 +181,7 @@ export default class Parkour {
     this.renderParkour(Parkour.levels[7]);
     this.renderParkour(Parkour.levels[8]);
     this.renderParkour(Parkour.levels[9]);
-    this.renderParkour(Parkour.levels[10])
+    this.renderParkour(Parkour.levels[10]);
   }
 
   // checks collision between the player and specified levels
@@ -197,6 +197,7 @@ export default class Parkour {
   
     levels.forEach((level, index) => {
       level.forEach((object) => {
+
         if (object.isCheckpoint) {
           if (object.boundingBox.intersectsBox(player.boundingBox) && index === 0) {
             player.currentLevel += 1;
@@ -221,7 +222,13 @@ export default class Parkour {
             player.playerBody.angularVelocity.y *= 0.5;
             player.playerBody.angularVelocity.x *= 0.5;
             player.playerBody.angularVelocity.z *= 0.5;
+            object.isColliding = true;
             player.onGround = true;
+            if (player.index == 0) {
+              console.log(`colliding with object ${level.indexOf(object)}`);
+            }
+          } else {
+            object.isColliding = false;
           }
         }
       });
