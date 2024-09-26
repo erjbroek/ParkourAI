@@ -43,7 +43,9 @@ export default class Player {
 
   public inputLevels: {current: Obstacle, next: Obstacle} = {current: Parkour.levels[0][0], next: Parkour.levels[0][1]};
 
-  public inputValues: {current: THREE.Vector3, next: THREE.Vector3} = {current: new THREE.Vector3(), next: new THREE.Vector3()};
+  public obstacleDistances: {current: THREE.Vector3, next: THREE.Vector3} = {current: new THREE.Vector3(), next: new THREE.Vector3()};
+
+  public inputValues: number[] = []
 
   public constructor(index: number) {
     this.index = index;
@@ -101,11 +103,17 @@ export default class Player {
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
 
-    this.inputValues.current = new THREE.Vector3();
-    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.inputValues.current);
-    this.inputValues.next = new THREE.Vector3();
-    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.inputValues.next);
+    this.obstacleDistances.current = new THREE.Vector3();
+    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.obstacleDistances.current);
+    this.obstacleDistances.next = new THREE.Vector3();
+    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleDistances.next);
 
+    this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
+    const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
+    this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)    
+    const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
+
+    this.inputValues = [Math.round(this.obstacleDistances.current.x * 1000) / 1000, Math.round(this.obstacleDistances.current.y * 1000) / 1000, Math.round(this.obstacleDistances.current.z * 1000) / 1000, this.obstacleDistances.next.x, this.obstacleDistances.next.y, this.obstacleDistances.next.z, Number(this.onGround), playerVelocity]
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
