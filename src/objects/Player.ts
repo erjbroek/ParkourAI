@@ -33,12 +33,6 @@ export default class Player {
 
   public onGround: boolean = false;
 
-  private moving: boolean = false
-
-  private forward: THREE.Vector3 = new THREE.Vector3();
-
-  private right: THREE.Vector3 = new THREE.Vector3();
-
   private jumpStatus: boolean = false;
 
   private jumpBuffer: number = 0.1;
@@ -49,6 +43,8 @@ export default class Player {
 
   public brain: any;
 
+  public inputLevels: {current: Obstacle, next: Obstacle} = {current: Parkour.levels[0][0], next: Parkour.levels[0][1]};
+
   public constructor(index: number) {
     this.index = index;
     if (this.index == 0) {
@@ -57,7 +53,7 @@ export default class Player {
     this.playerBody = new CANNON.Body({
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-      position: new CANNON.Vec3(0 + index * 3, 5 + index * 3, 20),
+      position: new CANNON.Vec3(0 + index * 3, 1, 20),
       material: this.physicsMaterial,
       collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
       collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
@@ -98,26 +94,18 @@ export default class Player {
       this.rotation.y -= rotationSpeed * deltaTime;
     }
 
-    this.forward.set(Math.sin(this.rotation.y), 0, Math.cos(this.rotation.y)).normalize();
-    this.right.set(Math.sin(this.rotation.y + Math.PI / 2), 0, Math.cos(this.rotation.y + Math.PI / 2)).normalize();
-
     // player movement based on inputs
-    this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
       this.moveForwardBackward(-1);
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyW')) {
       this.moveForwardBackward(1);
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyA')) {
       this.moveLeftRight(-1);
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyD')) {
       this.moveLeftRight(1);
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('ArrowLeft')) {
       this.rotate(1);
@@ -146,13 +134,13 @@ export default class Player {
     }
 
     // apply friction when player is not moving
-    if (!this.moving && this.onGround) {
-      this.playerBody.velocity.x *= 0.87;
-      this.playerBody.velocity.z *= 0.87;
-      this.playerBody.angularVelocity.y *= 0.95;
+    if (this.onGround) {
+      this.playerBody.velocity.x *= 0.93;
+      this.playerBody.velocity.z *= 0.93;
+      // this.playerBody.angularVelocity.y *= 0.95;
     }
-    this.playerBody.velocity.x *= 0.95;
-    this.playerBody.velocity.z *= 0.95;
+    this.playerBody.velocity.x *= 0.97;
+    this.playerBody.velocity.z *= 0.97;
 
     // needs to be fixed someday, since it causes non-realistic physics/ collisions
     this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
@@ -201,6 +189,7 @@ export default class Player {
 
   public jump() {
     const jumpForce = 14;
+    this.playerBody.position.y += 0.01;
     this.playerBody.velocity.y = jumpForce;
   }
 
@@ -210,10 +199,10 @@ export default class Player {
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveLeftRight(amount: number) {
-    const speed = 1;
+    const speed = 2;
 
-    this.playerBody.velocity.x += amount * -speed * this.right.x;
-    this.playerBody.velocity.z += amount * -speed * this.right.z;
+    this.playerBody.velocity.x -= amount * -speed;
+    // this.playerBody.velocity.z += amount * -speed;
     this.normalizeVelocity();
   }
 
@@ -223,10 +212,10 @@ export default class Player {
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveForwardBackward(amount: number) {
-    const speed = 1;
+    const speed = 2;
 
-    this.playerBody.velocity.x += amount * speed * this.forward.x;
-    this.playerBody.velocity.z += amount * speed * this.forward.z;
+    // this.playerBody.velocity.x += amount * speed;
+    this.playerBody.velocity.z -= amount * speed;
     this.normalizeVelocity();
   }
 

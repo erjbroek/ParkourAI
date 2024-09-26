@@ -33,13 +33,17 @@ export default class Parkour {
   }
 
   /**
+   * once i enable level creation, make sure that the levels are seperate from these levels
+   * meaning, these levels would not be pushed and instead just the players levels would be pushed
+   * otherwize, it wont work with collision code
+   * 
    * Generates the levels in the parkour
    */
   public generateParkour(): void {
     // level 0
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.platform, 0, 0, 16),
-      this.createObstacle(ParkourPieces.platform, 0, 0, 0),
+      this.createObstacle(ParkourPieces.startingPlatform, 0, 0, 16),
+      this.createObstacle(ParkourPieces.startingPlatform, 0, 0, 0),
       this.createObstacle(ParkourPieces.long2, 0, 0, -20),
       this.createObstacle(ParkourPieces.long1, 0, 0, -36),
       this.createObstacle(ParkourPieces.platform, 0, 0, -52),
@@ -49,7 +53,7 @@ export default class Parkour {
 
     // level 1
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.long2, 0, 0, -68),
+      this.createObstacle(ParkourPieces.long2, 0, 0, -73),
       this.createObstacle(ParkourPieces.long2, 8, 0, -80, 0, Math.PI / 2),
       this.createObstacle(ParkourPieces.long2, 16, 0, -88, 0),
       this.createObstacle(ParkourPieces.long1, 16, 0, -100, 0),
@@ -194,12 +198,15 @@ export default class Parkour {
     }
   
     player.onGround = false;
-  
-    levels.forEach((level, index) => {
-      level.forEach((object) => {
+    let foundObject: { index: number; level: number; object: Obstacle } | null = { index: null, level: null, object: null };
+    let current: Obstacle = null;
+    let next: Obstacle = null;
+
+    levels.forEach((level, levelIndex) => {
+      level.forEach((object, objectIndex) => {
 
         if (object.isCheckpoint) {
-          if (object.boundingBox.intersectsBox(player.boundingBox) && index === 0) {
+          if (object.boundingBox.intersectsBox(player.boundingBox) && levelIndex === 0) {
             player.currentLevel += 1;
   
             object.mesh.material = ParkourPieces.checkPointActive;
@@ -209,30 +216,56 @@ export default class Parkour {
               object.mesh.position.y - objectHeight / 2,
               object.mesh.position.z
             );
-  
-            levels[0] = Parkour.levels[player.currentLevel];
-  
+
             return;
           }
         } else {
           const obstacleTopY = object.boundingBox.max.y;
           const playerMinY = player.boundingBox.min.y;
-  
           if (object.boundingBox.intersectsBox(player.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
-            player.playerBody.angularVelocity.y *= 0.5;
             player.playerBody.angularVelocity.x *= 0.5;
+            player.playerBody.angularVelocity.y *= 0.5;
             player.playerBody.angularVelocity.z *= 0.5;
-            object.isColliding = true;
+
+
+            if (foundObject.index != null) {
+              if (levels.length === 1) {
+                if (objectIndex < foundObject.index) {
+                  foundObject = { index: objectIndex, level: levelIndex, object: object };
+                }
+              } else {
+                if (levelIndex === 1) {
+                  foundObject = { index: objectIndex, level: levelIndex, object: object };
+                }
+              }
+            } else {
+              foundObject = { index: objectIndex, level: levelIndex, object: object };
+            }
+
+            player.playerBody.velocity.y = 0;
+            player.playerBody.position.y = obstacleTopY + player.boundingBox.getSize(new THREE.Vector3()).y / 2;
+            player.playerBody.quaternion.y = 0
             player.onGround = true;
-            console.log(`colliding with object ${level.indexOf(object)}`);
-          } else {
-            object.isColliding = false;
           }
         }
       });
     });
+
+    if (foundObject.index != null) {
+      const foundLevel = Parkour.levels.find(level => level.includes(foundObject.object));
+      if (foundLevel) {
+        if (Parkour.levels[Parkour.levels.indexOf(foundLevel)].length - 2 > foundObject.index) {
+          next = Parkour.levels[Parkour.levels.indexOf(foundLevel)][foundObject.index + 1]
+        } else {
+          next = Parkour.levels[Parkour.levels.indexOf(foundLevel) + 1][0]
+        }
+        // console.log('Found object in level:', Parkour.levels.indexOf(foundLevel));
+      }
+      player.inputLevels.current = foundObject.object
+      player.inputLevels.next = next     
+    }
+    console.log(player.inputLevels.current.mesh.position.z, player.inputLevels.next.mesh.position.z)
   }
-  
 
   /**
    * Adds the level meshes to the scene

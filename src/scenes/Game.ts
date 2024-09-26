@@ -29,13 +29,13 @@ export default class Game extends Scene {
 
   public constructor() {
     super();
+    this.parkour.generateParkour();
     for (let i = 0; i < 1; i++) {
       this.players.push(new Player(i));
     }
 
     // sets up the neat manager and adds neural network to each player
     Game.neat = new NeatManager(this.players)
-    this.parkour.generateParkour();
   }
 
   public override processInput(): void {
@@ -72,8 +72,8 @@ export default class Game extends Scene {
   public override update(deltaTime: number): Scene {
     // console.log(this.players[0].currentLevel)
     this.players.forEach((player) => {
-      player.update(deltaTime);
       this.parkour.checkCollision(player);
+      player.update(deltaTime);
     });
 
     this.updateLight();
