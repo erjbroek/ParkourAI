@@ -25,11 +25,9 @@ export default class Player {
 
   public playerBody: CANNON.Body;
 
-  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 5, 20)
+  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 0.5, 20)
 
   public boundingBox: THREE.Box3;
-
-  public obstacleMaterial: CANNON.Material;
 
   public onGround: boolean = false;
 
@@ -73,7 +71,7 @@ export default class Player {
       this.playerBody = new CANNON.Body({
         mass: 1,
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(0 + index * 3, 1, 20),
+        position: new CANNON.Vec3(0 + index * 3, 1.5, 20),
         material: this.physicsMaterial,
         collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
@@ -83,7 +81,7 @@ export default class Player {
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
 
     // Player.playerBody.linearDamping = 1;
-    this.playerBody.angularDamping;
+    // this.playerBody.angularDamping;
     this.mesh.castShadow = true;
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
@@ -114,15 +112,6 @@ export default class Player {
 
   public updateMovement(deltaTime: number) {
 
-    // calculatesplayer direction based on camera azimuth
-    const rotationSpeed = 2.5;
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.rotation.y += rotationSpeed * deltaTime;
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.rotation.y -= rotationSpeed * deltaTime;
-    }
-
     // player movement based on inputs
     if (KeyListener.isKeyDown('KeyS')) {
       this.moveForwardBackward(-1);
@@ -135,12 +124,6 @@ export default class Player {
     }
     if (KeyListener.isKeyDown('KeyD')) {
       this.moveLeftRight(1);
-    }
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.rotate(1);
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.rotate(-1);
     }
     if (KeyListener.isKeyDown('Space')) {
       this.jumpBuffer = 0.1;
@@ -156,7 +139,7 @@ export default class Player {
 
     // if player falls, reset position to last reached checkpoint
     if (this.playerBody.position.y < -10) {
-      this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
+      this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
       this.playerBody.velocity.set(0, 0, 0);
       this.playerBody.angularVelocity.set(0, 0, 0);
       this.playerBody.quaternion.set(0, 0, 0, 1);
@@ -264,11 +247,6 @@ export default class Player {
       this.playerBody.velocity.x *= scale;
       this.playerBody.velocity.z *= scale;
     }
-  }
-
-  public rotate(amount: number) {
-    const speed: number = 0.07;
-    this.rotation.y += amount * speed;
   }
 
   /**
