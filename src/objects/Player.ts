@@ -52,14 +52,33 @@ export default class Player {
     if (this.index == 0) {
       this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
     }
-    this.playerBody = new CANNON.Body({
-      mass: 1,
-      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-      position: new CANNON.Vec3(0 + index * 3, 1, 20),
-      material: this.physicsMaterial,
-      collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
-      collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-    });
+    
+    // used to set player spawnpoint
+    let level: number | null;
+    level = 0
+
+    if (level) {
+      this.playerBody = new CANNON.Body({
+        mass: 1,
+        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
+        position: new CANNON.Vec3(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z),
+        material: this.physicsMaterial,
+        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
+        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
+      });
+      this.currentLevel = level;
+      MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
+    } else {
+      // sets it to start
+      this.playerBody = new CANNON.Body({
+        mass: 1,
+        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
+        position: new CANNON.Vec3(0 + index * 3, 1, 20),
+        material: this.physicsMaterial,
+        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
+        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
+      });
+    }
 
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
 
