@@ -70,7 +70,6 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-    // console.log(this.players[0].currentLevel)
     this.players.forEach((player) => {
       this.parkour.checkCollision(player);
       player.update(deltaTime);

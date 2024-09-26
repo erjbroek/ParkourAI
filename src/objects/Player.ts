@@ -45,6 +45,8 @@ export default class Player {
 
   public inputLevels: {current: Obstacle, next: Obstacle} = {current: Parkour.levels[0][0], next: Parkour.levels[0][1]};
 
+  public inputValues: {current: THREE.Vector3, next: THREE.Vector3} = {current: new THREE.Vector3(), next: new THREE.Vector3()};
+
   public constructor(index: number) {
     this.index = index;
     if (this.index == 0) {
@@ -79,6 +81,14 @@ export default class Player {
   }
 
   public update(deltaTime: number) {
+    const currentObstacle = this.inputLevels.current.boundingBox;
+    const nextObstacle = this.inputLevels.next.boundingBox;
+
+    this.inputValues.current = new THREE.Vector3();
+    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.inputValues.current);
+    this.inputValues.next = new THREE.Vector3();
+    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.inputValues.next);
+    
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }

@@ -222,6 +222,7 @@ export default class Parkour {
         } else {
           const obstacleTopY = object.boundingBox.max.y;
           const playerMinY = player.boundingBox.min.y;
+          object.mesh.material = ParkourPieces.material;
           if (object.boundingBox.intersectsBox(player.boundingBox) && playerMinY >= obstacleTopY - 0.1) {
             player.playerBody.angularVelocity.x *= 0.5;
             player.playerBody.angularVelocity.y *= 0.5;
@@ -262,7 +263,10 @@ export default class Parkour {
         // console.log('Found object in level:', Parkour.levels.indexOf(foundLevel));
       }
       player.inputLevels.current = foundObject.object
-      player.inputLevels.next = next     
+      player.inputLevels.next = next
+      player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial;   
+      player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial;      
+   
     }
     console.log(player.inputLevels.current.mesh.position.z, player.inputLevels.next.mesh.position.z)
   }
