@@ -264,10 +264,10 @@ export default class Parkour {
       }
       player.inputLevels.current = foundObject.object
       player.inputLevels.next = next
-      player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial;   
-      player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial;      
-   
+      
     }
+    player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;   
+    player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;    
     console.log(player.inputLevels.current.mesh.position.z, player.inputLevels.next.mesh.position.z)
   }
 

@@ -3,7 +3,9 @@ import * as THREE from 'three';
 export default class ParkourPieces {
   public static material: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true});
 
-  public static activeMaterial: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xaaffaa});
+  public static activeMaterial1: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xaaffaa});
+
+  public static activeMaterial2: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xaaaaff});
 
   public static checkPointInactive: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, transparent: true, opacity: 0.2 });
 

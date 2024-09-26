@@ -88,7 +88,7 @@ export default class Player {
     currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.inputValues.current);
     this.inputValues.next = new THREE.Vector3();
     nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.inputValues.next);
-    
+
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
