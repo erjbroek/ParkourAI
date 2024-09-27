@@ -133,7 +133,7 @@ export default class Player {
       if (extremes.max === extremes.min) {
         return 0;
       }
-      return (value - extremes.min) / (extremes.max - extremes.min);
+      return 2 * (value - extremes.min) / (extremes.max - extremes.min) - 1;
     });
 
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
