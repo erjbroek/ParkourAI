@@ -41,9 +41,9 @@ export default class Player {
 
   public brain: any;
 
-  public inputLevels: {current: Obstacle, next: Obstacle} = {current: Parkour.levels[0][0], next: Parkour.levels[0][1]};
+  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0][0], next: Parkour.levels[0][1] };
 
-  public obstacleDistances: {current: THREE.Vector3, next: THREE.Vector3} = {current: new THREE.Vector3(), next: new THREE.Vector3()};
+  public obstacleDistances: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
 
   public inputValues: number[] = []
 
@@ -52,7 +52,7 @@ export default class Player {
     if (this.index == 0) {
       this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
     }
-    
+
     // used to set player spawnpoint
     let level: number | null;
     level = 0
@@ -110,10 +110,34 @@ export default class Player {
 
     this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
-    this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)    
+    this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)
     const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
 
-    this.inputValues = [Math.round(this.obstacleDistances.current.x * 1000) / 1000, Math.round(this.obstacleDistances.current.y * 1000) / 1000, Math.round(this.obstacleDistances.current.z * 1000) / 1000, this.obstacleDistances.next.x, this.obstacleDistances.next.y, this.obstacleDistances.next.z, Number(this.onGround), playerVelocity]
+    const decimals = 3;
+    const inputValues = [
+      Math.round(this.obstacleDistances.current.x * 10 ** decimals) / 10 ** decimals,
+      Math.round(this.obstacleDistances.current.y * 10 ** decimals) / 10 ** decimals,
+      Math.round(this.obstacleDistances.current.z * 10 ** decimals) / 10 ** decimals,
+      this.obstacleDistances.next.x,
+      this.obstacleDistances.next.y,
+      this.obstacleDistances.next.z,
+      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
+    ];
+
+    const extremes: { max: number, min: number } = {
+      max: Math.max(...inputValues),
+      min: Math.min(...inputValues)
+    };
+
+    const normalizedValues = inputValues.map(value => {
+      if (extremes.max === extremes.min) {
+        return 0;
+      }
+      return (value - extremes.min) / (extremes.max - extremes.min);
+    });
+
+    this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
+
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
