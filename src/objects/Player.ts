@@ -99,6 +99,11 @@ export default class Player {
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 
+  /**
+   * updates the player movement and input values for nn
+   * 
+   * @param deltaTime deltatime since last frame
+   */
   public update(deltaTime: number) {
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
