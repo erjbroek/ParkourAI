@@ -9,6 +9,7 @@ import Edit from './Edit.js';
 import MouseListener from '../utilities/MouseListener.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import NeatManager from '../utilities/NeatManager.js';
+import KeyListener from '../utilities/KeyListener.js';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -25,7 +26,9 @@ export default class Game extends Scene {
 
   public parkour: Parkour = new Parkour();
 
-  public selectedPlayer: Player;
+  public selectedPlayer: number = 0;
+
+  public selectedPreviousPlayer: number = 0;
 
   public alivePlayers: Player[] = []
   
@@ -38,13 +41,34 @@ export default class Game extends Scene {
       this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
-    this.selectedPlayer = this.players[0]
 
     // sets up the neat manager and adds neural network to each player
     Game.neat = new NeatManager(this.alivePlayers)
   }
 
   public override processInput(): void {
+    // updates camera position based on active player
+    if (KeyListener.keyPressed('Digit1')) {
+      if (this.selectedPlayer + 1 <= this.alivePlayers.length - 1) {
+        this.selectedPreviousPlayer = this.selectedPlayer;
+        this.selectedPlayer++;
+
+        const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
+        const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
+        MainCanvas.camera.position.add(cameraOffset);
+      }
+    }
+    if (KeyListener.keyPressed('Digit2')) {
+      if (this.selectedPlayer - 1 >= 0) {
+        this.selectedPreviousPlayer = this.selectedPlayer;
+        this.selectedPlayer--;
+
+        const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
+        const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
+        MainCanvas.camera.position.add(cameraOffset);
+      }
+    }
+
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
@@ -114,18 +138,15 @@ export default class Game extends Scene {
   // updates position of the camera
   // resets position if player falls 
   public updateCamera(deltaTime: number) {
-    if (!this.selectedPlayer.alive) {
-        const cameraOffset = new THREE.Vector3(5, 6, 16);
-        MainCanvas.camera.position.copy(this.players[0].playerBody.position).add(cameraOffset);
-    }
-    const scaledVelocity = new THREE.Vector3(this.players[0].playerBody.velocity.x, this.players[0].playerBody.velocity.y, this.players[0].playerBody.velocity.z).multiplyScalar(deltaTime);
-    MainCanvas.orbitControls.target.copy(this.players[0].mesh.position);
+    const scaledVelocity = new THREE.Vector3(this.alivePlayers[this.selectedPlayer].playerBody.velocity.x, this.alivePlayers[this.selectedPlayer].playerBody.velocity.y, this.alivePlayers[this.selectedPlayer].playerBody.velocity.z).multiplyScalar(deltaTime);
+    MainCanvas.orbitControls.target.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
 
     // this makes sure the camera follows the position of the player
     MainCanvas.camera.position.add(scaledVelocity);
 
     MainCanvas.orbitControls.update();
   }
+
 
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);

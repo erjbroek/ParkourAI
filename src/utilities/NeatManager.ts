@@ -6,11 +6,11 @@ export default class NeatManager {
   public neat: any;
   
   public constructor(players: Player[]) {
-    this.neat = new neat.Neat(10, 2, null, {
+    this.neat = new neat.Neat(10, 3, null, {
       mutationRate: 0.3,
       elitism: 0.25,
       popsize: players.length,
-      network: new neat.architect.Perceptron(10, 2, 6),
+      network: new neat.architect.Perceptron(8, 2, 6),
     })
   
     this.neat.population.forEach((network: any, i: number) => {
