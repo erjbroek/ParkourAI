@@ -47,6 +47,8 @@ export default class Player {
 
   public inputValues: number[] = []
 
+  public alive: boolean = true;
+
   public constructor(index: number) {
     this.index = index;
     if (this.index == 0) {
@@ -143,6 +145,14 @@ export default class Player {
 
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
 
+
+    // if player falls, reset position to last reached checkpoint
+    if (this.playerBody.position.y < -10) {
+      this.alive = false;
+      MainCanvas.world.removeBody(this.playerBody)
+      MainCanvas.scene.remove(this.mesh);
+    }
+
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
@@ -172,14 +182,6 @@ export default class Player {
     if (this.jumpStatus && this.jumpBuffer > 0 && this.onGround) {
       this.jump();
       this.jumpStatus = false;
-    }
-
-    // if player falls, reset position to last reached checkpoint
-    if (this.playerBody.position.y < -10) {
-      this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
-      this.playerBody.velocity.set(0, 0, 0);
-      this.playerBody.angularVelocity.set(0, 0, 0);
-      this.playerBody.quaternion.set(0, 0, 0, 1);
     }
 
     // apply friction when player is not moving

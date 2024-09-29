@@ -24,15 +24,21 @@ export default class Game extends Scene {
   public players: Player[] = [];
 
   public parkour: Parkour = new Parkour();
+
+  public selectedPlayer: Player;
+
+  public alivePlayers: Player[] = []
   
   public static neat: any;
 
   public constructor() {
     super();
     this.parkour.generateParkour();
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10; i++) {
       this.players.push(new Player(i));
+      this.alivePlayers.push(this.players[i])
     }
+    this.selectedPlayer = this.players[0]
 
     // sets up the neat manager and adds neural network to each player
     Game.neat = new NeatManager(this.players)
@@ -70,11 +76,14 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-    this.players.forEach((player) => {
-      this.parkour.checkCollision(player);
-      player.update(deltaTime);
+    this.alivePlayers = this.players.filter(player => player.alive);
+    this.alivePlayers.forEach((player) => {
+      if (player.alive) {
+        this.parkour.checkCollision(player);
+        player.update(deltaTime);
+      }
     });
-
+    
     this.updateLight();
     this.updateCamera(deltaTime);
 
@@ -103,7 +112,7 @@ export default class Game extends Scene {
   // updates position of the camera
   // resets position if player falls 
   public updateCamera(deltaTime: number) {
-    if (this.players[0].mesh.position.y < -10) {
+    if (!this.selectedPlayer.alive) {
         const cameraOffset = new THREE.Vector3(5, 6, 16);
         MainCanvas.camera.position.copy(this.players[0].playerBody.position).add(cameraOffset);
     }
