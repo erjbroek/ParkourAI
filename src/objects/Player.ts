@@ -49,11 +49,13 @@ export default class Player {
 
   public alive: boolean = true;
 
-  public constructor(index: number) {
+  public constructor(index: number, brain: any) {
     this.index = index;
     if (this.index == 0) {
       this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
     }
+
+    this.brain = brain;
 
     // used to set player spawnpoint
     let level: number | null;
@@ -196,10 +198,8 @@ export default class Player {
     // needs to be fixed someday, since it causes non-realistic physics/ collisions
     this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
 
-    if (this.index == 0) {
-      this.calculateDistance()
-      this.calculateFitness()
-    }
+    this.calculateDistance()
+    this.calculateFitness()
   }
 
   public calculateDistance(): number {
@@ -229,13 +229,11 @@ export default class Player {
    * @returns the fitness of the player
    */
   public calculateFitness(): number {
-    let fitness = 0;
-    // progress in level
-    fitness += this.calculateDistance()
-    fitness += this.currentLevel * 100
+    this.brain.score = 0;
 
-    // console.log(fitness)
-    return fitness;
+    // progress in level
+    this.brain.score += this.calculateDistance()
+    this.brain.score += this.currentLevel * 100
   }
 
   public jump() {

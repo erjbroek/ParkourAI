@@ -35,7 +35,6 @@ export default class Game extends Scene {
     super();
     this.parkour.generateParkour();
     for (let i = 0; i < 10; i++) {
-      this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
     this.selectedPlayer = this.players[0]

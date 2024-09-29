@@ -22,4 +22,6 @@ export default class NeatManager {
     this.neat.mutate()
     console.log(this.neat)
   }
+
+  
 }
