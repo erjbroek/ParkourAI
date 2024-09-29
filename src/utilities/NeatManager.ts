@@ -23,5 +23,8 @@ export default class NeatManager {
     console.log(this.neat)
   }
 
+  public nextGeneration(players: Player[]) {
+    
+  }
   
 }

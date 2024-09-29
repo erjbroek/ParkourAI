@@ -31,6 +31,8 @@ export default class Game extends Scene {
   public selectedPreviousPlayer: number = 0;
 
   public alivePlayers: Player[] = []
+
+  public extinct: boolean = false;
   
   public static neat: any;
 
@@ -48,7 +50,7 @@ export default class Game extends Scene {
 
   public override processInput(): void {
     // updates camera position based on active player
-    if (KeyListener.keyPressed('Digit1')) {
+    if (KeyListener.keyPressed('Digit2')) {
       if (this.selectedPlayer + 1 <= this.alivePlayers.length - 1) {
         this.selectedPreviousPlayer = this.selectedPlayer;
         this.selectedPlayer++;
@@ -58,7 +60,7 @@ export default class Game extends Scene {
         MainCanvas.camera.position.add(cameraOffset);
       }
     }
-    if (KeyListener.keyPressed('Digit2')) {
+    if (KeyListener.keyPressed('Digit1')) {
       if (this.selectedPlayer - 1 >= 0) {
         this.selectedPreviousPlayer = this.selectedPlayer;
         this.selectedPlayer--;
@@ -101,17 +103,27 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.alivePlayers = this.players.filter(player => player.alive);
-    this.alivePlayers.forEach((player) => {
-      // updates physics body
-      player.mesh.position.copy(player.playerBody.position);
-      player.mesh.quaternion.copy(player.playerBody.quaternion);
+    this.extinct = this.alivePlayers.length === 0;
 
-      this.parkour.checkCollision(player);
-      player.update(deltaTime);
-    });
-
-    this.updateLight();
-    this.updateCamera(deltaTime);
+    if (!this.extinct) {
+      if (this.alivePlayers.length - 1 < this.selectedPlayer) {
+        this.selectedPlayer = this.alivePlayers.length - 1;
+      }
+    
+      this.alivePlayers.forEach((player) => {
+        player.mesh.position.copy(player.playerBody.position);
+        player.mesh.quaternion.copy(player.playerBody.quaternion);
+        
+        this.parkour.checkCollision(player);
+        player.update(deltaTime);
+      });
+      
+      this.updateLight();
+      this.updateCamera(deltaTime);
+      
+    } else {
+      // NeatManager.nextGeneration(this.alivePlayers);
+    }
 
     if (this.openEditor) {
       this.editor.update(deltaTime);    
@@ -140,9 +152,17 @@ export default class Game extends Scene {
   public updateCamera(deltaTime: number) {
     const scaledVelocity = new THREE.Vector3(this.alivePlayers[this.selectedPlayer].playerBody.velocity.x, this.alivePlayers[this.selectedPlayer].playerBody.velocity.y, this.alivePlayers[this.selectedPlayer].playerBody.velocity.z).multiplyScalar(deltaTime);
     MainCanvas.orbitControls.target.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
-
-    // this makes sure the camera follows the position of the player
     MainCanvas.camera.position.add(scaledVelocity);
+
+    if (this.alivePlayers[this.selectedPlayer].mesh.position.y < -10) {
+      MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
+      const offset = new THREE.Vector3(0, 21, 16);
+      MainCanvas.camera.position.add(offset);
+    }
+
+    MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
+    const offset = new THREE.Vector3(5, 11, 16);
+    MainCanvas.camera.position.add(offset);
 
     MainCanvas.orbitControls.update();
   }
