@@ -35,12 +35,13 @@ export default class Game extends Scene {
     super();
     this.parkour.generateParkour();
     for (let i = 0; i < 10; i++) {
+      this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
     this.selectedPlayer = this.players[0]
 
     // sets up the neat manager and adds neural network to each player
-    Game.neat = new NeatManager(this.players)
+    Game.neat = new NeatManager(this.alivePlayers)
   }
 
   public override processInput(): void {
@@ -77,12 +78,14 @@ export default class Game extends Scene {
   public override update(deltaTime: number): Scene {
     this.alivePlayers = this.players.filter(player => player.alive);
     this.alivePlayers.forEach((player) => {
-      if (player.alive) {
-        this.parkour.checkCollision(player);
-        player.update(deltaTime);
-      }
+      // updates physics body
+      player.mesh.position.copy(player.playerBody.position);
+      player.mesh.quaternion.copy(player.playerBody.quaternion);
+
+      this.parkour.checkCollision(player);
+      player.update(deltaTime);
     });
-    
+
     this.updateLight();
     this.updateCamera(deltaTime);
 

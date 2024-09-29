@@ -98,15 +98,7 @@ export default class MainCanvas {
       const deltaTime = this.clock.getDelta();
       if (deltaTime > 0) {
         MainCanvas.world.step(deltaTime)
-
       }
-
-      // physics
-      this.activeScene.players.forEach((player: Player) => {
-        player.mesh.position.copy(player.playerBody.position);
-        player.mesh.quaternion.copy(player.playerBody.quaternion);
-        this.activeScene.parkour.checkCollision(player);
-      })
 
       // updates controls
       MainCanvas.orbitControls.update();

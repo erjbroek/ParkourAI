@@ -49,13 +49,11 @@ export default class Player {
 
   public alive: boolean = true;
 
-  public constructor(index: number, brain: any) {
+  public constructor(index: number) {
     this.index = index;
     if (this.index == 0) {
       this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
     }
-
-    this.brain = brain;
 
     // used to set player spawnpoint
     let level: number | null;
@@ -147,14 +145,6 @@ export default class Player {
 
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
 
-
-    // if player falls, reset position to last reached checkpoint
-    if (this.playerBody.position.y < -10) {
-      this.alive = false;
-      MainCanvas.world.removeBody(this.playerBody)
-      MainCanvas.scene.remove(this.mesh);
-    }
-
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
@@ -186,6 +176,17 @@ export default class Player {
       this.jumpStatus = false;
     }
 
+    // if player falls, reset position to last reached checkpoint
+    if (this.playerBody.position.y < -10) {
+      this.alive = false;
+      MainCanvas.world.removeBody(this.playerBody)
+      MainCanvas.scene.remove(this.mesh)
+      // this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
+      // this.playerBody.velocity.set(0, 0, 0);
+      // this.playerBody.angularVelocity.set(0, 0, 0);
+      // this.playerBody.quaternion.set(0, 0, 0, 1);
+    }
+
     // apply friction when player is not moving
     if (this.onGround) {
       this.playerBody.velocity.x *= 0.93;
@@ -200,6 +201,7 @@ export default class Player {
 
     this.calculateDistance()
     this.calculateFitness()
+    
   }
 
   public calculateDistance(): number {
@@ -228,7 +230,7 @@ export default class Player {
    * 
    * @returns the fitness of the player
    */
-  public calculateFitness(): number {
+  public calculateFitness(): void {
     this.brain.score = 0;
 
     // progress in level
