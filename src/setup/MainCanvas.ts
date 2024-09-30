@@ -11,6 +11,7 @@ import KeyListener from '../utilities/KeyListener.js';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
 import CreateBackground from './CreateBackground.js';
+import Edit from '../scenes/Edit.js';
 
 export default class MainCanvas {
   public static scene: THREE.Scene = new THREE.Scene();
@@ -59,7 +60,8 @@ export default class MainCanvas {
     GUI.setCanvas(canvas);
     MainCanvas.canvas = GUI.getCanvas();
 
-    MainCanvas.flyControls.movementSpeed = 50;
+    MainCanvas.flyControls.movementSpeed = 0;
+    MainCanvas.flyControls.rollSpeed = 0;
     MainCanvas.flyControls.dragToLook = false;
     window.addEventListener("mousedown", () => this.onMouseDown(), false);
     window.addEventListener("mouseup", () => this.onMouseUp(), false);
@@ -111,10 +113,12 @@ export default class MainCanvas {
       }
 
       // updates controls
-      if (!this.isMouseButtonDown) {
         MainCanvas.flyControls.update(deltaTime);
+
+      if (!Edit.editActive) {
+        this.rotateCamera(deltaTime)
       }
-      this.updateCamera(deltaTime);
+      this.moveCamera(deltaTime);
 
       // calls functions of active scene
       this.activeScene.processInput();
@@ -136,38 +140,56 @@ export default class MainCanvas {
       this.isMouseButtonDown = false;
   }
 
-  private updateCamera(deltaTime: number) {
-    const rotateSpeed = 2;
+  private rotateCamera(deltaTime: number) {
+    const mouseSensitivity = 0.002;
+    if (this.isMouseButtonDown) {
+        const mouseMovementX = MouseListener.mouseDelta.x;
+        const mouseMovementY = MouseListener.mouseDelta.y;
+  
+        this.yaw -= mouseMovementX * mouseSensitivity;
+        this.pitch -= mouseMovementY * mouseSensitivity;
 
-    if (MouseListener.isButtonDown(0)) {
-      MainCanvas.flyControls.movementSpeed = 0
-    } else {
-      MainCanvas.flyControls.movementSpeed = 50
+        // Limit pitch to prevent flipping
+        this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
+        MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
     }
+  }
 
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.yaw += rotateSpeed * deltaTime;
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.yaw -= rotateSpeed * deltaTime;
-    }
+  private moveCamera(deltaTime: number) {
 
-    if (KeyListener.isKeyDown('ArrowUp')) {
-      this.pitch += rotateSpeed * deltaTime;
-    }
-    if (KeyListener.isKeyDown('ArrowDown')) {
-      this.pitch -= rotateSpeed * deltaTime
-    }
-
-    this.pitch = Math.max(-Math.PI / 10, Math.min(Math.PI / 10, this.pitch));
+    // Handle vertical camera movement
     if (KeyListener.isKeyDown('Space')) {
-      MainCanvas.camera.position.y += 1;
+        MainCanvas.camera.position.y += 0.5;
     }
     if (KeyListener.isKeyDown('ShiftLeft') || KeyListener.isKeyDown('ShiftRight')) {
-      MainCanvas.camera.position.y -= 1;
+        MainCanvas.camera.position.y -= 0.5;
     }
 
-    this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
-    MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+    const forward = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    forward.set(
+        Math.sin(this.yaw),
+        0,
+        Math.cos(this.yaw)
+    ).normalize();
+
+    right.copy(forward).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2);
+
+
+    const moveSpeed = 50 * deltaTime;
+    if (KeyListener.isKeyDown('KeyW')) {
+        MainCanvas.camera.position.sub(forward.clone().multiplyScalar(moveSpeed));
+    }
+    if (KeyListener.isKeyDown('KeyS')) {
+        MainCanvas.camera.position.sub(forward.clone().multiplyScalar(-moveSpeed));
+    }
+    if (KeyListener.isKeyDown('KeyA')) {
+        MainCanvas.camera.position.add(right.clone().multiplyScalar(-moveSpeed));
+    }
+    if (KeyListener.isKeyDown('KeyD')) {
+        MainCanvas.camera.position.add(right.clone().multiplyScalar(moveSpeed));
+    }
+
+    MainCanvas.flyControls.update(deltaTime);
   }
 }

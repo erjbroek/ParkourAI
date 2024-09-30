@@ -152,35 +152,16 @@ export default class Player {
     const outputX = output[1] * 2 - 1;
     const outputJump = output[2] * 2 - 1;
 
+    if (this.index == 0) {
+      console.log(output)
+    }
+    
     this.moveForwardBackward(outputZ);
     this.moveLeftRight(outputX);
-    if (outputJump > 0) {
-      this.jumpStatus = true;
-    }
-
-    // player movement based on inputs
-    // if (KeyListener.isKeyDown('KeyS')) {
-    //   this.moveForwardBackward(-1);
-    // }
-    // if (KeyListener.isKeyDown('KeyW')) {
-    //   this.moveForwardBackward(1);
-    // }
-    // if (KeyListener.isKeyDown('KeyA')) {
-    //   this.moveLeftRight(-1);
-    // }
-    // if (KeyListener.isKeyDown('KeyD')) {
-    //   this.moveLeftRight(1);
-    // }
-    // if (KeyListener.isKeyDown('Space')) {
-    //   this.jumpBuffer = 0.1;
-    //   this.jumpStatus = true;
-    // }
-
-    // jumpbuffer allows for jump to be triggered even when the key is pressed a little too early
-    this.jumpBuffer -= deltaTime;
-    if (this.jumpStatus && this.onGround) {
-      this.jump();
-      this.jumpStatus = false;
+    if (outputJump > 0.5) {
+      if (this.onGround) {
+        this.jump()
+      }
     }
 
     // if player falls, reset position to last reached checkpoint

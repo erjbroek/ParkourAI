@@ -27,6 +27,8 @@ export default class Edit {
 
   private activePosition: { x: number, y: number, z: number } = { x: 0, y: 0, z: 0 };
 
+  public static editActive: boolean = false;
+
   public mesh: THREE.Mesh = new THREE.Mesh(
     new THREE.BoxGeometry(4, 1, 4),
     new THREE.MeshLambertMaterial({ color: 0xccffcc, transparent: true }) 
@@ -145,6 +147,13 @@ export default class Edit {
     this.transformControls.setRotationSnap(THREE.MathUtils.degToRad(90));
 
     MainCanvas.scene.add(this.transformControls);
+
+    this.transformControls.addEventListener("mouseDown", () => {
+      Edit.editActive = true;
+    });
+    this.transformControls.addEventListener("mouseUp", () => {
+      Edit.editActive = false;
+    });
 
     // this changes snapping behaviour of translationControls, so that it's not the same for all axis
     this.transformControls.addEventListener("objectChange", () => {
