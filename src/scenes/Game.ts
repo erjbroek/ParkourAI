@@ -178,6 +178,18 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
+    if (this.selectedPlayer != 0) {
+      GUI.fillRectangle(canvas, canvas.width * 0.02, canvas.height * 0.04, canvas.width * 0.03, canvas.height * 0.06, 255, 255, 255, 0.7, 10);
+      GUI.writeText(canvas, '-', canvas.width * 0.035, canvas.height * 0.09, 'center', 'system-ui', 70, 'grey')
+    }
+    GUI.writeText(canvas, `Spectating player ${this.players.indexOf(this.alivePlayers[this.selectedPlayer])}`, canvas.width * 0.125, canvas.height * 0.08, 'center', 'system-ui', 25, 'black');
+
+    if (this.selectedPlayer != this.alivePlayers.length - 1) {
+
+      GUI.fillRectangle(canvas, canvas.width * 0.2, canvas.height * 0.04, canvas.width * 0.03, canvas.height * 0.06, 255, 255, 255, 0.7, 10);
+      GUI.writeText(canvas, '+', canvas.width * 0.215, canvas.height * 0.09, 'center', 'system-ui', 70, 'grey')
+    }
+
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
       this.editor.render(canvas)
