@@ -135,15 +135,15 @@ export default class Game extends Scene {
 
   public updateLight() {
     MainCanvas.directionalLight.position.set(
-      this.players[0].mesh.position.x + 70,
-      this.players[0].mesh.position.y + 140,
-      this.players[0].mesh.position.z -140
+      this.alivePlayers[this.selectedPlayer].mesh.position.x + 70,
+      this.alivePlayers[this.selectedPlayer].mesh.position.y + 140,
+      this.alivePlayers[this.selectedPlayer].mesh.position.z -140
     );
 
     MainCanvas.directionalLight.target.position.set(
-      this.players[0].mesh.position.x,
-      this.players[0].mesh.position.y,
-      this.players[0].mesh.position.z
+      this.alivePlayers[this.selectedPlayer].mesh.position.x,
+      this.alivePlayers[this.selectedPlayer].mesh.position.y,
+      this.alivePlayers[this.selectedPlayer].mesh.position.z
     );
 
     MainCanvas.directionalLight.target.updateMatrixWorld();
