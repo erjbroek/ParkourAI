@@ -40,6 +40,8 @@ export default class MainCanvas {
 
   private isMouseButtonDown: boolean = false;
 
+  private network: any;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     MainCanvas.camera.position.set(5, 11, 36);
@@ -70,6 +72,7 @@ export default class MainCanvas {
     CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
+    this.network = this.activeScene.players[0].brain;
   }
 
   /*

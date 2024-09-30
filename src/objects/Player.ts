@@ -31,10 +31,6 @@ export default class Player {
 
   public onGround: boolean = false;
 
-  private jumpStatus: boolean = false;
-
-  private jumpBuffer: number = 0.1;
-
   public currentLevel: number = 0;
 
   public index: number = 0;
@@ -48,6 +44,8 @@ export default class Player {
   public inputValues: number[] = []
 
   public alive: boolean = true;
+
+  public timer: number = 0;
 
   public constructor(index: number) {
     this.index = index;
@@ -117,6 +115,18 @@ export default class Player {
     this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)
     const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
 
+    if (this.index === 0) {
+      // console.log(playerVelocity)
+    }
+    if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 4) {
+      this.timer += deltaTime;
+      if (this.timer > 2) {
+        this.killPlayer()
+      }
+    } else {
+      this.timer = 0;
+    }
+
     const decimals = 3;
     const inputValues = [
       Math.round(this.obstacleDistances.current.x * 10 ** decimals) / 10 ** decimals,
@@ -148,17 +158,16 @@ export default class Player {
 
   public updateMovement(deltaTime: number) {
     const output = this.brain.activate(this.inputValues);
-    const outputZ = output[0] * 2 - 1;
-    const outputX = output[1] * 2 - 1;
-    const outputJump = output[2] * 2 - 1;
-
-    if (this.index == 0) {
-      console.log(output)
+    if (this.index === 0 ) {
+      // console.log(output)
     }
-    
+    const outputZ = output[0] * 4 - 2;  // Scale to -2 to 2 for stronger forward/backward
+    const outputX = output[1] * 4 - 2;  // Scale to -2 to 2 for stronger left/right
+    const outputJump = output[2] * 1.5 - 0.75;  // Scale jump to -0.75 to 0.75
+
     this.moveForwardBackward(outputZ);
     this.moveLeftRight(outputX);
-    if (outputJump > 0.5) {
+    if (outputJump > 0) {
       if (this.onGround) {
         this.jump()
       }
@@ -166,13 +175,7 @@ export default class Player {
 
     // if player falls, reset position to last reached checkpoint
     if (this.playerBody.position.y < -10) {
-      this.alive = false;
-      MainCanvas.world.removeBody(this.playerBody)
-      MainCanvas.scene.remove(this.mesh)
-      // this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
-      // this.playerBody.velocity.set(0, 0, 0);
-      // this.playerBody.angularVelocity.set(0, 0, 0);
-      // this.playerBody.quaternion.set(0, 0, 0, 1);
+      this.killPlayer()
     }
 
     // apply friction when player is not moving
@@ -189,6 +192,17 @@ export default class Player {
 
     this.calculateDistance()
     this.calculateFitness()
+    
+  }
+
+  public killPlayer() {
+    this.alive = false;
+    MainCanvas.world.removeBody(this.playerBody)
+    MainCanvas.scene.remove(this.mesh)
+    // this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
+    // this.playerBody.velocity.set(0, 0, 0);
+    // this.playerBody.angularVelocity.set(0, 0, 0);
+    // this.playerBody.quaternion.set(0, 0, 0, 1);
     
   }
 
