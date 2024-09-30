@@ -39,7 +39,7 @@ export default class Game extends Scene {
   public constructor() {
     super();
     this.parkour.generateParkour();
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 100; i++) {
       this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
@@ -104,6 +104,10 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
+    if (!this.extinct) {
+      this.updateLight();
+      this.updateCamera(deltaTime);
+    }
     this.alivePlayers = this.players.filter(player => player.alive);
     this.extinct = this.alivePlayers.length === 0;
 
@@ -111,7 +115,7 @@ export default class Game extends Scene {
       if (this.alivePlayers.length - 1 < this.selectedPlayer) {
         this.selectedPlayer = this.alivePlayers.length - 1;
       }
-    
+      
       this.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);
         player.mesh.quaternion.copy(player.playerBody.quaternion);
@@ -119,9 +123,6 @@ export default class Game extends Scene {
         this.parkour.checkCollision(player);
         player.update(deltaTime);
       });
-      
-      this.updateLight();
-      this.updateCamera(deltaTime);
       
     } else {
       console.log(...this.players.map(player => player.brain.score))
@@ -153,19 +154,37 @@ export default class Game extends Scene {
   // updates position of the camera
   // resets position if player falls 
   public updateCamera(deltaTime: number) {
-    const scaledVelocity = new THREE.Vector3(this.alivePlayers[this.selectedPlayer].playerBody.velocity.x, this.alivePlayers[this.selectedPlayer].playerBody.velocity.y, this.alivePlayers[this.selectedPlayer].playerBody.velocity.z).multiplyScalar(deltaTime);
+    // updates camera position based on movement
     MainCanvas.orbitControls.target.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
+    const scaledVelocity = new THREE.Vector3(this.alivePlayers[this.selectedPlayer].playerBody.velocity.x, this.alivePlayers[this.selectedPlayer].playerBody.velocity.y, this.alivePlayers[this.selectedPlayer].playerBody.velocity.z).multiplyScalar(deltaTime);
     MainCanvas.camera.position.add(scaledVelocity);
-
+    
+    // if selected player dies, camera follows closest alive player
     if (this.alivePlayers[this.selectedPlayer].mesh.position.y < -10) {
-      MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
-      const offset = new THREE.Vector3(0, 21, 16);
-      MainCanvas.camera.position.add(offset);
-      // MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
-      // const offset2 = new THREE.Vector3(5, 21, 16);
-      // MainCanvas.camera.position.add(offset2);
+      const offsetDeadPlayer = new THREE.Vector3().subVectors(
+        MainCanvas.camera.position,
+        this.alivePlayers[this.selectedPlayer].mesh.position
+      );
+    
+      this.alivePlayers = this.players.filter(player => player.alive);
+    
+      let closestAlivePlayer = this.alivePlayers[0];
+      let closestDistance = Infinity;
+    
+      for (let i = 0; i < this.alivePlayers.length; i++) {
+        const distance = this.alivePlayers[i].mesh.position.distanceTo(
+          this.alivePlayers[this.selectedPlayer].mesh.position
+        );
+    
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestAlivePlayer = this.alivePlayers[i];
+        }
+      }
+    
+      MainCanvas.camera.position.copy(closestAlivePlayer.mesh.position.clone().add(offsetDeadPlayer));
     }
-
+    
 
     MainCanvas.orbitControls.update();
   }
