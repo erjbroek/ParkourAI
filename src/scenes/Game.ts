@@ -50,31 +50,33 @@ export default class Game extends Scene {
 
   public override processInput(): void {
     // updates camera position based on active player
-    if (KeyListener.keyPressed('Digit2')) {
-      if (this.selectedPlayer + 1 <= this.alivePlayers.length - 1) {
-        this.selectedPreviousPlayer = this.selectedPlayer;
-        this.selectedPlayer++;
 
-        const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
-        const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
-        MainCanvas.camera.position.add(cameraOffset);
-      }
-    }
-    if (KeyListener.keyPressed('Digit1')) {
-      if (this.selectedPlayer - 1 >= 0) {
-        this.selectedPreviousPlayer = this.selectedPlayer;
-        this.selectedPlayer--;
-
-        const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
-        const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
-        MainCanvas.camera.position.add(cameraOffset);
+    if (MouseListener.buttonPressed(0)) {
+      if (UICollision.checkSquareCollision(0.02, 0.04, 0.03, 0.06)) {
+        if (this.selectedPlayer - 1 >= 0) {
+          this.selectedPreviousPlayer = this.selectedPlayer;
+          this.selectedPlayer--;
+  
+          const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
+          const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
+          MainCanvas.camera.position.add(cameraOffset);
+        }
+      } else if (UICollision.checkSquareCollision(0.2, 0.04, 0.03, 0.06)) {
+        if (this.selectedPlayer + 1 <= this.alivePlayers.length - 1) {
+          this.selectedPreviousPlayer = this.selectedPlayer;
+          this.selectedPlayer++;
+  
+          const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
+          const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
+          MainCanvas.camera.position.add(cameraOffset);
+        }
       }
     }
 
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
-      if (MouseListener.mouseDown) {
+      if (MouseListener.buttonPressed(0)) {
         this.clickEditor = true;
         if (this.readyClickEditor) {
           this.readyClickEditor = false;
