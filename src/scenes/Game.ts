@@ -25,10 +25,6 @@ export default class Game extends Scene {
 
   public parkour: Parkour = new Parkour();
 
-  public selectedPlayer: number = 0;
-
-  public selectedPreviousPlayer: number = 0;
-
   public alivePlayers: Player[] = []
 
   public extinct: boolean = false;
@@ -48,30 +44,6 @@ export default class Game extends Scene {
   }
 
   public override processInput(): void {
-    // updates camera position based on active player
-
-    if (MouseListener.buttonPressed(0)) {
-      if (UICollision.checkSquareCollision(0.02, 0.04, 0.03, 0.06)) {
-        if (this.selectedPlayer - 1 >= 0) {
-          this.selectedPreviousPlayer = this.selectedPlayer;
-          this.selectedPlayer--;
-  
-          const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
-          const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
-          MainCanvas.camera.position.add(cameraOffset);
-        }
-      } else if (UICollision.checkSquareCollision(0.2, 0.04, 0.03, 0.06)) {
-        if (this.selectedPlayer + 1 <= this.alivePlayers.length - 1) {
-          this.selectedPreviousPlayer = this.selectedPlayer;
-          this.selectedPlayer++;
-  
-          const relativeDistance = new THREE.Vector3().subVectors(this.alivePlayers[this.selectedPlayer].playerBody.position, this.alivePlayers[this.selectedPreviousPlayer].playerBody.position);
-          const cameraOffset = new THREE.Vector3(relativeDistance.x, relativeDistance.y, relativeDistance.z);
-          MainCanvas.camera.position.add(cameraOffset);
-        }
-      }
-    }
-
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
@@ -109,11 +81,7 @@ export default class Game extends Scene {
     this.alivePlayers = this.players.filter(player => player.alive);
     this.extinct = this.alivePlayers.length === 0;
 
-    if (!this.extinct) {
-      if (this.alivePlayers.length - 1 < this.selectedPlayer) {
-        this.selectedPlayer = this.alivePlayers.length - 1;
-      }
-      
+    if (!this.extinct) {  
       this.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);
         player.mesh.quaternion.copy(player.playerBody.quaternion);
@@ -134,16 +102,20 @@ export default class Game extends Scene {
   }
 
   public updateLight() {
+    const bestPlayer = this.alivePlayers.reduce((prev, current) => 
+      (prev.brain.score > current.brain.score) ? prev : current
+    );
+
     MainCanvas.directionalLight.position.set(
-      this.alivePlayers[this.selectedPlayer].mesh.position.x + 70,
-      this.alivePlayers[this.selectedPlayer].mesh.position.y + 140,
-      this.alivePlayers[this.selectedPlayer].mesh.position.z -140
+      bestPlayer.mesh.position.x + 70,
+      bestPlayer.mesh.position.y + 140,
+      bestPlayer.mesh.position.z - 140
     );
 
     MainCanvas.directionalLight.target.position.set(
-      this.alivePlayers[this.selectedPlayer].mesh.position.x,
-      this.alivePlayers[this.selectedPlayer].mesh.position.y,
-      this.alivePlayers[this.selectedPlayer].mesh.position.z
+      bestPlayer.mesh.position.x,
+      bestPlayer.mesh.position.y,
+      bestPlayer.mesh.position.z
     );
 
     MainCanvas.directionalLight.target.updateMatrixWorld();
@@ -158,17 +130,6 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.4, 10);
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
-    }
-    if (this.selectedPlayer != 0) {
-      GUI.fillRectangle(canvas, canvas.width * 0.02, canvas.height * 0.04, canvas.width * 0.03, canvas.height * 0.06, 255, 255, 255, 0.7, 10);
-      GUI.writeText(canvas, '-', canvas.width * 0.035, canvas.height * 0.09, 'center', 'system-ui', 70, 'grey')
-    }
-    GUI.writeText(canvas, `Spectating number ${this.players.indexOf(this.alivePlayers[this.selectedPlayer]) + 1}`, canvas.width * 0.125, canvas.height * 0.08, 'center', 'system-ui', 25, 'black');
-
-    if (this.selectedPlayer != this.alivePlayers.length - 1) {
-
-      GUI.fillRectangle(canvas, canvas.width * 0.2, canvas.height * 0.04, canvas.width * 0.03, canvas.height * 0.06, 255, 255, 255, 0.7, 10);
-      GUI.writeText(canvas, '+', canvas.width * 0.215, canvas.height * 0.09, 'center', 'system-ui', 70, 'grey')
     }
 
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
