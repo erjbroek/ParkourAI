@@ -39,7 +39,7 @@ export default class Game extends Scene {
   public constructor() {
     super();
     this.parkour.generateParkour();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 300; i++) {
       this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
@@ -124,6 +124,7 @@ export default class Game extends Scene {
       this.updateCamera(deltaTime);
       
     } else {
+      console.log(...this.players.map(player => player.brain.score))
       // NeatManager.nextGeneration(this.alivePlayers);
     }
 

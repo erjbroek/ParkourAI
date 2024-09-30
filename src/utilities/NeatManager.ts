@@ -10,7 +10,6 @@ export default class NeatManager {
       mutationRate: 0.3,
       elitism: 0.25,
       popsize: players.length,
-      network: new neat.architect.Perceptron(8, 2, 6),
     })
   
     this.neat.population.forEach((network: any, i: number) => {
@@ -24,7 +23,7 @@ export default class NeatManager {
   }
 
   public nextGeneration(players: Player[]) {
-    
+
   }
-  
+
 }

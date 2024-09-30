@@ -232,7 +232,7 @@ export default class Parkour {
 
             if (foundObject.index != null) {
               if (levels.length === 1) {
-                if (objectIndex < foundObject.index) {
+                if (objectIndex > foundObject.index) {
                   foundObject = { index: objectIndex, level: levelIndex, object: object };
                 }
               } else {
