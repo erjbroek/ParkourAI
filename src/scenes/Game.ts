@@ -160,11 +160,11 @@ export default class Game extends Scene {
       MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
       const offset = new THREE.Vector3(0, 21, 16);
       MainCanvas.camera.position.add(offset);
+      // MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
+      // const offset2 = new THREE.Vector3(5, 21, 16);
+      // MainCanvas.camera.position.add(offset2);
     }
 
-    MainCanvas.camera.position.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
-    const offset = new THREE.Vector3(5, 11, 16);
-    MainCanvas.camera.position.add(offset);
 
     MainCanvas.orbitControls.update();
   }
@@ -184,7 +184,7 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.02, canvas.height * 0.04, canvas.width * 0.03, canvas.height * 0.06, 255, 255, 255, 0.7, 10);
       GUI.writeText(canvas, '-', canvas.width * 0.035, canvas.height * 0.09, 'center', 'system-ui', 70, 'grey')
     }
-    GUI.writeText(canvas, `Spectating player ${this.players.indexOf(this.alivePlayers[this.selectedPlayer])}`, canvas.width * 0.125, canvas.height * 0.08, 'center', 'system-ui', 25, 'black');
+    GUI.writeText(canvas, `Spectating number ${this.players.indexOf(this.alivePlayers[this.selectedPlayer]) + 1}`, canvas.width * 0.125, canvas.height * 0.08, 'center', 'system-ui', 25, 'black');
 
     if (this.selectedPlayer != this.alivePlayers.length - 1) {
 

@@ -83,14 +83,11 @@ export default class Player {
     }
 
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
-
-    // Player.playerBody.linearDamping = 1;
-    // this.playerBody.angularDamping;
     this.mesh.castShadow = true;
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(this.mesh);
-    this.rotation.y = Math.PI;
+    // this.rotation.y = Math.PI;
 
     // testing values
     // Player.playerBody.position.set(338, 60, -68);
