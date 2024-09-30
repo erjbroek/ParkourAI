@@ -1,4 +1,3 @@
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Scene from './Scene.js';
 import * as THREE from 'three';
 import Player from '../objects/Player.js';
@@ -76,7 +75,7 @@ export default class Game extends Scene {
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
-      if (MouseListener.buttonPressed(0)) {
+      if (MouseListener.isButtonDown(0)) {
         this.clickEditor = true;
         if (this.readyClickEditor) {
           this.readyClickEditor = false;
@@ -106,7 +105,6 @@ export default class Game extends Scene {
   public override update(deltaTime: number): Scene {
     if (!this.extinct) {
       this.updateLight();
-      this.updateCamera(deltaTime);
     }
     this.alivePlayers = this.players.filter(player => player.alive);
     this.extinct = this.alivePlayers.length === 0;
@@ -150,45 +148,6 @@ export default class Game extends Scene {
 
     MainCanvas.directionalLight.target.updateMatrixWorld();
   }
-
-  // updates position of the camera
-  // resets position if player falls 
-  public updateCamera(deltaTime: number) {
-    // updates camera position based on movement
-    MainCanvas.orbitControls.target.copy(this.alivePlayers[this.selectedPlayer].mesh.position);
-    const scaledVelocity = new THREE.Vector3(this.alivePlayers[this.selectedPlayer].playerBody.velocity.x, this.alivePlayers[this.selectedPlayer].playerBody.velocity.y, this.alivePlayers[this.selectedPlayer].playerBody.velocity.z).multiplyScalar(deltaTime);
-    MainCanvas.camera.position.add(scaledVelocity);
-    
-    // if selected player dies, camera follows closest alive player
-    if (this.alivePlayers[this.selectedPlayer].mesh.position.y < -10) {
-      const offsetDeadPlayer = new THREE.Vector3().subVectors(
-        MainCanvas.camera.position,
-        this.alivePlayers[this.selectedPlayer].mesh.position
-      );
-    
-      this.alivePlayers = this.players.filter(player => player.alive);
-    
-      let closestAlivePlayer = this.alivePlayers[0];
-      let closestDistance = Infinity;
-    
-      for (let i = 0; i < this.alivePlayers.length; i++) {
-        const distance = this.alivePlayers[i].mesh.position.distanceTo(
-          this.alivePlayers[this.selectedPlayer].mesh.position
-        );
-    
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestAlivePlayer = this.alivePlayers[i];
-        }
-      }
-    
-      MainCanvas.camera.position.copy(closestAlivePlayer.mesh.position.clone().add(offsetDeadPlayer));
-    }
-    
-
-    MainCanvas.orbitControls.update();
-  }
-
 
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);

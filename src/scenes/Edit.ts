@@ -50,7 +50,7 @@ export default class Edit {
    * In the case of the editor, this is choosing what mesh/obstacle to add
    */
   public processInput() {
-    if (MouseListener.mouseDown) {
+    if (MouseListener.isButtonDown(0)) {
       for (let i = 0; i < 4; i++) {
         // if mouse collides with selected object
         if (MouseListener.x2 >= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i && MouseListener.x2 <= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i + window.innerWidth * 0.09 && MouseListener.y2 >= window.innerHeight * 0.8 && MouseListener.y2 <= window.innerHeight * 0.8 + window.innerHeight * 0.16
@@ -145,13 +145,6 @@ export default class Edit {
     this.transformControls.setRotationSnap(THREE.MathUtils.degToRad(90));
 
     MainCanvas.scene.add(this.transformControls);
-
-    this.transformControls.addEventListener("mouseDown", () => {
-      MainCanvas.orbitControls.enabled = false;
-    });
-    this.transformControls.addEventListener("mouseUp", () => {
-      MainCanvas.orbitControls.enabled = true;
-    });
 
     // this changes snapping behaviour of translationControls, so that it's not the same for all axis
     this.transformControls.addEventListener("objectChange", () => {

@@ -6,6 +6,7 @@ import GUI from "../utilities/GUI.js";
 import MouseListener from "../utilities/MouseListener.js";
 import UICollision from "../utilities/UICollision.js";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { FlyControls } from 'three/examples/jsm/controls/FlyControls';
 import KeyListener from '../utilities/KeyListener.js';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
@@ -19,18 +20,24 @@ export default class MainCanvas {
   public static renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
 
   public static gravityConstant = -25;
-  
+
   public activeScene: Game;
-  
+
   public clock: THREE.Clock = new THREE.Clock(true);
-  
-  public static world = new CANNON.World({gravity: new CANNON.Vec3(0, MainCanvas.gravityConstant, 0)});
+
+  public static world = new CANNON.World({ gravity: new CANNON.Vec3(0, MainCanvas.gravityConstant, 0) });
 
   public static canvas: HTMLCanvasElement;
 
-  public static orbitControls: OrbitControls;
+  public static flyControls: FlyControls = new FlyControls(MainCanvas.camera, MainCanvas.renderer.domElement);
 
-  public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);;
+  public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);
+
+  private yaw: number = 0;
+
+  private pitch: number = -0.1;
+
+  private isMouseButtonDown: boolean = false;
 
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
@@ -38,7 +45,7 @@ export default class MainCanvas {
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
     MainCanvas.renderer.shadowMap.enabled = true;
     MainCanvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    
+
     document.body.appendChild(MainCanvas.renderer.domElement);
 
     new MouseListener();
@@ -52,7 +59,10 @@ export default class MainCanvas {
     GUI.setCanvas(canvas);
     MainCanvas.canvas = GUI.getCanvas();
 
-    MainCanvas.orbitControls = new OrbitControls(MainCanvas.camera, MainCanvas.renderer.domElement);
+    MainCanvas.flyControls.movementSpeed = 50;
+    MainCanvas.flyControls.dragToLook = false;
+    window.addEventListener("mousedown", () => this.onMouseDown(), false);
+    window.addEventListener("mouseup", () => this.onMouseUp(), false);
 
     this.setupLight();
     CreateBackground.addBackgroundSphere(); // Add background sphere
@@ -101,17 +111,63 @@ export default class MainCanvas {
       }
 
       // updates controls
-      MainCanvas.orbitControls.update();
-      
+      if (!this.isMouseButtonDown) {
+        MainCanvas.flyControls.update(deltaTime);
+      }
+      this.updateCamera(deltaTime);
+
       // calls functions of active scene
       this.activeScene.processInput();
       this.activeScene.update(deltaTime);
-      
+
       const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
         GUI.getCanvas()
       );
       ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
       this.activeScene.render();
     });
+  }
+  
+  private onMouseDown() {
+    this.isMouseButtonDown = true;
+  }
+
+  private onMouseUp() {
+      this.isMouseButtonDown = false;
+  }
+
+  private updateCamera(deltaTime: number) {
+    const rotateSpeed = 2;
+
+    if (MouseListener.isButtonDown(0)) {
+      MainCanvas.flyControls.movementSpeed = 0
+    } else {
+      MainCanvas.flyControls.movementSpeed = 50
+    }
+
+    if (KeyListener.isKeyDown('ArrowLeft')) {
+      this.yaw += rotateSpeed * deltaTime;
+    }
+    if (KeyListener.isKeyDown('ArrowRight')) {
+      this.yaw -= rotateSpeed * deltaTime;
+    }
+
+    if (KeyListener.isKeyDown('ArrowUp')) {
+      this.pitch += rotateSpeed * deltaTime;
+    }
+    if (KeyListener.isKeyDown('ArrowDown')) {
+      this.pitch -= rotateSpeed * deltaTime
+    }
+
+    this.pitch = Math.max(-Math.PI / 10, Math.min(Math.PI / 10, this.pitch));
+    if (KeyListener.isKeyDown('Space')) {
+      MainCanvas.camera.position.y += 1;
+    }
+    if (KeyListener.isKeyDown('ShiftLeft') || KeyListener.isKeyDown('ShiftRight')) {
+      MainCanvas.camera.position.y -= 1;
+    }
+
+    this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
+    MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
   }
 }
