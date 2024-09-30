@@ -14,7 +14,7 @@ export default class NeatManager {
   
     this.neat.population.forEach((network: any, i: number) => {
       network.score = 0;
-      players[i].brain = network;
+      players[i].brain = new neat.architect.Random(8, 2, 3);
     })
 
     // initial mutation, so not all networks are the same

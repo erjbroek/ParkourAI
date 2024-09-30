@@ -151,17 +151,10 @@ export default class Player {
     const outputZ = output[0] * 2 - 1;
     const outputX = output[1] * 2 - 1;
     const outputJump = output[2] * 2 - 1;
-    if (this.index == 0) { 
-      console.log(this.inputValues)
-      if (this.onGround) {
-        console.log('ground')
-      }
-    }
 
     this.moveForwardBackward(outputZ);
     this.moveLeftRight(outputX);
-    if (outputJump > 0.99) {
-      this.jumpBuffer = 0.1;
+    if (outputJump > 0) {
       this.jumpStatus = true;
     }
 
@@ -185,7 +178,7 @@ export default class Player {
 
     // jumpbuffer allows for jump to be triggered even when the key is pressed a little too early
     this.jumpBuffer -= deltaTime;
-    if (this.jumpStatus && this.jumpBuffer > 0 && this.onGround) {
+    if (this.jumpStatus && this.onGround) {
       this.jump();
       this.jumpStatus = false;
     }
