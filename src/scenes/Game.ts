@@ -34,7 +34,7 @@ export default class Game extends Scene {
   public constructor() {
     super();
     this.parkour.generateParkour();
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 400; i++) {
       this.players.push(new Player(i));
       this.alivePlayers.push(this.players[i])
     }
@@ -124,6 +124,7 @@ export default class Game extends Scene {
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
+    Game.neat.renderNetwork(canvas, this.players[0]);
     if (this.clickEditor) {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
     } else if (this.hoverEditor) {

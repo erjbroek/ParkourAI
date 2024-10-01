@@ -120,7 +120,7 @@ export default class Player {
     }
     if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 4) {
       this.timer += deltaTime;
-      if (this.timer > 2) {
+      if (this.timer > 3) {
         this.killPlayer()
       }
     } else {
