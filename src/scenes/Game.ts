@@ -1,5 +1,4 @@
 import Scene from './Scene.js';
-import * as THREE from 'three';
 import Player from '../objects/Player.js';
 import Parkour from '../objects/Parkour.js';
 import GUI from '../utilities/GUI.js';
@@ -20,30 +19,28 @@ export default class Game extends Scene {
   private clickEditor: boolean = false;
   
   private readyClickEditor: boolean = true;
- 
-  public players: Player[] = [];
 
   public parkour: Parkour = new Parkour();
 
   public alivePlayers: Player[] = []
 
-  public extinct: boolean = false;
+  public static extinct: boolean = false;
   
   public static neat: any;
 
   public constructor() {
     super();
     this.parkour.generateParkour();
-    for (let i = 0; i < 400; i++) {
-      this.players.push(new Player(i));
-      this.alivePlayers.push(this.players[i])
-    }
+    Game.neat = new NeatManager()
 
-    // sets up the neat manager and adds neural network to each player
-    Game.neat = new NeatManager(this.alivePlayers)
+    this.alivePlayers = Game.neat.players;
   }
 
   public override processInput(): void {
+    // option to end generation if player gets stuck
+    if (KeyListener.keyPressed('KeyE')) {
+      Game.neat.endGeneration();
+    }
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
       this.hoverEditor = true;
@@ -75,13 +72,13 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
-    if (!this.extinct) {
+    if (!Game.extinct) {
       this.updateLight();
     }
-    this.alivePlayers = this.players.filter(player => player.alive);
-    this.extinct = this.alivePlayers.length === 0;
+    this.alivePlayers = Game.neat.players.filter(player => player.alive);
+    Game.extinct = this.alivePlayers.length === 0;
 
-    if (!this.extinct) {  
+    if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);
         player.mesh.quaternion.copy(player.playerBody.quaternion);
@@ -92,7 +89,7 @@ export default class Game extends Scene {
       
     } else {
       // console.log(...this.players.map(player => player.brain.score))
-      // NeatManager.nextGeneration(this.alivePlayers);
+      Game.neat.endGeneration();
     }
 
     if (this.openEditor) {
@@ -124,7 +121,8 @@ export default class Game extends Scene {
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
-    Game.neat.renderNetwork(canvas, this.players[0]);
+    Game.neat.renderNetwork(canvas, Game.neat.neat.getFittest());
+
     if (this.clickEditor) {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
     } else if (this.hoverEditor) {

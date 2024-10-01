@@ -85,14 +85,7 @@ export default class Player {
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(this.mesh);
-    // this.rotation.y = Math.PI;
-
-    // testing values
-    // Player.playerBody.position.set(338, 60, -68);
-    // this.spawnPoint.set(116, 15, -296);
-    // MainCanvas.camera.position.set(326, 68, -88);
-    // Parkour.activeLevel = 9
-
+    
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 
@@ -118,7 +111,7 @@ export default class Player {
     if (this.index === 0) {
       // console.log(playerVelocity)
     }
-    if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 4) {
+    if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 7) {
       this.timer += deltaTime;
       if (this.timer > 3) {
         this.killPlayer()
@@ -199,11 +192,6 @@ export default class Player {
     this.alive = false;
     MainCanvas.world.removeBody(this.playerBody)
     MainCanvas.scene.remove(this.mesh)
-    // this.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 1, this.spawnPoint.z);
-    // this.playerBody.velocity.set(0, 0, 0);
-    // this.playerBody.angularVelocity.set(0, 0, 0);
-    // this.playerBody.quaternion.set(0, 0, 0, 1);
-    
   }
 
   public calculateDistance(): number {

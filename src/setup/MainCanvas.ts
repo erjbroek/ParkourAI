@@ -72,7 +72,6 @@ export default class MainCanvas {
     CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
-    this.network = this.activeScene.players[0].brain;
   }
 
   /*
