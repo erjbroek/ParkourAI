@@ -18,5 +18,14 @@ export default class NeatManager {
     });
 
     console.log(this.neat)
+    console.log(players[0].brain)
+    this.renderNetwork(players[0]);
+  }
+
+  public renderNetwork(player: Player) {
+    const inputNodes = player.brain.nodes.filter((node: any) => node.type === 'input');
+    const hiddenNodes = player.brain.nodes.filter((node: any) => node.type === 'hidden');
+    const outputNodes = player.brain.nodes.filter((node: any) => node.type === 'output');
+    console.log(inputNodes, hiddenNodes, outputNodes)
   }
 }

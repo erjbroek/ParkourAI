@@ -91,7 +91,7 @@ export default class Game extends Scene {
       });
       
     } else {
-      console.log(...this.players.map(player => player.brain.score))
+      // console.log(...this.players.map(player => player.brain.score))
       // NeatManager.nextGeneration(this.alivePlayers);
     }
 
