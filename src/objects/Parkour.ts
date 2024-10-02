@@ -65,7 +65,7 @@ export default class Parkour {
     // level 2
     Parkour.levels.push([
       this.createObstacle(ParkourPieces.long1, 16, 0, -132),
-      // this.createObstacle(ParkourPieces.normal, 16, 0, -148),
+      this.createObstacle(ParkourPieces.normal, 16, 0, -148),
       this.createObstacle(ParkourPieces.long1, 16, 0, -156),
       this.createObstacle(ParkourPieces.platform, 16, 0, -172),
       this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -172)
