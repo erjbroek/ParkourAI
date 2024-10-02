@@ -57,8 +57,8 @@ export default class Parkour {
       this.createObstacle(ParkourPieces.long2, 8, 0, -84, 0, Math.PI / 2),
       this.createObstacle(ParkourPieces.long2, 20, 0, -92, 0),
       this.createObstacle(ParkourPieces.normal, 20, 0, -104),
-      this.createObstacle(ParkourPieces.platform, 16, 0, -116),
-      this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -116),
+      this.createObstacle(ParkourPieces.platform, 22, 0, -116),
+      this.createObstacle(ParkourPieces.checkPoint, 22, 6.51, -116),
     ]
     )
 

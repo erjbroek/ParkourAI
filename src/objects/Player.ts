@@ -51,6 +51,8 @@ export default class Player {
 
   public deathTimer: number = this.deathTime;
 
+  public foundObstacles: number[] = [];
+
   public constructor(index: number) {
     this.index = index;
     if (this.index == 0) {

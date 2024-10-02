@@ -11,12 +11,14 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
+  public highestScore: number = -Infinity;
+
   public constructor() {
     this.neat = new neat.Neat(7, 4, null, {
       mutationRate: 0.5,
       mutationAmount: 2,
       popsize: 500,
-      elitism: 0.1 * 500,
+      elitism: 100
     })
 
     this.initializePopulation()
@@ -45,6 +47,7 @@ export default class NeatManager {
    */
   public endGeneration(): void {
     this.neat.sort()
+    this.highestScore = Math.max(this.neat.population[0].score, this.highestScore)
 
     const newGeneration = []
 
@@ -52,7 +55,11 @@ export default class NeatManager {
       newGeneration.push(this.neat.population[i])
     }
     for (let i = 0; i < this.neat.popsize - this.neat.elitism; i++) {
-      newGeneration.push(this.neat.getOffspring())
+      if (Math.random() >= 1 / 3) {
+        newGeneration.push(this.neat.getOffspring())
+      } else {
+        newGeneration.push(this.neat.population[i])
+      }
     }
 
     this.neat.population = newGeneration
