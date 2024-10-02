@@ -12,11 +12,11 @@ export default class NeatManager {
   public players: Player[] = [];
 
   public constructor() {
-    this.neat = new neat.Neat(8, 3, null, {
-      mutationRate: 0.3,
-      mutationAmount: 1,
-      popsize: 100,
-      elitism: 0.25 * 100,
+    this.neat = new neat.Neat(7, 4, null, {
+      mutationRate: 0.5,
+      mutationAmount: 2,
+      popsize: 500,
+      elitism: 0.1 * 500,
     })
 
     this.initializePopulation()
@@ -44,7 +44,6 @@ export default class NeatManager {
    * mutates new generation
    */
   public endGeneration(): void {
-    console.log('Generation:', this.neat.generation, 'Average Score:', this.neat.getAverage(), 'Highest Score:', this.neat.getFittest().score)
     this.neat.sort()
 
     const newGeneration = []

@@ -45,7 +45,11 @@ export default class Player {
 
   public alive: boolean = true;
 
-  public timer: number = 0;
+  public speedTimer: number = 0;
+
+  public deathTime: number = 9;
+
+  public deathTimer: number = this.deathTime;
 
   public constructor(index: number) {
     this.index = index;
@@ -95,6 +99,12 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
+    if (this.deathTimer > 0) {
+      this.deathTimer -= deltaTime;
+    } else {
+      this.killPlayer()
+    }
+
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
 
@@ -103,22 +113,24 @@ export default class Player {
     this.obstacleDistances.next = new THREE.Vector3();
     nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleDistances.next);
 
-    this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
+    // this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
+
+    this.obstacleDistances.current.subVectors(this.obstacleDistances.next, playerPosition)
     this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)
-    const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
+    // const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
 
     if (this.index === 0) {
       // console.log(playerVelocity)
     }
-    if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 7) {
-      this.timer += deltaTime;
-      if (this.timer > 3) {
-        this.killPlayer()
-      }
-    } else {
-      this.timer = 0;
-    }
+    // if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 7) {
+    //   this.timer += deltaTime;
+    //   if (this.timer > 3) {
+    //     this.killPlayer()
+    //   }
+    // } else {
+    //   this.timer = 0;
+    // }
 
     const decimals = 3;
     const inputValues = [
@@ -128,7 +140,7 @@ export default class Player {
       this.obstacleDistances.next.x,
       this.obstacleDistances.next.y,
       this.obstacleDistances.next.z,
-      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
+      // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
     ];
 
     const extremes: { max: number, min: number } = {
@@ -154,12 +166,14 @@ export default class Player {
     if (this.index === 0 ) {
       // console.log(output)
     }
-    const outputZ = output[0] * 4 - 2;  // Scale to -2 to 2 for stronger forward/backward
-    const outputX = output[1] * 4 - 2;  // Scale to -2 to 2 for stronger left/right
-    const outputJump = output[2] * 1.5 - 0.75;  // Scale jump to -0.75 to 0.75
+    const outputZ = output[0] * 2 - 1;
+    const outputLeft = output[1];  
+    const outputRight = output[2]; 
+    const outputJump = output[3] * 1.5 - 0.75;
 
     this.moveForwardBackward(outputZ);
-    this.moveLeftRight(outputX);
+    this.moveLeft(outputLeft);
+    this.moveRight(outputRight);
     if (outputJump > 0) {
       if (this.onGround) {
         this.jump()
@@ -239,13 +253,26 @@ export default class Player {
    * 
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
-  public moveLeftRight(amount: number) {
-    const speed = 2;
+  public moveLeft(amount: number) {
+    const speed = 4;
 
-    this.playerBody.velocity.x -= amount * -speed;
+    this.playerBody.velocity.x += amount * -speed;
     // this.playerBody.velocity.z += amount * -speed;
     this.normalizeVelocity();
   }
+
+    /**
+   * moves player left or right based on player rotation
+   * 
+   * @param amount is the multiplier for the speed of the player between -1 and 1
+   */
+    public moveRight(amount: number) {
+      const speed = 4;
+  
+      this.playerBody.velocity.x -= amount * -speed;
+      // this.playerBody.velocity.z += amount * -speed;
+      this.normalizeVelocity();
+    }
 
   /**
    * moves player forwards or backwards based on player rotation

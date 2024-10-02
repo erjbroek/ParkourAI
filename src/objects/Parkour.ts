@@ -55,17 +55,17 @@ export default class Parkour {
     Parkour.levels.push([
       this.createObstacle(ParkourPieces.long2, 0, 0, -72),
       this.createObstacle(ParkourPieces.long2, 8, 0, -84, 0, Math.PI / 2),
-      this.createObstacle(ParkourPieces.long1, 20, 0, -88, 0),
-      this.createObstacle(ParkourPieces.normal, 20, 0, -96, 0),
-      this.createObstacle(ParkourPieces.platform, 16, 0, -108),
-      this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -108),
+      this.createObstacle(ParkourPieces.long2, 20, 0, -92, 0),
+      this.createObstacle(ParkourPieces.normal, 20, 0, -104),
+      this.createObstacle(ParkourPieces.platform, 16, 0, -116),
+      this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -116),
     ]
     )
 
     // level 2
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.long2, 16, 0, -128),
-      this.createObstacle(ParkourPieces.normal, 16, 0, -148),
+      this.createObstacle(ParkourPieces.long1, 16, 0, -132),
+      // this.createObstacle(ParkourPieces.normal, 16, 0, -148),
       this.createObstacle(ParkourPieces.long1, 16, 0, -156),
       this.createObstacle(ParkourPieces.platform, 16, 0, -172),
       this.createObstacle(ParkourPieces.checkPoint, 16, 6.51, -172)
@@ -209,6 +209,7 @@ export default class Parkour {
         if (object.isCheckpoint) {
           if (object.boundingBox.intersectsBox(player.boundingBox) && levelIndex === 0) {
             player.currentLevel += 1;
+            player.deathTimer = player.deathTime;
   
             object.mesh.material = ParkourPieces.checkPointActive;
             const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;

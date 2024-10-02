@@ -130,6 +130,9 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
+    GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5 + canvas.width * 0.04, canvas.height * 0.05, 'center', 'system-ui', 20, 'black')
+    GUI.writeText(canvas, `Players alive: ${this.alivePlayers.length}`, canvas.width * 0.5 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.05, 'center', 'system-ui', 20, 'black')
+    GUI.writeText(canvas, `record: ${Math.round(Game.neat.neat.getFittest().score)}`, canvas.width * 0.5 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.1, 'center', 'system-ui', 20, 'black')
 
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
