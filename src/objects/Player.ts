@@ -39,7 +39,7 @@ export default class Player {
 
   public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0][0], next: Parkour.levels[0][1] };
 
-  public obstacleDistances: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
+  public obstacleCoordinations: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
 
   public inputValues: number[] = []
 
@@ -51,9 +51,15 @@ export default class Player {
 
   public deathTimer: number = this.deathTime;
 
-  public foundObstacles: number[] = [];
+  public highestObstacle: Obstacle = Parkour.levels[0][0];
+
+  public highestObstacleIndex: number = 0;
 
   public ai: boolean;
+
+  public userFitness: number = 0;
+
+  public currentPlatform: number = 0;
 
   public constructor(index: number, ai: boolean) {
     this.ai = ai;
@@ -115,26 +121,26 @@ export default class Player {
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
 
-    this.obstacleDistances.current = new THREE.Vector3();
-    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.obstacleDistances.current);
-    this.obstacleDistances.next = new THREE.Vector3();
-    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleDistances.next);
+    this.obstacleCoordinations.current = new THREE.Vector3();
+    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.current);
+    this.obstacleCoordinations.next = new THREE.Vector3();
+    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.next);
 
     // this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
 
-    this.obstacleDistances.current.subVectors(this.obstacleDistances.next, playerPosition)
-    this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)
+    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.next, playerPosition)
+    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)
     // const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
 
     const decimals = 3;
     const inputValues = [
-      Math.round(this.obstacleDistances.current.x * 10 ** decimals) / 10 ** decimals,
-      Math.round(this.obstacleDistances.current.y * 10 ** decimals) / 10 ** decimals,
-      Math.round(this.obstacleDistances.current.z * 10 ** decimals) / 10 ** decimals,
-      this.obstacleDistances.next.x,
-      this.obstacleDistances.next.y,
-      this.obstacleDistances.next.z,
+      Math.round(this.obstacleCoordinations.current.x * 10 ** decimals) / 10 ** decimals,
+      Math.round(this.obstacleCoordinations.current.y * 10 ** decimals) / 10 ** decimals,
+      Math.round(this.obstacleCoordinations.current.z * 10 ** decimals) / 10 ** decimals,
+      this.obstacleCoordinations.next.x,
+      this.obstacleCoordinations.next.y,
+      this.obstacleCoordinations.next.z,
       // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
     ];
 
@@ -193,9 +199,6 @@ export default class Player {
 
     // needs to be fixed someday, since it causes non-realistic physics/ collisions
     this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
-
-    this.calculateDistance()
-    this.calculateFitness()
     
   }
 
@@ -227,6 +230,47 @@ export default class Player {
   }
 
   /**
+   * calculates the percentage of the distance the player is to the next obstacle
+   * 
+   * @returns percentage that player has reached to the next jump from the current
+   */
+  public calculateObstacleDistance(): number {
+    // will be used for the starting point, 0% distance
+    const current = this.inputLevels.current.boundingBox;
+
+    // will be used for the end point, 100% distance
+    const next = this.inputLevels.next.boundingBox;
+    
+
+    
+    // this first finds the nearest point on the next platform to the current platform
+    const currentCenter = current.getCenter(new THREE.Vector3());
+    const nextPosition = new THREE.Vector3();
+    next.clampPoint(currentCenter, nextPosition);
+    
+    //then it gets the point that is furthest away from the next jump
+    const directionVector = new THREE.Vector3();
+    directionVector.subVectors(nextPosition, currentCenter);
+    directionVector.multiplyScalar(-2);
+    const currentPosition = new THREE.Vector3();
+    currentPosition.addVectors(nextPosition, directionVector);
+
+    const maxDistance = Math.sqrt(
+      (currentPosition.x - nextPosition.x) ** 2 +
+      (currentPosition.y - nextPosition.y) ** 2 +
+      (currentPosition.z - nextPosition.z) ** 2
+    );
+    
+    const currentDistance = Math.sqrt(
+      (this.playerBody.position.x - nextPosition.x) ** 2 +
+      (this.playerBody.position.y - nextPosition.y) ** 2 +
+      (this.playerBody.position.z - nextPosition.z) ** 2
+    );
+
+    return (1 - currentDistance / maxDistance);
+  }
+
+  /**
    * the fitness of the player is based on progress in the course
    * 
    * @returns the fitness of the player
@@ -236,8 +280,16 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      this.brain.score += this.calculateDistance()
-      this.brain.score += this.currentLevel * 100
+      this.brain.score += this.calculateDistance() / 2
+      this.brain.score += this.currentLevel * 125
+      this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+    } else {
+      this.userFitness = 0;
+      
+      // progress in level
+      // this.userFitness += this.calculateDistance()
+      this.userFitness += this.currentLevel * 125
+      this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     }
   }
 

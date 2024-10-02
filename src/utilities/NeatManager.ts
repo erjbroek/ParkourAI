@@ -17,8 +17,8 @@ export default class NeatManager {
     this.neat = new neat.Neat(7, 4, null, {
       mutationRate: 0.4,
       mutationAmount: 1,
-      popsize: 500,
-      elitism: 100
+      popsize: 100,
+      elitism: 30
     })
 
     this.initializePopulation()
@@ -46,6 +46,9 @@ export default class NeatManager {
    * mutates new generation
    */
   public endGeneration(): void {
+    this.players.forEach((player: Player) => {
+      player.calculateFitness()
+    })
     this.neat.sort()
     this.highestScore = Math.max(this.neat.population[0].score, this.highestScore)
 
@@ -55,11 +58,7 @@ export default class NeatManager {
       newGeneration.push(this.neat.population[i])
     }
     for (let i = 0; i < this.neat.popsize - this.neat.elitism; i++) {
-      if (Math.random() >= 1 / 3) {
-        newGeneration.push(this.neat.getOffspring())
-      } else {
-        newGeneration.push(this.neat.population[i])
-      }
+      newGeneration.push(this.neat.getOffspring())
     }
 
     this.neat.population = newGeneration

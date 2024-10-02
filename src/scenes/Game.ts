@@ -40,8 +40,17 @@ export default class Game extends Scene {
   }
 
   public override processInput(): void {
-    if (KeyListener.keyPressed('ArrowUp')) {
+    if (KeyListener.isKeyDown('ArrowUp')) {
       this.userPlayer.moveForwardBackward(1)
+    } else if (KeyListener.isKeyDown('ArrowDown')) {
+      this.userPlayer.moveForwardBackward(-1)
+    } else if (KeyListener.isKeyDown('ArrowLeft')) {
+      this.userPlayer.moveLeft(1)
+    } else if (KeyListener.isKeyDown('ArrowRight')) {
+      this.userPlayer.moveRight(1)
+    } 
+    if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
+      this.userPlayer.jump()
     }
 
     // option to end generation if player gets stuck
@@ -84,11 +93,14 @@ export default class Game extends Scene {
     }
     this.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = this.alivePlayers.length === 0;
+    // Game.extinct = false;
 
     this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
     this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
     this.parkour.checkCollision(this.userPlayer);
     this.userPlayer.update(deltaTime);
+    this.userPlayer.calculateFitness()
+    console.log(this.userPlayer.userFitness)
 
     if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {

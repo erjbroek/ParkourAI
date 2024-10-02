@@ -259,10 +259,11 @@ export default class Parkour {
       if (foundLevel) {
         if (Parkour.levels[Parkour.levels.indexOf(foundLevel)].length - 2 > foundObject.index) {
           next = Parkour.levels[Parkour.levels.indexOf(foundLevel)][foundObject.index + 1]
+
         } else {
           next = Parkour.levels[Parkour.levels.indexOf(foundLevel) + 1][0]
         }
-        // console.log('Found object in level:', Parkour.levels.indexOf(foundLevel));
+        player.highestObstacleIndex = this.getIndex(foundObject.object);
       }
       player.inputLevels.current = foundObject.object
       player.inputLevels.next = next
@@ -270,6 +271,20 @@ export default class Parkour {
     }
     player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;   
     player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;    
+  }
+
+  public getIndex(obstacle: Obstacle): number {
+    let count: number = 0;
+    for (const level of Parkour.levels) {
+      for (const object of level) {
+        if (object === obstacle) {
+          return count;
+        } else {
+          count++;
+        }
+      }
+    }
+    return -1;
   }
 
   /**
