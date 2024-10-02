@@ -15,8 +15,8 @@ export default class NeatManager {
 
   public constructor() {
     this.neat = new neat.Neat(7, 4, null, {
-      mutationRate: 0.5,
-      mutationAmount: 2,
+      mutationRate: 0.4,
+      mutationAmount: 1,
       popsize: 500,
       elitism: 100
     })
@@ -34,7 +34,7 @@ export default class NeatManager {
     })
     this.players = []
     for (let i = 0; i < this.neat.popsize; i++) {
-      this.players.push(new Player(i))
+      this.players.push(new Player(i, true))
       this.players[i].brain = this.neat.population[i]
       this.players[i].brain.score = 0
     }

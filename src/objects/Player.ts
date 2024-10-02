@@ -53,7 +53,10 @@ export default class Player {
 
   public foundObstacles: number[] = [];
 
-  public constructor(index: number) {
+  public ai: boolean;
+
+  public constructor(index: number, ai: boolean) {
+    this.ai = ai;
     this.index = index;
     if (this.index == 0) {
       this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
@@ -101,10 +104,12 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
-    if (this.deathTimer > 0) {
-      this.deathTimer -= deltaTime;
-    } else {
-      this.killPlayer()
+    if (this.ai) {
+      if (this.deathTimer > 0) {
+        this.deathTimer -= deltaTime;
+      } else {
+        this.killPlayer()
+      }
     }
 
     const currentObstacle = this.inputLevels.current.boundingBox;
@@ -121,18 +126,6 @@ export default class Player {
     this.obstacleDistances.current.subVectors(this.obstacleDistances.next, playerPosition)
     this.obstacleDistances.current.subVectors(this.obstacleDistances.current, playerPosition)
     // const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
-
-    if (this.index === 0) {
-      // console.log(playerVelocity)
-    }
-    // if (Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.z) <= 7) {
-    //   this.timer += deltaTime;
-    //   if (this.timer > 3) {
-    //     this.killPlayer()
-    //   }
-    // } else {
-    //   this.timer = 0;
-    // }
 
     const decimals = 3;
     const inputValues = [
@@ -164,24 +157,26 @@ export default class Player {
   }
 
   public updateMovement(deltaTime: number) {
-    const output = this.brain.activate(this.inputValues);
-    if (this.index === 0 ) {
-      // console.log(output)
-    }
-    const outputZ = output[0] * 2 - 1;
-    const outputLeft = output[1];  
-    const outputRight = output[2]; 
-    const outputJump = output[3] * 1.5 - 0.75;
-
-    this.moveForwardBackward(outputZ);
-    this.moveLeft(outputLeft);
-    this.moveRight(outputRight);
-    if (outputJump > 0) {
-      if (this.onGround) {
-        this.jump()
+    if (this.ai) {
+      const output = this.brain.activate(this.inputValues);
+      if (this.index === 0 ) {
+        // console.log(output)
+      }
+      const outputZ = output[0] * 2 - 1;
+      const outputLeft = output[1];  
+      const outputRight = output[2]; 
+      const outputJump = output[3] * 1.5 - 0.75;
+      
+      this.moveForwardBackward(outputZ);
+      this.moveLeft(outputLeft);
+      this.moveRight(outputRight);
+      if (outputJump > 0) {
+        if (this.onGround) {
+          this.jump()
+        }
       }
     }
-
+      
     // if player falls, reset position to last reached checkpoint
     if (this.playerBody.position.y < -10) {
       this.killPlayer()
@@ -237,11 +232,13 @@ export default class Player {
    * @returns the fitness of the player
    */
   public calculateFitness(): void {
-    this.brain.score = 0;
-
-    // progress in level
-    this.brain.score += this.calculateDistance()
-    this.brain.score += this.currentLevel * 100
+    if (this.ai) {
+      this.brain.score = 0;
+      
+      // progress in level
+      this.brain.score += this.calculateDistance()
+      this.brain.score += this.currentLevel * 100
+    }
   }
 
   public jump() {

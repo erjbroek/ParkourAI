@@ -28,15 +28,22 @@ export default class Game extends Scene {
   
   public static neat: any;
 
+  public userPlayer: Player;
+
   public constructor() {
     super();
     this.parkour.generateParkour();
     Game.neat = new NeatManager()
+    this.userPlayer = new Player(0, false);
 
     this.alivePlayers = Game.neat.players;
   }
 
   public override processInput(): void {
+    if (KeyListener.keyPressed('ArrowUp')) {
+      this.userPlayer.moveForwardBackward(1)
+    }
+
     // option to end generation if player gets stuck
     if (KeyListener.keyPressed('KeyE')) {
       Game.neat.endGeneration();
@@ -77,6 +84,11 @@ export default class Game extends Scene {
     }
     this.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = this.alivePlayers.length === 0;
+
+    this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
+    this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
+    this.parkour.checkCollision(this.userPlayer);
+    this.userPlayer.update(deltaTime);
 
     if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {
