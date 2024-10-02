@@ -93,14 +93,13 @@ export default class Game extends Scene {
     }
     this.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = this.alivePlayers.length === 0;
-    // Game.extinct = false;
+
 
     this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
     this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
     this.parkour.checkCollision(this.userPlayer);
     this.userPlayer.update(deltaTime);
     this.userPlayer.calculateFitness()
-    console.log(this.userPlayer.userFitness)
 
     if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {

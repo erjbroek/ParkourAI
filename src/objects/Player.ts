@@ -126,12 +126,9 @@ export default class Player {
     this.obstacleCoordinations.next = new THREE.Vector3();
     nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.next);
 
-    // this.obstacleDistances.next.subVectors(this.obstacleDistances.next, this.obstacleDistances.current)
+    this.obstacleCoordinations.next.subVectors(this.obstacleCoordinations.next, this.obstacleCoordinations.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
-
-    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.next, playerPosition)
-    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)
-    // const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)
+    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)  
 
     const decimals = 3;
     const inputValues = [
@@ -143,21 +140,21 @@ export default class Player {
       this.obstacleCoordinations.next.z,
       // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
     ];
-
+    
     const extremes: { max: number, min: number } = {
       max: Math.max(...inputValues),
       min: Math.min(...inputValues)
     };
-
+    
     const normalizedValues = inputValues.map(value => {
       if (extremes.max === extremes.min) {
         return 0;
       }
       return 2 * (value - extremes.min) / (extremes.max - extremes.min) - 1;
     });
-
+    
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
-
+    
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
@@ -280,15 +277,15 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      this.brain.score += this.calculateDistance() / 2
-      this.brain.score += this.currentLevel * 125
+      // this.brain.score += this.calculateDistance() / 2
+      this.brain.score += this.currentLevel * 40
       this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     } else {
       this.userFitness = 0;
       
       // progress in level
       // this.userFitness += this.calculateDistance()
-      this.userFitness += this.currentLevel * 125
+      this.userFitness += this.currentLevel * 30
       this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     }
   }
