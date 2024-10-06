@@ -189,15 +189,22 @@ export default class Parkour {
     this.renderParkour(Parkour.levels[10]);
   }
 
-  // checks collision between the player and specified levels
-  // is used to check if the player can jump and if checkpoint is reached
+/**
+ * checks collision between the player and all jumps in the current and previous level
+ * if the object is a checkpoint, the player will move to the next level
+ * if its a normal jump, it sets the active platform the player is on to the platform that is being collided with
+ * if the player is colliding with multiple platforms, it will get the one furthest into the parkour
+ * also checks collision if the player is jumping over a platform by just checking for x and z axis
+ * 
+ * @param player is the player object that is being checked for collision
+ */
   public checkCollision(player: Player): void {
     let levels: Obstacle[][] = [Parkour.levels[player.currentLevel]];
-  
+
     if (player.currentLevel > 0) {
       levels.push(Parkour.levels[player.currentLevel - 1]);
     }
-  
+
     player.onGround = false;
     let foundObject: { index: number; level: number; object: Obstacle } | null = { index: null, level: null, object: null };
     let current: Obstacle = null;
@@ -205,12 +212,11 @@ export default class Parkour {
 
     levels.forEach((level, levelIndex) => {
       level.forEach((object, objectIndex) => {
-
         if (object.isCheckpoint) {
           if (object.boundingBox.intersectsBox(player.boundingBox) && levelIndex === 0) {
             player.currentLevel += 1;
             player.deathTimer = player.deathTime;
-  
+
             object.mesh.material = ParkourPieces.checkPointActive;
             const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
             player.spawnPoint = new THREE.Vector3(
@@ -230,25 +236,17 @@ export default class Parkour {
             player.playerBody.angularVelocity.y *= 0.5;
             player.playerBody.angularVelocity.z *= 0.5;
 
-
-            if (foundObject.index != null) {
-              if (levels.length === 1) {
-                if (objectIndex > foundObject.index) {
-                  foundObject = { index: objectIndex, level: levelIndex, object: object };
-                }
-              } else {
-                if (levelIndex === 1) {
-                  foundObject = { index: objectIndex, level: levelIndex, object: object };
-                }
-              }
-            } else {
-              foundObject = { index: objectIndex, level: levelIndex, object: object };
-            }
-
             player.playerBody.velocity.y = 0;
             player.playerBody.position.y = obstacleTopY + player.boundingBox.getSize(new THREE.Vector3()).y / 2;
             player.playerBody.quaternion.y = 0
             player.onGround = true;
+
+            foundObject = { index: objectIndex, level: levelIndex, object: object };
+
+          } else if (player.boundingBox.min.x >= object.boundingBox.min.x && player.boundingBox.max.x <= object.boundingBox.max.x &&
+            player.boundingBox.min.z >= object.boundingBox.min.z && player.boundingBox.max.z <= object.boundingBox.max.z &&
+            player.boundingBox.min.y >= object.boundingBox.max.y) {
+            foundObject = { index: objectIndex, level: levelIndex, object: object };
           }
         }
       });
@@ -267,10 +265,10 @@ export default class Parkour {
       }
       player.inputLevels.current = foundObject.object
       player.inputLevels.next = next
-      
+
     }
-    player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;   
-    player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;    
+    player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;
+    player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;
   }
 
   public getIndex(obstacle: Obstacle): number {

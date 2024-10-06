@@ -8,6 +8,7 @@ import MouseListener from '../utilities/MouseListener.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import NeatManager from '../utilities/NeatManager.js';
 import KeyListener from '../utilities/KeyListener.js';
+import * as CANNON from 'cannon-es';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -35,6 +36,8 @@ export default class Game extends Scene {
     this.parkour.generateParkour();
     Game.neat = new NeatManager()
     this.userPlayer = new Player(0, false);
+    // this.userPlayer.playerBody.position = new CANNON.Vec3(320, 30, -300);
+    // this.userPlayer.currentLevel = 7;
 
     this.alivePlayers = Game.neat.players;
   }
@@ -44,12 +47,15 @@ export default class Game extends Scene {
    */
   public override processInput(): void {
     if (KeyListener.isKeyDown('ArrowUp')) {
-      this.userPlayer.moveForwardBackward(1)
-    } else if (KeyListener.isKeyDown('ArrowDown')) {
       this.userPlayer.moveForwardBackward(-1)
-    } else if (KeyListener.isKeyDown('ArrowLeft')) {
+    }
+    if (KeyListener.isKeyDown('ArrowDown')) {
+      this.userPlayer.moveForwardBackward(1)
+    }
+    if (KeyListener.isKeyDown('ArrowLeft')) {
       this.userPlayer.moveLeft(1)
-    } else if (KeyListener.isKeyDown('ArrowRight')) {
+    }
+    if (KeyListener.isKeyDown('ArrowRight')) {
       this.userPlayer.moveRight(1)
     } 
     if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
@@ -116,7 +122,7 @@ export default class Game extends Scene {
       
     } else {
       // console.log(...this.players.map(player => player.brain.score))
-      Game.neat.endGeneration();
+      // Game.neat.endGeneration();
     }
 
     if (this.openEditor) {
