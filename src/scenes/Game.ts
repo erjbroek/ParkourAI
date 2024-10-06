@@ -39,6 +39,9 @@ export default class Game extends Scene {
     this.alivePlayers = Game.neat.players;
   }
 
+  /**
+   * processes player input
+   */
   public override processInput(): void {
     if (KeyListener.isKeyDown('ArrowUp')) {
       this.userPlayer.moveForwardBackward(1)
@@ -100,6 +103,7 @@ export default class Game extends Scene {
     this.parkour.checkCollision(this.userPlayer);
     this.userPlayer.update(deltaTime);
     this.userPlayer.calculateFitness()
+    console.log(this.userPlayer.userFitness)
 
     if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {

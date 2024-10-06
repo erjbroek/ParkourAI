@@ -14,11 +14,11 @@ export default class NeatManager {
   public highestScore: number = -Infinity;
 
   public constructor() {
-    this.neat = new neat.Neat(7, 4, null, {
-      mutationRate: 0.4,
+    this.neat = new neat.Neat(8, 4, null, {
+      mutationRate: 0.3,
       mutationAmount: 1,
-      popsize: 300,
-      elitism: 80
+      popsize: 100,
+      elitism: 30
     })
 
     this.initializePopulation()

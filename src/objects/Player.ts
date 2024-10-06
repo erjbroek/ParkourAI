@@ -128,7 +128,8 @@ export default class Player {
 
     this.obstacleCoordinations.next.subVectors(this.obstacleCoordinations.next, this.obstacleCoordinations.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
-    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)  
+    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)
+    const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)  
 
     const decimals = 3;
     const inputValues = [
@@ -138,7 +139,7 @@ export default class Player {
       this.obstacleCoordinations.next.x,
       this.obstacleCoordinations.next.y,
       this.obstacleCoordinations.next.z,
-      // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
+      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
     ];
     
     const extremes: { max: number, min: number } = {
@@ -168,12 +169,18 @@ export default class Player {
       const outputZ = output[0] * 2 - 1;
       const outputLeft = output[1];  
       const outputRight = output[2]; 
-      const outputJump = output[3] * 1.5 - 0.75;
+      const outputJump = output[3];
       
-      this.moveForwardBackward(outputZ);
-      this.moveLeft(outputLeft);
-      this.moveRight(outputRight);
-      if (outputJump > 0) {
+      if (outputZ > 0.4 || outputZ < -0.4) {
+        this.moveForwardBackward(outputZ);
+      }
+      if (outputLeft > 0.4) {
+        this.moveLeft(outputLeft);
+      }
+      if (outputRight > 0.4) {
+        this.moveRight(outputRight);
+      }
+      if (outputJump > 0.6) {
         if (this.onGround) {
           this.jump()
         }
@@ -277,14 +284,12 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      // this.brain.score += this.calculateDistance() / 2
       this.brain.score += this.currentLevel * 40
       this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     } else {
       this.userFitness = 0;
       
       // progress in level
-      // this.userFitness += this.calculateDistance()
       this.userFitness += this.currentLevel * 30
       this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     }
@@ -331,7 +336,7 @@ export default class Player {
     const speed = 2;
 
     // this.playerBody.velocity.x += amount * speed;
-    this.playerBody.velocity.z -= amount * speed;
+    this.playerBody.velocity.z -= (amount * 2 - 1) * -speed;
     this.normalizeVelocity();
   }
 
