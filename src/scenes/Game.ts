@@ -36,8 +36,6 @@ export default class Game extends Scene {
     this.parkour.generateParkour();
     Game.neat = new NeatManager()
     this.userPlayer = new Player(0, false);
-    // this.userPlayer.playerBody.position = new CANNON.Vec3(320, 30, -300);
-    // this.userPlayer.currentLevel = 7;
 
     this.alivePlayers = Game.neat.players;
   }
@@ -122,7 +120,7 @@ export default class Game extends Scene {
       
     } else {
       // console.log(...this.players.map(player => player.brain.score))
-      // Game.neat.endGeneration();
+      Game.neat.endGeneration();
     }
 
     if (this.openEditor) {

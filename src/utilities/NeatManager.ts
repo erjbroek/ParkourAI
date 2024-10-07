@@ -17,8 +17,8 @@ export default class NeatManager {
     this.neat = new neat.Neat(8, 4, null, {
       mutationRate: 0.3,
       mutationAmount: 1,
-      popsize: 2,
-      elitism: 2
+      popsize: 200,
+      elitism: 50
     })
 
     this.initializePopulation()
