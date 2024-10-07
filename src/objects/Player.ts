@@ -139,7 +139,7 @@ export default class Player {
       this.obstacleCoordinations.next.x,
       this.obstacleCoordinations.next.y,
       this.obstacleCoordinations.next.z,
-      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
+      // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
     ];
     
     const extremes: { max: number, min: number } = {
@@ -174,13 +174,13 @@ export default class Player {
       if (outputZ > 0.4 || outputZ < -0.4) {
         this.moveForwardBackward(outputZ);
       }
-      if (outputLeft > 0.4) {
+      if (outputLeft > 0.3) {
         this.moveLeft(outputLeft);
       }
-      if (outputRight > 0.4) {
+      if (outputRight > 0.3) {
         this.moveRight(outputRight);
       }
-      if (outputJump > 0.6) {
+      if (outputJump > 0.5) {
         if (this.onGround) {
           this.jump()
         }

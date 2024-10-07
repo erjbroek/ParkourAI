@@ -9,6 +9,7 @@ import MainCanvas from '../setup/MainCanvas.js';
 import NeatManager from '../utilities/NeatManager.js';
 import KeyListener from '../utilities/KeyListener.js';
 import * as CANNON from 'cannon-es';
+import Statistics from './Statistics.js';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -31,7 +32,7 @@ export default class Game extends Scene {
 
   public userPlayer: Player;
 
-  
+  public statistics: Statistics = new Statistics();
 
   public constructor() {
     super();
@@ -172,6 +173,8 @@ export default class Game extends Scene {
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
       this.editor.render(canvas)
+    } else {
+      this.statistics.renderPerformance();
     }
   }
 }

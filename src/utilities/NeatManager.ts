@@ -3,6 +3,7 @@ import { Network } from 'neataptic';
 import Player from '../objects/Player.js';
 import GUI from '../utilities/GUI.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import Statistics from '../scenes/Statistics.js';
 
 export default class NeatManager {
   public neat: any;
@@ -11,14 +12,12 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
-  public highestScore: number = -Infinity;
-
   public constructor() {
     this.neat = new neat.Neat(8, 4, null, {
-      mutationRate: 0.3,
+      mutationRate: 0.4,
       mutationAmount: 1,
-      popsize: 200,
-      elitism: 50
+      popsize: 500,
+      elitism: 150
     })
 
     this.initializePopulation()
@@ -50,7 +49,8 @@ export default class NeatManager {
       player.calculateFitness()
     })
     this.neat.sort()
-    this.highestScore = Math.max(this.neat.population[0].score, this.highestScore)
+    Statistics.highscores.push(this.neat.population[0].score)
+    Statistics.averageScores.push(this.neat.getAverage())
 
     const newGeneration = []
 
@@ -104,7 +104,7 @@ export default class NeatManager {
     const width = canvas.width * 0.1;
     const height = canvas.height * 0.3;
 
-    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) + 60, height, 0, 0, 0, 0.5, 10)
+    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) + 60, height, 0, 0, 0, 0.2, 10)
 
     // ads layerSize and index to the nodes for positioning
     nodes.forEach((node: any) => {
