@@ -31,6 +31,8 @@ export default class Game extends Scene {
 
   public userPlayer: Player;
 
+  
+
   public constructor() {
     super();
     this.parkour.generateParkour();
