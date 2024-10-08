@@ -62,6 +62,22 @@ export default class Game extends Scene {
     if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
       this.userPlayer.jump()
     }
+    if (KeyListener.keyPressed('Delete')) {
+      Game.neat.players.forEach((player) => {
+        player.calculateFitness()
+      })
+      const fittest: any = Game.neat.neat.getFittest();
+      console.log(fittest)
+      const jsonString = JSON.stringify(fittest);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `score${Math.round(fittest.score * 10) / 10}`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+    }
 
     // option to end generation if player gets stuck
     if (KeyListener.keyPressed('KeyE')) {
@@ -110,7 +126,6 @@ export default class Game extends Scene {
     this.parkour.checkCollision(this.userPlayer);
     this.userPlayer.update(deltaTime);
     this.userPlayer.calculateFitness()
-    console.log(this.userPlayer.userFitness)
 
     if (!Game.extinct) {  
       this.alivePlayers.forEach((player) => {
