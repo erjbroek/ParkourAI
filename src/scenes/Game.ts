@@ -68,7 +68,6 @@ export default class Game extends Scene {
       })
       Game.neat.neat.sort()
       const fittest: any = Game.neat.neat.getFittest()
-      console.log(fittest)
       const jsonString = JSON.stringify(fittest);
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
