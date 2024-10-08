@@ -67,15 +67,14 @@ export default class Game extends Scene {
         player.calculateFitness()
       })
       Game.neat.neat.sort()
-      const fittest: any = Game.neat.neat.getFittest()
-      const jsonString = JSON.stringify(fittest);
-      const blob = new Blob([jsonString], { type: 'application/json' });
+      const populationJson = Game.neat.neat.export(); // Export the current population
+      const blob = new Blob([JSON.stringify(populationJson)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gen${Game.neat.neat.generation}_score${Math.round(Math.max(...Statistics.highscores))}`;
-      a.click();
-      URL.revokeObjectURL(url);
+      a.download = `gen${Game.neat.neat.generation}_${Math.round(Math.max(...Statistics.highscores))}.json`; // Name the download file
+      a.click(); // Trigger the download
+      URL.revokeObjectURL(url); // Clean up
 
     }
 
