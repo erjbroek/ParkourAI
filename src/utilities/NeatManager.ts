@@ -12,6 +12,8 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
+  public usePretrainedNetwork: boolean = true;
+
   public constructor() {
     this.neat = new neat.Neat(8, 4, null, {
       mutationRate: 0.4,
@@ -31,6 +33,9 @@ export default class NeatManager {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
     })
+    if (this.usePretrainedNetwork) {
+      
+    }
     this.players = []
     for (let i = 0; i < this.neat.popsize; i++) {
       this.players.push(new Player(i, true))
