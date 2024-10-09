@@ -4,7 +4,9 @@ import Player from '../objects/Player.js';
 import GUI from '../utilities/GUI.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import Statistics from '../scenes/Statistics.js';
-import networkJSON from '../jsonProgress/gen5_561.json';
+
+
+import networkJSON from '../jsonProgress/gen16_721.json';
 
 export default class NeatManager {
   public neat: any;
@@ -13,19 +15,19 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
-  public usePretrainedNetwork: boolean = true;
+  public static usePretrainedNetwork: boolean = true;
 
   public constructor() {
     this.neat = new neat.Neat(8, 4, null, {
       mutationRate: 0.4,
       mutationAmount: 1,
-      popsize: 1000,
-      elitism: 400
+      popsize: 2,
+      elitism: 1
     })
 
     const json = networkJSON;
 
-    if (this.usePretrainedNetwork) {
+    if (NeatManager.usePretrainedNetwork) {
       this.neat.population.forEach((network: any, index: number) => {
         this.neat.population[index] = Network.fromJSON(json[index])
       })
@@ -48,11 +50,6 @@ export default class NeatManager {
       this.players.push(new Player(i, true))
       this.players[i].brain = this.neat.population[i]
       this.players[i].brain.score = 0;
-
-      if (this.usePretrainedNetwork) {
-        // const json = JSON.stringify(networkJSON)
-        // this.players[i].brain = this.players[i].brain.fromJSON(json)
-      }
     }
   }
 

@@ -215,7 +215,6 @@ export default class Parkour {
         if (object.isCheckpoint) {
           if (object.boundingBox.intersectsBox(player.boundingBox) && levelIndex === 0) {
             player.currentLevel += 1;
-            player.deathTimer = player.deathTime;
 
             object.mesh.material = ParkourPieces.checkPointActive;
             const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
@@ -243,8 +242,8 @@ export default class Parkour {
 
             foundObject = { index: objectIndex, level: levelIndex, object: object };
 
-          } else if (player.boundingBox.min.x >= object.boundingBox.min.x && player.boundingBox.max.x <= object.boundingBox.max.x &&
-            player.boundingBox.min.z >= object.boundingBox.min.z && player.boundingBox.max.z <= object.boundingBox.max.z &&
+          } else if (player.boundingBox.max.x >= object.boundingBox.min.x && player.boundingBox.min.x <= object.boundingBox.max.x &&
+            player.boundingBox.max.z >= object.boundingBox.min.z && player.boundingBox.min.z <= object.boundingBox.max.z &&
             player.boundingBox.min.y >= object.boundingBox.max.y) {
             foundObject = { index: objectIndex, level: levelIndex, object: object };
           }

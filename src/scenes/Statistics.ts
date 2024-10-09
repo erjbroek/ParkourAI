@@ -1,5 +1,6 @@
 import MainCanvas from '../setup/MainCanvas.js';
 import GUI from '../utilities/GUI.js';
+import NeatManager from '../utilities/NeatManager.js';
 
 export default class Statistics {
   public static highscores: number[] = [];
@@ -10,7 +11,10 @@ export default class Statistics {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.35 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
-    const min: number = Math.min(...Statistics.highscores, ...Statistics.averageScores);
+    let min = 0;
+    if (!NeatManager.usePretrainedNetwork) {
+      min = Math.min(...Statistics.highscores, ...Statistics.averageScores);
+    }
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));
     const maxAverage: number = Math.ceil(Math.max(...Statistics.averageScores));
 
@@ -48,9 +52,9 @@ export default class Statistics {
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height, 100, 255, 100, 0.4, 2);
 
     // legenda
-    GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 + 10, 50, 15, 255, 100, 100, 1);
-    GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 + 40, 50, 15, 100, 255, 100, 1);
-    GUI.writeText(MainCanvas.canvas, 'Highscore', startPosition.x + dimensions.width * 0.2, startPosition.y + dimensions.height * 1.1 + 20, 'left', 'system-ui', 15, 'black');
-    GUI.writeText(MainCanvas.canvas, 'Average', startPosition.x + dimensions.width * 0.2, startPosition.y + dimensions.height * 1.1 + 50, 'left', 'system-ui', 15, 'black');
+    GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 + 10, window.innerWidth * 0.02, 15, 255, 100, 100, 1);
+    GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 + 40, window.innerWidth * 0.02, 15, 100, 255, 100, 1);
+    GUI.writeText(MainCanvas.canvas, 'Highscore', startPosition.x + window.innerWidth * 0.04, startPosition.y + dimensions.height * 1.1 + 20, 'left', 'system-ui', 15, 'black');
+    GUI.writeText(MainCanvas.canvas, 'Average', startPosition.x + window.innerWidth * 0.04, startPosition.y + dimensions.height * 1.1 + 50, 'left', 'system-ui', 15, 'black');
   }
 }
