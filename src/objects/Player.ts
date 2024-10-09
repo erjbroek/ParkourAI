@@ -166,21 +166,23 @@ export default class Player {
       if (this.index === 0 ) {
         // console.log(output)
       }
-      const outputZ = output[0] * 2 - 1;
-      const outputLeft = output[1];  
-      const outputRight = output[2]; 
-      const outputJump = output[3];
+      const outputForwards = output[0];
+      const outputBackwards = output[1];
+      const outputLeft = output[2];  
+      const outputRight = output[3]; 
+      const outputJump = output[4];
       
-      // if (outputZ > 0.5 || outputZ < -0.5) {
-        this.moveForwardBackward(outputZ);
-      // }
-      // if (outputLeft > 0.4) {
+
+        // this.moveForwardBackward(outputZ);
+        this.moveForward(outputForwards)
+        this.moveBackward(outputBackwards)
+
+
         this.moveLeft(outputLeft);
-      // }
-      // if (outputRight > 0.4) {
+
         this.moveRight(outputRight);
-      // }
-      if (outputJump > 0.5) {
+
+      if (outputJump > 0.99) {
         if (this.onGround) {
           this.jump()
         }
@@ -327,16 +329,30 @@ export default class Player {
       this.normalizeVelocity();
     }
 
+    public moveForward(amount: number) {
+      const speed = 4;
+
+      this.playerBody.velocity.z += amount * speed;
+      this.normalizeVelocity();
+    }
+
+    public moveBackward(amount: number) {
+      const speed = 4;
+
+      this.playerBody.velocity.z -= amount * speed;
+      this.normalizeVelocity();
+    }
+
   /**
    * moves player forwards or backwards based on player rotation
    * 
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveForwardBackward(amount: number) {
-    const speed = 2;
+    const speed = 4;
 
     // this.playerBody.velocity.x += amount * speed;
-    this.playerBody.velocity.z -= (amount * 2 - 1) * -speed;
+    this.playerBody.velocity.z -= amount * -speed;
     this.normalizeVelocity();
   }
 

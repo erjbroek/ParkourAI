@@ -20,7 +20,7 @@ export default class NeatManager {
   public static usePretrainedNetwork: boolean = false;
 
   public constructor() {
-    this.neat = new neat.Neat(8, 4, null, {
+    this.neat = new neat.Neat(8, 5, null, {
       mutationRate: 0.5,
       mutationAmount: 1,
       popsize: 1000,

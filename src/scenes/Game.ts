@@ -53,9 +53,9 @@ export default class Game extends Scene {
     if (KeyListener.isKeyDown('ArrowDown')) {
       this.userPlayer.moveForwardBackward(1)
     }
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.userPlayer.moveLeft(1)
-    }
+    // if (KeyListener.isKeyDown('ArrowLeft')) {
+    //   this.userPlayer.moveLeft(1)
+    // }
     if (KeyListener.isKeyDown('ArrowRight')) {
       this.userPlayer.moveRight(1)
     } 
