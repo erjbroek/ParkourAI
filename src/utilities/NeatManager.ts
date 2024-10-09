@@ -6,6 +6,7 @@ import MainCanvas from '../setup/MainCanvas.js';
 import Statistics from '../scenes/Statistics.js';
 
 
+// this is for a population of 1000 players
 import networkJSON from '../jsonProgress/gen16_721.json';
 
 export default class NeatManager {
@@ -21,8 +22,8 @@ export default class NeatManager {
     this.neat = new neat.Neat(8, 4, null, {
       mutationRate: 0.4,
       mutationAmount: 1,
-      popsize: 2,
-      elitism: 1
+      popsize: 1000,
+      elitism: 400
     })
 
     const json = networkJSON;

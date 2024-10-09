@@ -215,7 +215,7 @@ export default class Parkour {
         if (object.isCheckpoint) {
           if (object.boundingBox.intersectsBox(player.boundingBox) && levelIndex === 0) {
             player.currentLevel += 1;
-
+            player.deathTimer = player.deathTime
             object.mesh.material = ParkourPieces.checkPointActive;
             const objectHeight = object.boundingBox.max.y - object.boundingBox.min.y;
             player.spawnPoint = new THREE.Vector3(
