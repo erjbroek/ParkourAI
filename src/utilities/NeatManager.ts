@@ -7,7 +7,8 @@ import Statistics from '../scenes/Statistics.js';
 
 
 // this is for a population of 1000 players
-import networkJSON from '../jsonProgress/gen16_721.json';
+const generation = 0;
+import networkJSON from '../jsonProgress/gen70_843.json';
 
 export default class NeatManager {
   public neat: any;
@@ -16,19 +17,20 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
-  public static usePretrainedNetwork: boolean = true;
+  public static usePretrainedNetwork: boolean = false;
 
   public constructor() {
     this.neat = new neat.Neat(8, 4, null, {
-      mutationRate: 0.4,
+      mutationRate: 0.5,
       mutationAmount: 1,
       popsize: 1000,
       elitism: 400
     })
+    this.neat.generation = generation;
 
-    const json = networkJSON;
-
+    
     if (NeatManager.usePretrainedNetwork) {
+      const json = networkJSON;
       this.neat.population.forEach((network: any, index: number) => {
         this.neat.population[index] = Network.fromJSON(json[index])
       })

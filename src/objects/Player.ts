@@ -47,7 +47,7 @@ export default class Player {
 
   public speedTimer: number = 0;
 
-  public deathTime: number = 2;
+  public deathTime: number = 3;
 
   public deathTimer: number = 8;
 
@@ -126,8 +126,8 @@ export default class Player {
     this.obstacleCoordinations.next = new THREE.Vector3();
     nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.next);
 
-    this.obstacleCoordinations.next.subVectors(this.obstacleCoordinations.next, this.obstacleCoordinations.current)
     const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
+    this.obstacleCoordinations.next.subVectors(this.obstacleCoordinations.next, playerPosition)
     this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)
     const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)  
 
@@ -139,7 +139,7 @@ export default class Player {
       this.obstacleCoordinations.next.x,
       this.obstacleCoordinations.next.y,
       this.obstacleCoordinations.next.z,
-      // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals
+      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10
     ];
     
     const extremes: { max: number, min: number } = {
@@ -171,15 +171,15 @@ export default class Player {
       const outputRight = output[2]; 
       const outputJump = output[3];
       
-      if (outputZ > 0.4 || outputZ < -0.4) {
+      // if (outputZ > 0.5 || outputZ < -0.5) {
         this.moveForwardBackward(outputZ);
-      }
-      if (outputLeft > 0.3) {
+      // }
+      // if (outputLeft > 0.4) {
         this.moveLeft(outputLeft);
-      }
-      if (outputRight > 0.3) {
+      // }
+      // if (outputRight > 0.4) {
         this.moveRight(outputRight);
-      }
+      // }
       if (outputJump > 0.5) {
         if (this.onGround) {
           this.jump()
