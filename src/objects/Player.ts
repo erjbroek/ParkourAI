@@ -47,9 +47,9 @@ export default class Player {
 
   public speedTimer: number = 0;
 
-  public deathTime: number = 9;
+  public deathTime: number = 2;
 
-  public deathTimer: number = this.deathTime;
+  public deathTimer: number = 8;
 
   public highestObstacle: Obstacle = Parkour.levels[0][0];
 
