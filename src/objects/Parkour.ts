@@ -100,15 +100,15 @@ export default class Parkour {
     // level 5
     // this is the big level with lots of jumps to test the player
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.normal, -28, 8, -388),
-      this.createObstacle(ParkourPieces.normal, -24, 11, -400),
-      this.createObstacle(ParkourPieces.normal, -16, 14, -408),
-      this.createObstacle(ParkourPieces.normal, -4, 17, -412),
-      this.createObstacle(ParkourPieces.normal, 8, 20, -412),
-      this.createObstacle(ParkourPieces.normal, 20, 23, -408),
-      this.createObstacle(ParkourPieces.normal, 28, 26, -400),
-      this.createObstacle(ParkourPieces.normal, 32, 29, -388),
-      this.createObstacle(ParkourPieces.long1, 32, 29, -368, 0),
+      this.createObstacle(ParkourPieces.normal, -28, 8, -386),
+      this.createObstacle(ParkourPieces.normal, -28, 11, -400),
+      this.createObstacle(ParkourPieces.normal, -16, 14, -400),
+      this.createObstacle(ParkourPieces.normal, -4, 17, -400),
+      this.createObstacle(ParkourPieces.normal, 8, 20, -400),
+      this.createObstacle(ParkourPieces.normal, 20, 23, -400),
+      this.createObstacle(ParkourPieces.normal, 32, 26, -400),
+      this.createObstacle(ParkourPieces.normal, 32, 29, -386),
+      this.createObstacle(ParkourPieces.long1, 32, 29, -370, 0),
       this.createObstacle(ParkourPieces.platform, 32, 29, -344),
       this.createObstacle(ParkourPieces.checkPoint, 32, 35.51, -344)
     ]);

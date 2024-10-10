@@ -182,7 +182,7 @@ export default class Player {
 
         this.moveRight(outputRight);
 
-      if (outputJump > 0.99) {
+      if (outputJump > 0.5) {
         if (this.onGround) {
           this.jump()
         }
