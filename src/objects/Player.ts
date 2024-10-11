@@ -95,6 +95,9 @@ export default class Player {
       });
     }
 
+    this.currentLevel = 3;
+    this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);
+
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     this.mesh.castShadow = true;
     MainCanvas.world.addBody(this.playerBody);
