@@ -80,7 +80,7 @@ export default class Player {
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
       this.currentLevel = level;
-      MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
+      // MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
     } else {
       // sets it to start
       this.playerBody = new CANNON.Body({
