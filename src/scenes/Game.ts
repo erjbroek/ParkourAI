@@ -38,7 +38,7 @@ export default class Game extends Scene {
     super();
     this.parkour.generateParkour();
     Game.neat = new NeatManager()
-    this.userPlayer = new Player(0, false);
+    this.userPlayer = new Player(0, false, 0);
 
     this.alivePlayers = Game.neat.players;
   }

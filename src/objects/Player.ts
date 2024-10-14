@@ -61,7 +61,7 @@ export default class Player {
 
   public currentPlatform: number = 0;
 
-  public constructor(index: number, ai: boolean) {
+  public constructor(index: number, ai: boolean, level: number = 0) {
     this.ai = ai;
     this.index = index;
     if (this.index == 0) {
@@ -69,8 +69,6 @@ export default class Player {
     }
 
     // used to set player spawnpoint
-    let level: number | null;
-    level = 0
 
     if (level) {
       this.playerBody = new CANNON.Body({
@@ -94,9 +92,6 @@ export default class Player {
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
     }
-
-    this.currentLevel = 3;
-    this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);
 
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     this.mesh.castShadow = true;
