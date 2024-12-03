@@ -69,7 +69,6 @@ export default class Player {
     // used to set player spawnpoint
     let level: number | null;
     level = 0
-    // 15 16 17
 
     if (level) {
       this.playerBody = new CANNON.Body({
@@ -165,28 +164,96 @@ export default class Player {
   public updateMovement(deltaTime: number) {
     if (this.ai) {
       const output = this.brain.activate(this.inputValues);
-      if (this.index === 0 ) {
-        // console.log(output)
-      }
       const outputForwards = output[0];
       const outputBackwards = output[1];
       const outputLeft = output[2];  
       const outputRight = output[3]; 
       const outputJump = output[4];
+      if (this.ai) {
+        const inputNodes = this.brain.nodes.filter((node: any) => node.type === 'input');
+        const hiddenNodes = this.brain.nodes.filter((node: any) => node.type === 'hidden');
+        const outputNodes = this.brain.nodes.filter((node: any) => node.type === 'output');
+        if (Game.colorMode == 0) {
+          const material = this.mesh.material as THREE.MeshLambertMaterial;
+          material.color.setRGB(0 / 255, 100 / 255, 255 / 255);
+          material.emissive.setRGB(0, 0, 0);
+        } else if (Game.colorMode == 1) {
+          const material = this.mesh.material as THREE.MeshLambertMaterial;
+          material.color.setRGB(0 / 255, 0 / 255, 0 / 255);
+        
+          const energy = outputForwards + outputBackwards + outputLeft + outputRight + outputJump;
+          const normalizedEnergy = Math.min(energy / 5, 1);
+        
+          const meshMaterial = this.mesh.material as THREE.MeshStandardMaterial;
+          meshMaterial.emissive.setRGB(normalizedEnergy, normalizedEnergy * 0.5, 0);
+          meshMaterial.emissiveIntensity = normalizedEnergy;
+        } else if (Game.colorMode == 2) {
+          const forwardBackward = outputForwards - outputBackwards;
+          const colorValue = forwardBackward;
+          const material = this.mesh.material as THREE.MeshLambertMaterial;
+          material.color.setRGB(colorValue, 0, 0 - colorValue);
+          material.emissive.setRGB(0, 0, 0);
+        } else if (Game.colorMode == 3) {
+          const leftRight = outputLeft - outputRight;
+          const colorValue = leftRight;
+          const material = this.mesh.material as THREE.MeshLambertMaterial;
+          material.color.setRGB(0, colorValue, 0 - colorValue);
+          material.emissive.setRGB(0, 0, 0);
+          // (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(1, 1, 1);
+        } else if (Game.colorMode == 4) {
+          const X = 4;
+          const connections = [];
+          for (let i = 0; i < this.brain.connections.length; i += 1) {
+            connections.push(...this.brain.connections.slice(i, i + 1));
+            if (connections.length >= X) break;
+          }
+          let r = 0;
+          let g = 0;
+          let b = 0;
+          connections.forEach((connection, index) => {
+            const weight = connection.weight;
+            if (index < 1) {
+              r += weight * 0.4;
+            }
+            if (index >= 1 && index < 2) {
+              g += weight * 0.4;
+            }
+            if (index >= 2 && index < 4) {
+              b += weight * 0.4;
+            }}
+          );
+          r = Math.min(Math.max(r / X, 0), 1);
+          g = Math.min(Math.max(g / X, 0), 1);
+          b = Math.min(Math.max(b / X, 0), 1);
+          (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(r, g, b);
+        } else if (Game.colorMode == 5) {
+          const forwardBackward = outputForwards - outputBackwards;
+          const leftRight = outputRight - outputLeft;
+          const jumpEffect = outputJump * 0.5;
+          const meshMaterial = this.mesh.material as THREE.MeshStandardMaterial;
+
+          (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(
+            Math.abs(forwardBackward),
+            Math.abs(leftRight),
+            jumpEffect
+          ); 
+        } else if (Game.colorMode == 6) {
+        } else if (Game.colorMode == 7) {
+        } else if (Game.colorMode == 8) {
+        } else if (Game.colorMode == 9) {
+        } else if (Game.colorMode == 10) {
+          const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+          const wireframeMesh = new THREE.Mesh(this.mesh.geometry, wireframeMaterial);
+          this.mesh.add(wireframeMesh);
+        }
+      }
       
-      const forwardBackward = outputForwards - outputBackwards;
-      const colorValue = (forwardBackward); 
-      (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(colorValue, 0, 0 - colorValue);
       
+      this.moveForward(outputForwards)
+      this.moveBackward(outputBackwards)
 
-        // this.moveForwardBackward(outputZ);
-        this.moveForward(outputForwards)
-        this.moveBackward(outputBackwards)
-
-
-        this.moveLeft(outputLeft);
-
-        this.moveRight(outputRight);
+      this.moveLeft(outputLeft);
+      this.moveRight(outputRight);
 
       if (outputJump > 0.5) {
         if (this.onGround) {

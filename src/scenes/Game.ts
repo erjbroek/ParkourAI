@@ -30,6 +30,8 @@ export default class Game extends Scene {
   
   public static neat: any;
 
+  public static colorMode: number = 0;
+
   public userPlayer: Player;
 
   public statistics: Statistics = new Statistics();
@@ -81,6 +83,18 @@ export default class Game extends Scene {
     // option to end generation if player gets stuck
     if (KeyListener.keyPressed('KeyE')) {
       Game.neat.endGeneration();
+    }
+    if (KeyListener.keyPressed('Digit1')) {
+      if (Game.colorMode < 10) {
+        Game.colorMode++;
+        console.log(Game.colorMode)
+      }
+    }
+    if (KeyListener.keyPressed('Digit2')) {
+      if (Game.colorMode > 0) {
+        Game.colorMode--
+        console.log(Game.colorMode)
+      }
     }
     // animates button based on player action
     if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
@@ -180,7 +194,7 @@ export default class Game extends Scene {
     }
     GUI.writeText(canvas, `Alive: ${Math.round(this.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.84, 'center', 'system-ui', 20, 'black');
     GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.2, canvas.height * 0.81, 'center', 'system-ui', 20, 'black');
-
+    GUI.writeText(canvas, Game.colorMode.toString(), canvas.width * 0.2, canvas.height * 0.78, 'center', 'system-ui', 20, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
       this.editor.render(canvas)

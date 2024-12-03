@@ -27,7 +27,7 @@ export default class NeatManager {
       elitism: 400
     })
     this.neat.generation = generation;
-    
+
     
     if (NeatManager.usePretrainedNetwork) {
       const json = networkJSON;
