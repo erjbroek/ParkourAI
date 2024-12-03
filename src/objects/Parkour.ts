@@ -51,6 +51,36 @@ export default class Parkour {
     ]
     );
 
+    // Parkour.levels.push([
+    //   this.createObstacle(ParkourPieces.long2, 0, 0, -72),
+    //   this.createObstacle(ParkourPieces.normal, 0, 0, -90),
+    //   this.createObstacle(ParkourPieces.normal, 0, 0, -100),
+    //   this.createObstacle(ParkourPieces.normal, 0, 0, -110),
+    //   this.createObstacle(ParkourPieces.normal, 0, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, 10, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, 20, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, 30, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, 40, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, 40, 0, -130),
+    //   this.createObstacle(ParkourPieces.normal, 40, 0, -140),
+    //   this.createObstacle(ParkourPieces.normal, 40, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, 30, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, 20, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, 10, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, 0, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, -10, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, -20, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -150),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -140),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -130),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -120),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -110),
+    //   this.createObstacle(ParkourPieces.normal, -30, 0, -100),
+    //   this.createObstacle(ParkourPieces.normal, -40, 0, -100),
+    //   this.createObstacle(ParkourPieces.normal, -50, 0, -100),
+
+    // ])
+
     // level 1
     Parkour.levels.push([
       this.createObstacle(ParkourPieces.long2, 0, 0, -72),
@@ -176,18 +206,21 @@ export default class Parkour {
       this.createObstacle(ParkourPieces.checkPoint, 340, 16.51, 36)
     ]);
 
+    for(let i = 0; i < Parkour.levels.length; i++) {
+      this.renderParkour(Parkour.levels[i]);
+    }
 
-    this.renderParkour(Parkour.levels[0]);
-    this.renderParkour(Parkour.levels[1]);
-    this.renderParkour(Parkour.levels[2]);
-    this.renderParkour(Parkour.levels[3]);
-    this.renderParkour(Parkour.levels[4]);
-    this.renderParkour(Parkour.levels[5]);
-    this.renderParkour(Parkour.levels[6]);
-    this.renderParkour(Parkour.levels[7]);
-    this.renderParkour(Parkour.levels[8]);
-    this.renderParkour(Parkour.levels[9]);
-    this.renderParkour(Parkour.levels[10]);
+    // this.renderParkour(Parkour.levels[0]);
+    // this.renderParkour(Parkour.levels[1]);
+    // this.renderParkour(Parkour.levels[2]);
+    // this.renderParkour(Parkour.levels[3]);
+    // this.renderParkour(Parkour.levels[4]);
+    // this.renderParkour(Parkour.levels[5]);
+    // this.renderParkour(Parkour.levels[6]);
+    // this.renderParkour(Parkour.levels[7]);
+    // this.renderParkour(Parkour.levels[8]);
+    // this.renderParkour(Parkour.levels[9]);
+    // this.renderParkour(Parkour.levels[10]);
   }
 
 /**

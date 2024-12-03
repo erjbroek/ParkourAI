@@ -61,14 +61,15 @@ export default class Player {
 
   public currentPlatform: number = 0;
 
-  public constructor(index: number, ai: boolean, level: number = 0) {
-    this.ai = ai;
+  public constructor(index: number, ai: boolean, brain: any) {
     this.index = index;
-    if (this.index == 0) {
-      this.mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0xaaffff }));
-    }
-
+    this.ai = ai;
+    this.brain = brain;
+    
     // used to set player spawnpoint
+    let level: number | null;
+    level = 0
+    // 15 16 17
 
     if (level) {
       this.playerBody = new CANNON.Body({
@@ -80,7 +81,7 @@ export default class Player {
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
       this.currentLevel = level;
-      // MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
+      MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
     } else {
       // sets it to start
       this.playerBody = new CANNON.Body({
@@ -92,6 +93,9 @@ export default class Player {
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
     }
+
+    // this.currentLevel = 3;
+    // this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);
 
     const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
     this.mesh.castShadow = true;
@@ -169,6 +173,10 @@ export default class Player {
       const outputLeft = output[2];  
       const outputRight = output[3]; 
       const outputJump = output[4];
+      
+      const forwardBackward = outputForwards - outputBackwards;
+      const colorValue = (forwardBackward); 
+      (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(colorValue, 0, 0 - colorValue);
       
 
         // this.moveForwardBackward(outputZ);

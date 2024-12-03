@@ -1,6 +1,4 @@
 import * as neat from 'neataptic';
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
 import { Network } from 'neataptic';
 import Player from '../objects/Player.js';
 import GUI from '../utilities/GUI.js';
@@ -29,7 +27,7 @@ export default class NeatManager {
       elitism: 400
     })
     this.neat.generation = generation;
-
+    
     
     if (NeatManager.usePretrainedNetwork) {
       const json = networkJSON;
@@ -45,24 +43,16 @@ export default class NeatManager {
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
-    const playersCopy = this.players;
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
     })
 
     this.players = []
-    const newPlayers = []
     for (let i = 0; i < this.neat.popsize; i++) {
-      if (this.neat.generation === 0) {
-        newPlayers.push(new Player(i, true, 0))
-      } else {
-        newPlayers.push(new Player(i, true, playersCopy[i].currentLevel))
-      }
-      newPlayers[i].brain = this.neat.population[i]
-      newPlayers[i].brain.score = 0;
+      this.players.push(new Player(i, true, this.neat.population[i]))
+      this.players[i].brain.score = 0;
     }
-    this.players = newPlayers
   }
 
   /**
