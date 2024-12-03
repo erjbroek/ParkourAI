@@ -84,13 +84,13 @@ export default class Game extends Scene {
     if (KeyListener.keyPressed('KeyE')) {
       Game.neat.endGeneration();
     }
-    if (KeyListener.keyPressed('Digit1')) {
+    if (KeyListener.keyPressed('Digit2')) {
       if (Game.colorMode < 10) {
-        Game.colorMode++;
+        Game.colorMode++
         console.log(Game.colorMode)
       }
     }
-    if (KeyListener.keyPressed('Digit2')) {
+    if (KeyListener.keyPressed('Digit1')) {
       if (Game.colorMode > 0) {
         Game.colorMode--
         console.log(Game.colorMode)
@@ -194,12 +194,16 @@ export default class Game extends Scene {
     }
     GUI.writeText(canvas, `Alive: ${Math.round(this.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.53, 'center', 'system-ui', 20, 'black');
     GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.05, 'center', 'system-ui', 40, 'black');
-    GUI.writeText(canvas, Game.colorMode.toString(), canvas.width * 0.2, canvas.height * 0.78, 'center', 'system-ui', 20, 'black');
+    GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
-    if (this.openEditor) {
+    if (this.openEditor) { 
       this.editor.render(canvas)
     } else {
       this.statistics.renderPerformance();
+      const bestPlayer = this.alivePlayers.reduce((prev, current) => 
+        (prev.brain.score > current.brain.score) ? prev : current
+      );
+      Statistics.renderOutput(bestPlayer);
     }
   }
 }

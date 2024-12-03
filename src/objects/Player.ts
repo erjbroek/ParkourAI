@@ -8,6 +8,7 @@ import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import Game from '../scenes/Game.js';
 import * as neat from 'neataptic';
+import Statistics from '../scenes/Statistics.js';
 
 
 const PLAYER_GROUP = 1 << 0; // 0001
