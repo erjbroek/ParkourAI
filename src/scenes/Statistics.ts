@@ -8,7 +8,7 @@ export default class Statistics {
   public static averageScores: number[] = [];
 
   public renderPerformance(): void {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.35 };
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.03 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
     let min = 0;
@@ -32,9 +32,9 @@ export default class Statistics {
         GUI.writeText(MainCanvas.canvas, `${Math.round(min + i * (max - min) / numGridLines)}`, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.1, 'center', 'system-ui', 15, 'black');
       }
     }
-    GUI.writeText(MainCanvas.canvas, 'Score', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 0.55, 'center', 'system-ui', 15, 'black');
+    GUI.writeText(MainCanvas.canvas, 'Score', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height / 1.8, 'center', 'system-ui', 15, 'black');
     GUI.writeText(MainCanvas.canvas, 'Generation', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height + 20, 'center', 'system-ui', 15, 'black');
-
+    
     // next rendering average scores and highscores
     Statistics.highscores.forEach((score: number, index: number) => {
       if (index > 0) {

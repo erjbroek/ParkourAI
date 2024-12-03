@@ -183,7 +183,7 @@ export default class Game extends Scene {
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
-    Game.neat.renderNetwork(canvas, Game.neat.neat.getFittest());
+    // Game.neat.renderNetwork(canvas, Game.neat.neat.getFittest());
 
     if (this.clickEditor) {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
@@ -192,8 +192,8 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
-    GUI.writeText(canvas, `Alive: ${Math.round(this.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.84, 'center', 'system-ui', 20, 'black');
-    GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.2, canvas.height * 0.81, 'center', 'system-ui', 20, 'black');
+    GUI.writeText(canvas, `Alive: ${Math.round(this.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.53, 'center', 'system-ui', 20, 'black');
+    GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.05, 'center', 'system-ui', 40, 'black');
     GUI.writeText(canvas, Game.colorMode.toString(), canvas.width * 0.2, canvas.height * 0.78, 'center', 'system-ui', 20, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) {
