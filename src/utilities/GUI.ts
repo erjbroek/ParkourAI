@@ -129,6 +129,37 @@ export default class GUI {
     ctx.restore();
   }
 
+    /**
+   * Draw a rectangle outline with optional border radius to the canvas
+   *
+   * @param canvas the canvas to draw to
+   * @param dx the x-coordinate of the rectangle's top-left corner
+   * @param dy the y-coordinate of the rectangle's top-left corner
+   * @param width the width of the rectangle
+   * @param height the height of the rectangle
+   * @param red is the red color value of the rectangle
+   * @param green is the green color value of the rectangle
+   * @param blue is the blue color value of the rectangle
+   * @param opacity is the opacity of the rectangle
+   * @param lineWidth is the width of the border
+   * @param borderRadius is the border radius of the rectangle
+   */
+    public static drawRectangle(canvas: HTMLCanvasElement, dx: number, dy: number, width: number, height: number, red: number = 255, green: number = 255, blue: number = 255, opacity: number = 1, lineWidth: number = 1, borderRadius: number = 0): void {
+      const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(canvas);
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+      ctx.lineWidth = lineWidth;
+  
+      ctx.moveTo(dx + borderRadius, dy);
+      ctx.arcTo(dx + width, dy, dx + width, dy + height, borderRadius);
+      ctx.arcTo(dx + width, dy + height, dx, dy + height, borderRadius);
+      ctx.arcTo(dx, dy + height, dx, dy, borderRadius);
+      ctx.arcTo(dx, dy, dx + borderRadius, dy, borderRadius);
+  
+      ctx.closePath();
+      ctx.stroke();
+    }
+
   /**
  * Draw a filled circle on the canvas
  *

@@ -55,9 +55,9 @@ export default class Game extends Scene {
     if (KeyListener.isKeyDown('ArrowDown')) {
       this.userPlayer.moveForwardBackward(1)
     }
-    // if (KeyListener.isKeyDown('ArrowLeft')) {
-    //   this.userPlayer.moveLeft(1)
-    // }
+    if (KeyListener.isKeyDown('ArrowLeft')) {
+      this.userPlayer.moveLeft(1)
+    }
     if (KeyListener.isKeyDown('ArrowRight')) {
       this.userPlayer.moveRight(1)
     } 
@@ -203,7 +203,7 @@ export default class Game extends Scene {
       if (!Game.extinct) {
         const bestPlayer = this.alivePlayers.reduce((prev, current) => 
           (prev.brain.score > current.brain.score) ? prev : current
-      );
+        );
       Statistics.renderOutput(bestPlayer);
     }
     }
