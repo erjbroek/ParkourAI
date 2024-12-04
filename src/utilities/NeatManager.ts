@@ -1,4 +1,5 @@
 import * as neat from 'neataptic';
+import * as THREE from 'three';
 import { Network } from 'neataptic';
 import Player from '../objects/Player.js';
 import GUI from '../utilities/GUI.js';
@@ -19,6 +20,11 @@ export default class NeatManager {
 
   public static usePretrainedNetwork: boolean = false;
 
+  public recordPylon: THREE.Mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.4, 1.2, 1000, 32),
+    new THREE.MeshBasicMaterial({ color: 0x00ff0f, transparent: true, opacity: 0.2 })
+  );
+
   public constructor() {
     this.neat = new neat.Neat(8, 5, null, {
       mutationRate: 0.3,
@@ -36,13 +42,20 @@ export default class NeatManager {
       })
     } 
     this.initializePopulation()
-      
+    console.log(this.neat.generation)
   }
 
   /**
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
+    if (this.neat.generation > 0) {
+      const bestPlayer = this.players.reduce((prev, current) => (prev.brain.score > current.brain.score) ? prev : current);
+      MainCanvas.scene.remove(this.recordPylon);
+      this.recordPylon.position.set(bestPlayer.mesh.position.x, bestPlayer.mesh.position.y + 500, bestPlayer.mesh.position.z);
+      MainCanvas.scene.add(this.recordPylon);
+    }
+
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
