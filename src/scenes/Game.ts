@@ -200,10 +200,12 @@ export default class Game extends Scene {
       this.editor.render(canvas)
     } else {
       this.statistics.renderPerformance();
-      const bestPlayer = this.alivePlayers.reduce((prev, current) => 
-        (prev.brain.score > current.brain.score) ? prev : current
+      if (!Game.extinct) {
+        const bestPlayer = this.alivePlayers.reduce((prev, current) => 
+          (prev.brain.score > current.brain.score) ? prev : current
       );
       Statistics.renderOutput(bestPlayer);
+    }
     }
   }
 }

@@ -63,7 +63,8 @@ export default class Statistics {
   public static renderOutput(best_player: Player): void {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.58 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
-
+    const bottom = startPosition.y + dimensions.height * 0.8
+    
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 0, 0, 0, 0.2, 10);
     const output = best_player.brain.activate(best_player.inputValues);
     const outputForwards = output[0];
@@ -71,6 +72,12 @@ export default class Statistics {
     const outputLeft = output[2];  
     const outputRight = output[3]; 
     const outputJump = output[4];
-    GUI.writeText(MainCanvas.canvas, `Forwards: ${Math.round(outputForwards * 100)}%`, startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height / 2 - 50, 'center', 'system-ui', 20, 'black');
+    const max_height = dimensions.height / 2
+    const width = dimensions.width * 0.15
+    const output_classes = ['Forward', 'Back', 'Left', 'Right', 'Jump']
+    for (let i = 0; i < 5; i++){
+      GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05 + width * 1.2 * i, bottom - max_height * output[i], width, max_height * output[i], 255, 255, 255, 1, 0, 0)
+      GUI.writeText(MainCanvas.canvas, output_classes[i], startPosition.x + dimensions.width * 0.05 + width * 1.2 * i, startPosition.y + dimensions.height * 0.9, 'left', 'system-ui', 20, 'white')
+    }
   }
 }

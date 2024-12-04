@@ -44,7 +44,7 @@ export default class MainCanvas {
 
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
-    MainCanvas.camera.position.set(5, 11, 36);
+    MainCanvas.camera.position.set(5, 18, 45);
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
     MainCanvas.renderer.shadowMap.enabled = true;
     MainCanvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
