@@ -64,20 +64,20 @@ export default class Statistics {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.58 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const bottom = startPosition.y + dimensions.height * 0.8
-    
-    GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 0, 0, 0, 0.2, 10);
-    const output = best_player.brain.activate(best_player.inputValues);
-    const outputForwards = output[0];
-    const outputBackwards = output[1];
-    const outputLeft = output[2];  
-    const outputRight = output[3]; 
-    const outputJump = output[4];
     const max_height = dimensions.height / 2
     const width = dimensions.width * 0.15
+    
+    GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 0, 0, 0, 0.2, 10);
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom, startPosition.x + dimensions.width * 0.05 + width * 1.2 * 5, bottom, 0, 0, 0, 0.5, 2)
+    GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom - max_height, dimensions.width * 0.05 + width * 1.2 * 4.72, max_height, 0, 0, 0, 0.15, 10)
+    
+    const output = best_player.brain.activate(best_player.inputValues);
     const output_classes = ['Forward', 'Back', 'Left', 'Right', 'Jump']
     for (let i = 0; i < 5; i++){
       GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05 + width * 1.2 * i, bottom - max_height * output[i], width, max_height * output[i], 255, 255, 255, 1, 0, 0)
       GUI.writeText(MainCanvas.canvas, output_classes[i], startPosition.x + dimensions.width * 0.05 + width * 1.2 * i, startPosition.y + dimensions.height * 0.9, 'left', 'system-ui', 20, 'white')
+      GUI.writeText(MainCanvas.canvas, `${Math.round(output[i] * 1000) / 10}%`, startPosition.x + dimensions.width * 0.07 + width * 1.2 * i, startPosition.y + dimensions.height * 0.25, 'left', 'system-ui', 20, 'white')
     }
+
   }
 }
