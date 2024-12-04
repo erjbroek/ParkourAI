@@ -119,7 +119,9 @@ export default class Player {
         this.killPlayer()
       }
     }
-
+    if (this.ai) {
+      this.calculateFitness()
+    }
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
 
@@ -247,6 +249,14 @@ export default class Player {
           const wireframeMesh = new THREE.Mesh(this.mesh.geometry, wireframeMaterial);
           this.mesh.add(wireframeMesh);
         }
+
+        const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
+          (prev.brain.score > current.brain.score) ? prev : current
+        );
+        if (this.brain == bestPlayer.brain) {
+          const material = this.mesh.material as THREE.MeshLambertMaterial;
+          material.color.setRGB(1, 0, 0);
+        }
       }
       
       
@@ -360,7 +370,7 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      this.brain.score += this.currentLevel * 40
+      this.brain.score += this.currentLevel * 10
       this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
     } else {
       this.userFitness = 0;

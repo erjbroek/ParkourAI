@@ -24,7 +24,7 @@ export default class Game extends Scene {
 
   public parkour: Parkour = new Parkour();
 
-  public alivePlayers: Player[] = []
+  public static alivePlayers: Player[] = []
 
   public static extinct: boolean = false;
   
@@ -42,7 +42,7 @@ export default class Game extends Scene {
     Game.neat = new NeatManager()
     this.userPlayer = new Player(0, false);
 
-    this.alivePlayers = Game.neat.players;
+    Game.alivePlayers = Game.neat.players;
   }
 
   /**
@@ -130,8 +130,8 @@ export default class Game extends Scene {
     if (!Game.extinct) {
       this.updateLight();
     }
-    this.alivePlayers = Game.neat.players.filter(player => player.alive);
-    Game.extinct = this.alivePlayers.length === 0;
+    Game.alivePlayers = Game.neat.players.filter(player => player.alive);
+    Game.extinct = Game.alivePlayers.length === 0;
 
 
     this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
@@ -141,7 +141,7 @@ export default class Game extends Scene {
     this.userPlayer.calculateFitness()
 
     if (!Game.extinct) {  
-      this.alivePlayers.forEach((player) => {
+      Game.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);
         player.mesh.quaternion.copy(player.playerBody.quaternion);
         
@@ -161,7 +161,7 @@ export default class Game extends Scene {
   }
 
   public updateLight() {
-    const bestPlayer = this.alivePlayers.reduce((prev, current) => 
+    const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
       (prev.brain.score > current.brain.score) ? prev : current
     );
 
@@ -192,7 +192,7 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
-    GUI.writeText(canvas, `Alive: ${Math.round(this.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.53, 'center', 'system-ui', 20, 'black');
+    GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.53, 'center', 'system-ui', 20, 'black');
     GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.05, 'center', 'system-ui', 40, 'black');
     GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
@@ -201,11 +201,12 @@ export default class Game extends Scene {
     } else {
       this.statistics.renderPerformance();
       if (!Game.extinct) {
-        const bestPlayer = this.alivePlayers.reduce((prev, current) => 
+        const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
           (prev.brain.score > current.brain.score) ? prev : current
         );
-      Statistics.renderOutput(bestPlayer);
-    }
+        console.log(bestPlayer.brain.score)
+        Statistics.renderOutput(bestPlayer);
+      }
     }
   }
 }
