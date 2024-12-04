@@ -71,7 +71,10 @@ export default class Statistics {
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom - max_height, dimensions.width * 0.05 + width * 1.2 * 4.72, max_height, 0, 0, 0, 0.15, 10)
     GUI.writeText(MainCanvas.canvas, 'Neural network outputs', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.1, 'center', 'system-ui', 22, 'white', 300)
     
-    const output = best_player.brain.activate(best_player.inputValues);
+    let output = best_player.brain.activate(best_player.inputValues);
+    const max = Math.max(...output);
+    const min = Math.min(...output);
+    output = output.map(value => (value - min) / (max - min));
     const output_classes = ['Forward', 'Back', 'Left', 'Right', 'Jump']
     const highest_output = Math.max(output[0], output[1], output[2], output[3], output[4])
     for (let i = 0; i < 5; i++){

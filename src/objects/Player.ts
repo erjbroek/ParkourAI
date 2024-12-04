@@ -163,19 +163,43 @@ export default class Player {
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
-
+  
   public updateMovement(deltaTime: number) {
     if (this.ai) {
-      const output = this.brain.activate(this.inputValues);
+      let output = this.brain.activate(this.inputValues);
+      const max = Math.max(...output);
+      const min = Math.min(...output);
+      output = output.map(value => (value - min) / (max - min));
+
       const outputForwards = output[0];
       const outputBackwards = output[1];
       const outputLeft = output[2];  
       const outputRight = output[3]; 
       const outputJump = output[4];
+      
+
+      output.forEach((value, index) => {
+        if (value > 1 || value < 0) {
+          console.log(`Output ${index}: ${value}`);
+        }
+      });
+      
+      
+      this.moveForward(outputForwards)
+      this.moveBackward(outputBackwards)
+      this.moveLeft(outputLeft);
+      this.moveRight(outputRight);
+    
+      if (outputJump > 0.5) {
+        if (this.onGround) {
+          this.jump()
+        }
+      }
+
       if (this.ai) {
-        const inputNodes = this.brain.nodes.filter((node: any) => node.type === 'input');
-        const hiddenNodes = this.brain.nodes.filter((node: any) => node.type === 'hidden');
-        const outputNodes = this.brain.nodes.filter((node: any) => node.type === 'output');
+        // const inputNodes = this.brain.nodes.filter((node: any) => node.type === 'input');
+        // const hiddenNodes = this.brain.nodes.filter((node: any) => node.type === 'hidden');
+        // const outputNodes = this.brain.nodes.filter((node: any) => node.type === 'output');
         if (Game.colorMode == 0) {
           const material = this.mesh.material as THREE.MeshLambertMaterial;
           material.color.setRGB(0 / 255, 100 / 255, 255 / 255);
@@ -256,19 +280,6 @@ export default class Player {
         if (this.brain == bestPlayer.brain) {
           const material = this.mesh.material as THREE.MeshLambertMaterial;
           material.color.setRGB(1, 0, 0);
-        }
-      }
-      
-      
-      this.moveForward(outputForwards)
-      this.moveBackward(outputBackwards)
-
-      this.moveLeft(outputLeft);
-      this.moveRight(outputRight);
-
-      if (outputJump > 0.5) {
-        if (this.onGround) {
-          this.jump()
         }
       }
     }
@@ -416,14 +427,14 @@ export default class Player {
     public moveForward(amount: number) {
       const speed = 4;
 
-      this.playerBody.velocity.z += amount * speed;
+      this.playerBody.velocity.z -= amount * speed;
       this.normalizeVelocity();
     }
 
     public moveBackward(amount: number) {
       const speed = 4;
 
-      this.playerBody.velocity.z -= amount * speed;
+      this.playerBody.velocity.z += amount * speed;
       this.normalizeVelocity();
     }
 

@@ -204,7 +204,6 @@ export default class Game extends Scene {
         const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
           (prev.brain.score > current.brain.score) ? prev : current
         );
-        console.log(bestPlayer.brain.score)
         Statistics.renderOutput(bestPlayer);
       }
     }
