@@ -1,7 +1,9 @@
 import Player from '../objects/Player.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import GUI from '../utilities/GUI.js';
+import MouseListener from '../utilities/MouseListener.js';
 import NeatManager from '../utilities/NeatManager.js';
+import UICollision from '../utilities/UICollision.js';
 import Game from './Game.js';
 
 export default class Statistics {
@@ -12,6 +14,36 @@ export default class Statistics {
   public static checkpointsReached: number[] = []
 
   public static previousCheckpointsReached: number[] = []
+
+  private visualisation: number = 0;
+
+  public procesInput(): void {
+
+  }
+
+  public chooseVisualisation(): void {
+    const width = window.innerWidth * 0.1 / 4;
+
+
+    for (let i = 0; i < 2; i++) {
+      if (UICollision.checkCollision(window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035)) {
+        GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+        if (MouseListener.isButtonDown(0)) {
+          GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 255, 255, 255, 0.4, 3);
+          this.visualisation = i;
+        }
+      }
+      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, i * width * 1.1 + window.innerWidth * 0.032, window.innerHeight * 0.04 + window.innerHeight * 0.023, 'center', 'system-ui', 15, 'black');
+    }
+
+
+    if (this.visualisation == 0) {
+      this.renderPerformance();
+    } else if (this.visualisation == 1) {
+      this.renderProgression();
+    }
+  }
 
   public renderPerformance(): void {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.04 };

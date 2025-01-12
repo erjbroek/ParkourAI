@@ -22,4 +22,16 @@ export default class UICollision {
     } 
     return false;
   }
+
+  public static checkCollision(posX: number, posY: number, width: number, height: number): boolean {
+    if (
+      MouseListener.x2 > posX &&
+      MouseListener.x2 < posX + width &&
+      MouseListener.y2 > posY &&
+      MouseListener.y2 < posY + height
+    ) {
+      return true;
+    }
+    return false;
+  }
 }
