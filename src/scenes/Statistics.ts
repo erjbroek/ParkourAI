@@ -24,17 +24,16 @@ export default class Statistics {
   public chooseVisualisation(): void {
     const width = window.innerWidth * 0.1 / 4;
 
-
     for (let i = 0; i < 2; i++) {
-      if (UICollision.checkCollision(window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035)) {
-        GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+      if (UICollision.checkCollision(window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035)) {
+        GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
         if (MouseListener.isButtonDown(0)) {
-          GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 255, 255, 255, 0.4, 3);
+          GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 255, 255, 255, 0.4, 3);
           this.visualisation = i;
         }
       }
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.02 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, i * width * 1.1 + window.innerWidth * 0.032, window.innerHeight * 0.04 + window.innerHeight * 0.023, 'center', 'system-ui', 15, 'black');
+      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, i * width * 1.1 + window.innerWidth * 0.262, window.innerHeight * 0.04 + window.innerHeight * 0.023, 'center', 'system-ui', 15, 'black');
     }
 
 
@@ -49,6 +48,8 @@ export default class Statistics {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.04 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
+
+    
     let min = 0;
     if (!NeatManager.usePretrainedNetwork) {
       min = Math.min(...Statistics.highscores, ...Statistics.averageScores);
@@ -58,14 +59,14 @@ export default class Statistics {
 
     // first rendering graph itself
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2, 10);
-    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 1.1, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 2, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height, 255, 255, 255, 1);
 
     // render gridlines and axis
     const numGridLines: number = 5;
     for (let i = 0; i <= numGridLines; i++) {
-      GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.1, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.1, 255, 255, 255, 0.2);
-      GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + i * dimensions.width * 0.8 / numGridLines, startPosition.y * 1.1, startPosition.x + dimensions.width * 0.1 + i * dimensions.width * 0.8 / numGridLines, startPosition.y + dimensions.height, 255, 255, 255, 0.2);
+      GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.115, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.115, 255, 255, 255, 0.2);
+      GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + i * dimensions.width * 0.8 / numGridLines, startPosition.y * 2, startPosition.x + dimensions.width * 0.1 + i * dimensions.width * 0.8 / numGridLines, startPosition.y + dimensions.height, 255, 255, 255, 0.2);
       if (Statistics.highscores.length > 0) {
         GUI.writeText(MainCanvas.canvas, `${Math.round(min + i * (max - min) / numGridLines)}`, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height - i * dimensions.height / numGridLines / 1.1, 'center', 'system-ui', 15, 'black');
       }
