@@ -39,6 +39,10 @@ export default class Game extends Scene {
   public constructor() {
     super();
     this.parkour.generateParkour();
+    // console.log(Statistics.checkpointsReached)
+    // for(let i = 0; i < Parkour.levels.length - 1; i++) {
+    //   Statistics.checkpointsReached.push(0)
+    // }
     Game.neat = new NeatManager()
     this.userPlayer = new Player(0, false);
 
@@ -152,6 +156,7 @@ export default class Game extends Scene {
     } else {
       // console.log(...this.players.map(player => player.brain.score))
       Game.neat.endGeneration();
+      
     }
 
     if (this.openEditor) {
@@ -192,14 +197,15 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
-    GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.2, canvas.height * 0.53, 'center', 'system-ui', 20, 'black');
+    GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
     GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.05, 'center', 'system-ui', 40, 'black');
     GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     if (this.openEditor) { 
       this.editor.render(canvas)
     } else {
-      this.statistics.renderPerformance();
+      // this.statistics.renderPerformance();
+      this.statistics.renderProgression()
       if (!Game.extinct) {
         const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
           (prev.brain.score > current.brain.score) ? prev : current

@@ -42,6 +42,8 @@ export default class MainCanvas {
 
   private network: any;
 
+  private pauzed: boolean = false;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     MainCanvas.camera.position.set(5, 18, 45);
@@ -109,30 +111,39 @@ export default class MainCanvas {
    */
   public startRendering() {
     MainCanvas.renderer.setAnimationLoop(() => {
-      const deltaTime = this.clock.getDelta();
-      if (deltaTime > 0) {
-        MainCanvas.world.step(deltaTime)
-      }
+        if (KeyListener.keyPressed('KeyP')) {
+            this.pauzed = !this.pauzed;
+        }
 
-      // updates controls
+        const deltaTime = this.clock.getDelta();
+
+        // Only step the physics and update the scene when not paused
+        if (!this.pauzed) {
+            if (deltaTime > 0) {
+                MainCanvas.world.step(deltaTime);
+            }
+
+            // Process input and update the active scene
+            this.activeScene.processInput();
+            this.activeScene.update(deltaTime);
+        }
+
+        if (!Edit.editActive) {
+            this.rotateCamera(deltaTime);
+        }
+        this.moveCamera(deltaTime);
+
+        // Always update controls, even when paused
         MainCanvas.flyControls.update(deltaTime);
 
-      if (!Edit.editActive) {
-        this.rotateCamera(deltaTime)
-      }
-      this.moveCamera(deltaTime);
-
-      // calls functions of active scene
-      this.activeScene.processInput();
-      this.activeScene.update(deltaTime);
-
-      const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
-        GUI.getCanvas()
-      );
-      ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
-      this.activeScene.render();
+        // Render the GUI and the active scene
+        const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
+            GUI.getCanvas()
+        );
+        ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
+        this.activeScene.render(deltaTime);
     });
-  }
+}
   
   private onMouseDown() {
     this.isMouseButtonDown = true;

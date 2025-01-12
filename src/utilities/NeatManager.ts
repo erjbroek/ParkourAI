@@ -79,7 +79,9 @@ export default class NeatManager {
     })
     this.neat.sort()
     Statistics.highscores.push(this.neat.population[0].score)
-    Statistics.averageScores.push(this.neat.getAverage())
+    Statistics.averageScores.push(this.neat.getAverage());
+    Statistics.previousCheckpointsReached = Statistics.checkpointsReached;
+    Statistics.checkpointsReached = []
 
     const newGeneration = []
 
