@@ -9,6 +9,8 @@ import Game from './Game.js';
 export default class Statistics {
   public static highscores: number[] = [];
 
+  public static highscore: number = -Infinity;
+
   public static averageScores: number[] = [];
 
   public static checkpointsReached: number[] = []
@@ -49,7 +51,6 @@ export default class Statistics {
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
 
-    
     let min = 0;
     if (!NeatManager.usePretrainedNetwork) {
       min = Math.min(...Statistics.highscores, ...Statistics.averageScores);
@@ -134,7 +135,13 @@ export default class Statistics {
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2, 10);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height * 1.1, 255, 255, 255, 1);
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1 - max, window.innerWidth * 0.184, max, 0, 0, 0, 0.2)
-    
+
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1 - max / 2, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height * 1.1 - max / 2, 255, 255, 255, 0.2)
+    GUI.writeText(MainCanvas.canvas, '50%', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 - max / 2, 'center', 'system-ui', 15, 'black')
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1 - max / 4, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height * 1.1 - max / 4, 255, 255, 255, 0.2)
+    GUI.writeText(MainCanvas.canvas, '25%', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 - max / 4, 'center', 'system-ui', 15, 'black')
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1 - max / 1.333, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height * 1.1 - max / 1.333, 255, 255, 255, 0.2)
+    GUI.writeText(MainCanvas.canvas, '75%', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 - max / 1.333, 'center', 'system-ui', 15, 'black')
 
     for (let i = 0; i < Statistics.previousCheckpointsReached.length ; i++) {
       GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / Game.neat.neat.popsize * max, 30, Statistics.previousCheckpointsReached[i] / Game.neat.neat.popsize * max, 255, 255, 255, 0.2)
@@ -144,8 +151,9 @@ export default class Statistics {
     for (let i = 0; i < Statistics.checkpointsReached.length ; i++) {
       GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / Game.neat.neat.popsize * max, 30, Statistics.checkpointsReached[i] / Game.neat.neat.popsize * max, 255, 255, 255, 0.2)
       GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
+      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / Game.neat.neat.popsize * 100, 1)}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / Game.neat.neat.popsize * max - 10, 'left', 'system-ui', 12, 'white')
     }
-    GUI.writeText(MainCanvas.canvas, 'Checkpoint numbers', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height * 1.1 + 50, 'center', 'system-ui', 22, 'white')
+    GUI.writeText(MainCanvas.canvas, '% checkpoint completed', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height * 1.1 + 50, 'center', 'system-ui', 22, 'white')
 
   }
 }

@@ -62,6 +62,8 @@ export default class Player {
 
   public currentPlatform: number = 0;
 
+  private loaded: boolean = false;
+
   public constructor(index: number, ai: boolean, brain: any) {
     this.index = index;
     this.ai = ai;
@@ -226,8 +228,26 @@ export default class Player {
           const material = this.mesh.material as THREE.MeshLambertMaterial;
           material.color.setRGB(0, colorValue, 0 - colorValue);
           material.emissive.setRGB(0, 0, 0);
-          // (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(1, 1, 1);
+          if (this.loaded) {
+          this.loaded = false;
+          const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
+          this.mesh.material = material;
+          }
         } else if (Game.colorMode == 4) {
+          if (!this.loaded) {
+            this.loaded = true;
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load('./assets/william.png', (texture) => {
+              const material = new THREE.MeshLambertMaterial({ map: texture });
+              this.mesh.material = material;
+            });
+         }
+        } else if (Game.colorMode == 5) {
+          if (this.loaded) {
+            this.loaded = false;
+            const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
+            this.mesh.material = material;
+          }
           const X = 4;
           const connections = [];
           for (let i = 0; i < this.brain.connections.length; i += 1) {
@@ -253,7 +273,7 @@ export default class Player {
           g = Math.min(Math.max(g / X, 0), 1);
           b = Math.min(Math.max(b / X, 0), 1);
           (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(r, g, b);
-        } else if (Game.colorMode == 5) {
+        } else if (Game.colorMode == 6) {
           const forwardBackward = outputForwards - outputBackwards;
           const leftRight = outputRight - outputLeft;
           const jumpEffect = outputJump * 0.5;
@@ -264,7 +284,6 @@ export default class Player {
             Math.abs(leftRight),
             jumpEffect
           ); 
-        } else if (Game.colorMode == 6) {
         } else if (Game.colorMode == 7) {
         } else if (Game.colorMode == 8) {
         } else if (Game.colorMode == 9) {
