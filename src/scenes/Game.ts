@@ -78,9 +78,9 @@ export default class Game extends Scene {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gen${Game.neat.neat.generation}_${Math.round(Math.max(...Statistics.highscores))}.json`; // Name the download file
-      a.click(); // Trigger the download
-      URL.revokeObjectURL(url); // Clean up
+      a.download = `gen${Game.neat.neat.generation}_${Math.round(Math.max(...Statistics.highscores))}.json`; 
+      a.click();
+      URL.revokeObjectURL(url);
 
     }
 

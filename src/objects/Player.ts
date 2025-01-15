@@ -229,9 +229,9 @@ export default class Player {
           material.color.setRGB(0, colorValue, 0 - colorValue);
           material.emissive.setRGB(0, 0, 0);
           if (this.loaded) {
-          this.loaded = false;
-          const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
-          this.mesh.material = material;
+            this.loaded = false;
+            const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
+            this.mesh.material = material;
           }
         } else if (Game.colorMode == 4) {
           if (!this.loaded) {

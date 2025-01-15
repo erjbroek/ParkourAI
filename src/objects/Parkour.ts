@@ -44,8 +44,11 @@ export default class Parkour {
     // level 0
     Parkour.levels.push([
       this.createObstacle(ParkourPieces.startingPlatform, 0, 0, 20),
-      this.createObstacle(ParkourPieces.long2, 4, 0, 0),
-      this.createObstacle(ParkourPieces.long1, 4, 0, -16),
+      this.createObstacle(ParkourPieces.normal, 8, 0, 4),
+      this.createObstacle(ParkourPieces.normal, 8, 0, -6),
+      this.createObstacle(ParkourPieces.normal, 8, 0, -16),
+      // this.createObstacle(ParkourPieces.long2, 12, 0, 0),
+      // this.createObstacle(ParkourPieces.long1, 12, 0, -16),
       this.createObstacle(ParkourPieces.platform, 0, 0, -32),
       this.createObstacle(ParkourPieces.checkPoint, 0, 6.51, -32),
     ]
@@ -53,7 +56,8 @@ export default class Parkour {
 
     // testing
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.long2, -8, 0, -52),
+      this.createObstacle(ParkourPieces.normal, -8, 0, -50),
+      this.createObstacle(ParkourPieces.normal, -8, 0, -60),
       this.createObstacle(ParkourPieces.normal, -8, 0, -70),
       this.createObstacle(ParkourPieces.normal, -8, 0, -80),
       this.createObstacle(ParkourPieces.normal, -18, 0, -80),
@@ -66,13 +70,13 @@ export default class Parkour {
 
     // testing
     Parkour.levels.push([
-      this.createObstacle(ParkourPieces.normal, -16, 0, -114),
-      this.createObstacle(ParkourPieces.normal, -8, 0, -114),
-      this.createObstacle(ParkourPieces.normal, 0, 0, -114),
-      this.createObstacle(ParkourPieces.normal, 0, 0, -103),
-      this.createObstacle(ParkourPieces.normal, 0, 0, -92),
-      this.createObstacle(ParkourPieces.normal, 8, 0, -92),
-      this.createObstacle(ParkourPieces.normal, 16, 0, -92),
+      this.createObstacle(ParkourPieces.normal, -16, 0, -116),
+      this.createObstacle(ParkourPieces.normal, -6, 0, -116),
+      this.createObstacle(ParkourPieces.normal, -6, 0, -106),
+      this.createObstacle(ParkourPieces.normal, 4, 0, -106),
+      this.createObstacle(ParkourPieces.normal, 4, 0, -96),
+      this.createObstacle(ParkourPieces.normal, 14, 0, -96),
+      // this.createObstacle(ParkourPieces.normal, 16, 0, -92),
       this.createObstacle(ParkourPieces.platform, 32, 0, -92, 0, Math.PI / 2),
       this.createObstacle(ParkourPieces.checkPoint, 32, 6.51, -92, 0, Math.PI / 2),
     ])
@@ -114,7 +118,7 @@ export default class Parkour {
       this.createObstacle(ParkourPieces.normal, 210, 0, -92),
       this.createObstacle(ParkourPieces.normal, 220, 0, -92),
       this.createObstacle(ParkourPieces.normal, 230, 0, -92),
-
+      this.createObstacle(ParkourPieces.normal, 230, 0, -92),
 
 
 
@@ -301,8 +305,6 @@ export default class Parkour {
               object.mesh.position.y - objectHeight / 2,
               object.mesh.position.z
             );
-            
-
             return;
           }
         } else {
@@ -323,7 +325,7 @@ export default class Parkour {
 
           } else if (player.boundingBox.max.x >= object.boundingBox.min.x && player.boundingBox.min.x <= object.boundingBox.max.x &&
             player.boundingBox.max.z >= object.boundingBox.min.z && player.boundingBox.min.z <= object.boundingBox.max.z &&
-            player.boundingBox.min.y >= object.boundingBox.max.y) {
+            player.boundingBox.min.y >= object.boundingBox.max.y && player.boundingBox.max.y <= object.boundingBox.max.y + 0.1) {
             foundObject = { index: objectIndex, level: levelIndex, object: object };
           }
         }

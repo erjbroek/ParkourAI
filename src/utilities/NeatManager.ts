@@ -49,12 +49,7 @@ export default class NeatManager {
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
-    if (this.neat.generation > 0) {
-      const bestPlayer = this.players.reduce((prev, current) => (prev.brain.score > current.brain.score) ? prev : current);
-      MainCanvas.scene.remove(this.recordPylon);
-      this.recordPylon.position.set(bestPlayer.mesh.position.x, bestPlayer.mesh.position.y + 500, bestPlayer.mesh.position.z);
-      MainCanvas.scene.add(this.recordPylon);
-    }
+
 
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
@@ -78,10 +73,18 @@ export default class NeatManager {
       player.calculateFitness()
     })
     this.neat.sort()
-    Statistics.highscores.push(this.neat.population[0].score)
     Statistics.averageScores.push(this.neat.getAverage())
     Statistics.previousCheckpointsReached = Statistics.checkpointsReached
     Statistics.checkpointsReached = []
+    if (this.neat.population[0].score > Statistics.highscore) {
+      Statistics.highscore = this.neat.population[0].score;
+      const bestPlayer = this.players.reduce((prev, current) => (prev.brain.score > current.brain.score) ? prev : current);
+      MainCanvas.scene.remove(this.recordPylon);
+      this.recordPylon.position.set(bestPlayer.mesh.position.x, bestPlayer.mesh.position.y + 500, bestPlayer.mesh.position.z);
+      MainCanvas.scene.add(this.recordPylon);
+    }
+    
+    Statistics.highscores.push(this.neat.population[0].score)
 
     const newGeneration = []
 
@@ -91,8 +94,8 @@ export default class NeatManager {
     for (let i = 0; i < this.neat.popsize - this.neat.elitism; i++) {
       newGeneration.push(this.neat.getOffspring())
     }
-
     this.neat.population = newGeneration
+
     this.neat.mutate()
     this.neat.generation++
 
