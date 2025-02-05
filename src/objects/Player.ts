@@ -237,28 +237,10 @@ export default class Player {
           if (!this.loaded) {
             this.loaded = true;
             const textureLoader = new THREE.TextureLoader();
-            const random = Math.random()
-            if (random < 1 / 4) {
-              textureLoader.load('./assets/william.png', (texture) => {
-                const material = new THREE.MeshLambertMaterial({ map: texture });
-                this.mesh.material = material;
-              });
-            } else if (random < 2 / 4) {
-              textureLoader.load('./assets/emil.jpg', (texture) => {
-                const material = new THREE.MeshLambertMaterial({ map: texture });
-                this.mesh.material = material;
-              });
-            } else if (random < 3 / 4) {
-              textureLoader.load('./assets/pristen.png', (texture) => {
-                const material = new THREE.MeshLambertMaterial({ map: texture });
-                this.mesh.material = material;
-              });
-            } else {
-              textureLoader.load('./assets/erik.png', (texture) => {
-                const material = new THREE.MeshLambertMaterial({ map: texture });
-                this.mesh.material = material;
-              });
-            }
+            textureLoader.load('./assets/william.png', (texture) => {
+              const material = new THREE.MeshLambertMaterial({ map: texture });
+              this.mesh.material = material;
+            });
          }
         } else if (Game.colorMode == 5) {
           if (this.loaded) {
