@@ -7,8 +7,8 @@
 <br>
 
 ## progress:
-implemented neural network, which structure mutates over time and evolves over time
-this is to find the best balance between complexity and efficiency.
+implemented neural network, which structure mutates and evolves over time,
+to find the best balance between complexity and efficiency.
 
 ![gif_parkour](https://github.com/user-attachments/assets/f8fd1075-7acd-413f-8540-fc97ffe4ca21)
 
