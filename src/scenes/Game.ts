@@ -85,8 +85,10 @@ export default class Game extends Scene {
     }
 
     // option to end generation if player gets stuck
-    if (KeyListener.keyPressed('KeyE')) {
-      Game.neat.endGeneration();
+    if (!this.openEditor) {
+      if (KeyListener.keyPressed('KeyE')) {
+        Game.neat.endGeneration();
+      }
     }
     if (KeyListener.keyPressed('Digit2')) {
       if (Game.colorMode < 10) {
