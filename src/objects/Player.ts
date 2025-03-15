@@ -42,6 +42,8 @@ export default class Player {
 
   public obstacleCoordinations: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
 
+  public finished: boolean = false;
+
   public inputValues: number[] = []
 
   public alive: boolean = true;
@@ -363,18 +365,19 @@ export default class Player {
     
 
     
-    // this first finds the nearest point on the next platform to the current platform
+    // this first finds the nearest point on the next platform
     const currentCenter = current.getCenter(new THREE.Vector3());
     const nextPosition = new THREE.Vector3();
     next.clampPoint(currentCenter, nextPosition);
     
-    //then it gets the point that is furthest away from the next jump
+    // then it gets the point that is furthest away from the nextPosition on the current platform
     const directionVector = new THREE.Vector3();
     directionVector.subVectors(nextPosition, currentCenter);
     directionVector.multiplyScalar(-2);
     const currentPosition = new THREE.Vector3();
     currentPosition.addVectors(nextPosition, directionVector);
 
+    // next, the distance is calculated between these 2 points
     const maxDistance = Math.sqrt(
       (currentPosition.x - nextPosition.x) ** 2 +
       (currentPosition.y - nextPosition.y) ** 2 +
@@ -387,6 +390,8 @@ export default class Player {
       (this.playerBody.position.z - nextPosition.z) ** 2
     );
 
+    // when using both of these distances (the total distance, and the current players distance), we know how far the player is to the next jump
+    // if the player is halfway, it would return 0.5 (which can then be used for the players fitness function)
     return (1 - currentDistance / maxDistance);
   }
 
@@ -400,8 +405,11 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      this.brain.score += this.currentLevel * 10
+      // this.brain.score += this.finished ? 10 : 0
       this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      if (this.finished) {
+        this.brain.score *= 1.5
+      }
     } else {
       this.userFitness = 0;
       
