@@ -33,5 +33,6 @@ export default class Level {
     this.pieces.forEach((obstacle) => {
       MainCanvas.scene.add(obstacle.mesh);
     })
+    MainCanvas.scene.add(this.finishLine.mesh)
   }
 }
