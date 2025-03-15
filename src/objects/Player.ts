@@ -38,7 +38,7 @@ export default class Player {
 
   public brain: any;
 
-  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0][0], next: Parkour.levels[0][1] };
+  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0].pieces[0], next: Parkour.levels[0].pieces[1] };
 
   public obstacleCoordinations: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
 

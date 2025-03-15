@@ -10,7 +10,7 @@ import Statistics from '../scenes/Statistics.js';
 import Level from './level.js';
 
 export default class Parkour {
-  public levels: Level[] = []
+  public static levels: Level[] = []
 
   public activeLevel: number = 0;
 
@@ -54,10 +54,10 @@ export default class Parkour {
     ]
     const level1 = new Level(0, level1_Obstacles.slice(0, -1), level1_Obstacles[level1_Obstacles.length - 1], new THREE.Vector3(0, 0.5, 20));
 
-    this.levels.push(level1);
+    Parkour.levels.push(level1);
 
-    for(let i = 0; i < this.levels.length; i++) {
-      this.levels[i].renderParkour()
+    for(let i = 0; i < Parkour.levels.length; i++) {
+      Parkour.levels[i].renderParkour()
     }
 
 
@@ -84,11 +84,11 @@ export default class Parkour {
 
   public checkCollision(player: Player): void {
     player.onGround = false;
-    let foundObject: { index: number; object: Obstacle } | null = { index: null, level: null, object: null };
+    let foundObject: { index: number; object: Obstacle } | null = { index: null, object: null };
     let current: Obstacle = null;
     let next: Obstacle = null;
 
-    const activeLevel: Level = this.levels[this.activeLevel]
+    const activeLevel: Level = Parkour.levels[this.activeLevel]
     const finished = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
 
     // if the player finishes:
@@ -126,19 +126,18 @@ export default class Parkour {
         foundObject = { index: pieceIndex, object: piece };
       }
     })
-
-    if (foundObject != null) {
+    if (foundObject.index != null) {
       if (activeLevel.pieces.length - 2 > foundObject.index) {
-        next = activeLevel[foundObject.index + 1]
+        next = activeLevel.pieces[foundObject.index + 1]
       } else {
         return ;
       }
-
+      
       player.highestObstacleIndex = this.getIndex(foundObject.object);
+      player.inputLevels.current = foundObject.object;
+      player.inputLevels.next = next
     }
 
-    player.inputLevels.current = foundObject.object;
-    player.inputLevels.next = next
     player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;
     player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;
   }
@@ -247,7 +246,7 @@ export default class Parkour {
 
   public getIndex(obstacle: Obstacle): number {
     let count: number = 0;
-    for (const level of this.levels) {
+    for (const level of Parkour.levels) {
       for (const object of level.pieces) {
         if (object === obstacle) {
           return count;
