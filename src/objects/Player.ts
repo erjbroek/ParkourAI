@@ -67,27 +67,16 @@ export default class Player {
     let level: number | null;
     level = 0
 
-    if (Parkour.levels[level]) {
-      const spawnPoint = Parkour.levels[level].spawnPoint
-      this.playerBody = new CANNON.Body({
-        mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(spawnPoint.x, spawnPoint.y, spawnPoint.z),
-        material: this.physicsMaterial,
-        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
-        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-      });
-    } else {
-      // sets it to start
-      this.playerBody = new CANNON.Body({
-        mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(0, 10, -30),
-        material: this.physicsMaterial,
-        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
-        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-      });
-    }
+    const spawnPoint = Parkour.levels[Parkour.activeLevel].spawnPoint
+    this.playerBody = new CANNON.Body({
+      mass: 1,
+      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
+      position: new CANNON.Vec3(spawnPoint.x, spawnPoint.y, spawnPoint.z),
+      material: this.physicsMaterial,
+      collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
+      collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
+
+    })
 
     // this.currentLevel = 3;
     // this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);

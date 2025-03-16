@@ -38,7 +38,6 @@ export default class Game extends Scene {
 
   public constructor() {
     super();
-    this.parkour.generateParkour();
     // console.log(Statistics.checkpointsReached)
     // for(let i = 0; i < Parkour.levels.length - 1; i++) {
     //   Statistics.checkpointsReached.push(0)
@@ -158,9 +157,7 @@ export default class Game extends Scene {
       });
       
     } else {
-      // console.log(...this.players.map(player => player.brain.score))
-      Game.neat.endGeneration();
-      
+      Game.neat.endGeneration();      
     }
 
     if (this.openEditor) {

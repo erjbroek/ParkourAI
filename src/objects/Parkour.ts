@@ -12,7 +12,7 @@ import Level from './level.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public activeLevel: number = 0;
+  public static activeLevel: number = 15;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -20,7 +20,7 @@ export default class Parkour {
   public objectArray: Obstacle[] = [];
 
   public constructor() {
-
+    this.generateParkour();
   }
 
 
@@ -66,7 +66,7 @@ export default class Parkour {
     let current: Obstacle = null;
     let next: Obstacle = null;
 
-    const activeLevel: Level = Parkour.levels[this.activeLevel]
+    const activeLevel: Level = Parkour.levels[Parkour.activeLevel]
     const activeIndex: number = Parkour.levels.indexOf(activeLevel)
     const collidingFinishline = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
 
@@ -112,26 +112,12 @@ export default class Parkour {
         return ;
       }
       
-      player.highestObstacleIndex = this.getIndex(foundObject.object);
+      player.highestObstacleIndex = activeLevel.pieces.indexOf(foundObject.object)
       player.inputLevels.current = foundObject.object;
       player.inputLevels.next = next
     }
 
     player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;
     player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;
-  }
-
-  public getIndex(obstacle: Obstacle): number {
-    let count: number = 0;
-    for (const level of Parkour.levels) {
-      for (const object of level.pieces) {
-        if (object === obstacle) {
-          return count;
-        } else {
-          count++;
-        }
-      }
-    }
-    return -1;
   }
 }
