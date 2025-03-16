@@ -90,6 +90,12 @@ export default class Game extends Scene {
       if (KeyListener.keyPressed('KeyE')) {
         Game.neat.endGeneration();
       }
+      if (MouseListener.buttonPressed(0) && Parkour.levels[Parkour.activeLevel].finished) {
+        if (UICollision.checkSquareCollision(0.26, 0.929, 0.1, 0.05)) {
+          this.readyNextLevel = true;
+            Game.alivePlayers.forEach(player => player.alive = false);
+        }
+      }
     }
     if (KeyListener.keyPressed('Digit2')) {
       if (Game.colorMode < 10) {
@@ -163,10 +169,11 @@ export default class Game extends Scene {
     } else {
       if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
         Parkour.activeLevel++
+        this.readyNextLevel = false
       }
       Game.neat.endGeneration();      
     }
-
+    console.log(this.readyNextLevel)
     if (this.openEditor) {
       this.editor.update(deltaTime);    
     }
@@ -208,6 +215,7 @@ export default class Game extends Scene {
     GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
     GUI.writeText(canvas, `Level: ${Parkour.activeLevel}`, canvas.width * 0.133, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
     GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
+
     if (Parkour.levels[Parkour.activeLevel].finished) {
       GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
       GUI.writeText(canvas, 'Next level', canvas.width * 0.31, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
@@ -215,6 +223,10 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1))
       GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.6} players`, canvas.width * 0.31, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
     }
+
+    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.height / 40, canvas.height / 40, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.height / 40, canvas.height / 40, 100, 100, 100, 0.55, 3, 8)
+    GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.284, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
     // GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
