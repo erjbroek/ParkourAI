@@ -32,7 +32,7 @@ export default class Player {
 
   public onGround: boolean = false;
 
-  public currentLevel: number = 0;
+  // public currentLevel: number = 0;
 
   public index: number = 0;
 
@@ -48,21 +48,13 @@ export default class Player {
 
   public alive: boolean = true;
 
-  public speedTimer: number = 0;
-
-  public deathTime: number = 3;
-
   public deathTimer: number = 8;
-
-  public highestObstacle: Obstacle = Parkour.levels[0][0];
 
   public highestObstacleIndex: number = 0;
 
   public ai: boolean;
 
   public userFitness: number = 0;
-
-  public currentPlatform: number = 0;
 
   private loaded: boolean = false;
 
@@ -85,7 +77,6 @@ export default class Player {
         collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
-      this.currentLevel = level;
     } else {
       // sets it to start
       this.playerBody = new CANNON.Body({
@@ -391,8 +382,10 @@ export default class Player {
       this.userFitness = 0;
       
       // progress in level
-      this.userFitness += this.currentLevel * 30
       this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      if (this.finished) {
+        this.brain.score *= 1.5
+      }
     }
   }
 

@@ -146,6 +146,8 @@ export default class Game extends Scene {
     this.userPlayer.update(deltaTime);
     this.userPlayer.calculateFitness()
 
+    console.log(`Players finished: ${Game.alivePlayers.filter(player => player.finished).length}`);
+
     if (!Game.extinct) {  
       Game.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);

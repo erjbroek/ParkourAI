@@ -67,6 +67,7 @@ export default class Parkour {
     let next: Obstacle = null;
 
     const activeLevel: Level = Parkour.levels[this.activeLevel]
+    const activeIndex: number = Parkour.levels.indexOf(activeLevel)
     const collidingFinishline = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
 
     // if the player finishes:
@@ -76,10 +77,10 @@ export default class Parkour {
     if (collidingFinishline && !player.finished) {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
-      if (Statistics.checkpointsReached[player.currentLevel]) {
-        Statistics.checkpointsReached[player.currentLevel]++
+      if (Statistics.checkpointsReached[activeIndex]) {
+        Statistics.checkpointsReached[activeIndex]++
       } else {
-        Statistics.checkpointsReached[player.currentLevel] = 1
+        Statistics.checkpointsReached[activeIndex] = 1
       }
     }
 

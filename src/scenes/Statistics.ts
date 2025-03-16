@@ -151,7 +151,7 @@ export default class Statistics {
     for (let i = 0; i < Statistics.checkpointsReached.length ; i++) {
       GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2)
       GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
-      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize) * 100}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white')
+      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize * 100)}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white')
     }
     GUI.writeText(MainCanvas.canvas, '% checkpoint completed', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height * 1.1 + 50, 'center', 'system-ui', 22, 'white')
 
