@@ -20,6 +20,8 @@ export default class NeatManager {
 
   public static usePretrainedNetwork: boolean = false;
 
+  public static popSize: number = 50
+
   public recordPylon: THREE.Mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(0.4, 1.2, 1000, 32),
     new THREE.MeshBasicMaterial({ color: 0x00ff0f, transparent: true, opacity: 0.2 })
@@ -29,8 +31,8 @@ export default class NeatManager {
     this.neat = new neat.Neat(8, 5, null, {
       mutationRate: 0.3,
       mutationAmount: 1,
-      popsize: 1000,
-      elitism: 400
+      popsize: NeatManager.popSize,
+      elitism: NeatManager.popSize / 5
     })
     this.neat.generation = generation;
 

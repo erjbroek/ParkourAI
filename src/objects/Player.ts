@@ -32,35 +32,29 @@ export default class Player {
 
   public onGround: boolean = false;
 
-  public currentLevel: number = 0;
+  // public currentLevel: number = 0;
 
   public index: number = 0;
 
   public brain: any;
 
-  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0][0], next: Parkour.levels[0][1] };
+  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0].pieces[0], next: Parkour.levels[0].pieces[1] };
 
   public obstacleCoordinations: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
+
+  public finished: boolean = false;
 
   public inputValues: number[] = []
 
   public alive: boolean = true;
 
-  public speedTimer: number = 0;
-
-  public deathTime: number = 3;
-
   public deathTimer: number = 8;
-
-  public highestObstacle: Obstacle = Parkour.levels[0][0];
 
   public highestObstacleIndex: number = 0;
 
   public ai: boolean;
 
   public userFitness: number = 0;
-
-  public currentPlatform: number = 0;
 
   private loaded: boolean = false;
 
@@ -73,28 +67,16 @@ export default class Player {
     let level: number | null;
     level = 0
 
-    if (level) {
-      this.playerBody = new CANNON.Body({
-        mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z),
-        material: this.physicsMaterial,
-        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
-        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-      });
-      this.currentLevel = level;
-      MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
-    } else {
-      // sets it to start
-      this.playerBody = new CANNON.Body({
-        mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(0, 1.5, 20),
-        material: this.physicsMaterial,
-        collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
-        collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-      });
-    }
+    const spawnPoint = Parkour.levels[Parkour.activeLevel].spawnPoint
+    this.playerBody = new CANNON.Body({
+      mass: 1,
+      shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
+      position: new CANNON.Vec3(spawnPoint.x, spawnPoint.y, spawnPoint.z),
+      material: this.physicsMaterial,
+      collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
+      collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
+
+    })
 
     // this.currentLevel = 3;
     // this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);
@@ -328,27 +310,6 @@ export default class Player {
     MainCanvas.scene.remove(this.mesh)
   }
 
-  public calculateDistance(): number {
-    const checkpoint = Parkour.levels[this.currentLevel][Parkour.levels[this.currentLevel].length - 1];
-
-    const spawnPoint = this.spawnPoint;
-
-    const maxDistance = Math.sqrt(
-      (spawnPoint.x - checkpoint.mesh.position.x) ** 2 +
-      (spawnPoint.y - checkpoint.mesh.position.y) ** 2 +
-      (spawnPoint.z - checkpoint.mesh.position.z) ** 2
-    );
-    const currentDistance = Math.sqrt(
-      (this.playerBody.position.x - checkpoint.mesh.position.x) ** 2 +
-      (this.playerBody.position.y - checkpoint.mesh.position.y) ** 2 +
-      (this.playerBody.position.z - checkpoint.mesh.position.z) ** 2
-    );
-
-    const distanceFitness = currentDistance / maxDistance;
-
-    return (1 - distanceFitness) * 100;
-  }
-
   /**
    * calculates the percentage of the distance the player is to the next obstacle
    * 
@@ -361,20 +322,19 @@ export default class Player {
     // will be used for the end point, 100% distance
     const next = this.inputLevels.next.boundingBox;
     
-
-    
-    // this first finds the nearest point on the next platform to the current platform
+    // this first finds the nearest point on the next platform
     const currentCenter = current.getCenter(new THREE.Vector3());
     const nextPosition = new THREE.Vector3();
     next.clampPoint(currentCenter, nextPosition);
     
-    //then it gets the point that is furthest away from the next jump
+    // then it gets the point that is furthest away from the nextPosition on the current platform
     const directionVector = new THREE.Vector3();
     directionVector.subVectors(nextPosition, currentCenter);
     directionVector.multiplyScalar(-2);
     const currentPosition = new THREE.Vector3();
     currentPosition.addVectors(nextPosition, directionVector);
 
+    // next, the distance is calculated between these 2 points
     const maxDistance = Math.sqrt(
       (currentPosition.x - nextPosition.x) ** 2 +
       (currentPosition.y - nextPosition.y) ** 2 +
@@ -387,6 +347,8 @@ export default class Player {
       (this.playerBody.position.z - nextPosition.z) ** 2
     );
 
+    // when using both of these distances (the total distance, and the current players distance), we know how far the player is to the next jump
+    // if the player is halfway, it would return 0.5 (which can then be used for the players fitness function)
     return (1 - currentDistance / maxDistance);
   }
 
@@ -400,14 +362,19 @@ export default class Player {
       this.brain.score = 0;
       
       // progress in level
-      this.brain.score += this.currentLevel * 10
+      // this.brain.score += this.finished ? 10 : 0
       this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      if (this.finished) {
+        this.brain.score *= 1.5
+      }
     } else {
       this.userFitness = 0;
       
       // progress in level
-      this.userFitness += this.currentLevel * 30
       this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      if (this.finished) {
+        this.brain.score *= 1.5
+      }
     }
   }
 
