@@ -30,7 +30,7 @@ export default class Game extends Scene {
   
   public static neat: any;
 
-  public static colorMode: number = 0;
+  public static colorMode: number = 1;
 
   public readyNextLevel: boolean = false;
 
@@ -47,7 +47,7 @@ export default class Game extends Scene {
     //   Statistics.checkpointsReached.push(0)
     // }
     Game.neat = new NeatManager()
-    this.userPlayer = new Player(0, false);
+    // this.userPlayer = new Player(0, false);
 
     Game.alivePlayers = Game.neat.players;
   }
@@ -153,12 +153,13 @@ export default class Game extends Scene {
     Game.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = Game.alivePlayers.length === 0;
 
-
-    this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
-    this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
-    this.parkour.checkCollision(this.userPlayer);
-    this.userPlayer.update(deltaTime);
-    this.userPlayer.calculateFitness()
+    if (this.userPlayer) {
+      this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
+      this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
+      this.parkour.checkCollision(this.userPlayer);
+      this.userPlayer.update(deltaTime);
+      this.userPlayer.calculateFitness()
+    }
 
     if (!Game.extinct) {  
       if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.5 && !Parkour.levels[Parkour.activeLevel].finished) {
