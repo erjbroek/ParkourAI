@@ -15,6 +15,8 @@ export default class Level {
 
   public index: number;
 
+  public finished: boolean = false;
+
   public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3) {
     this.index = index;
     this.location = new THREE.Vector3((index % 10) * 150, 0, -Math.floor(index / 10) * 150);
