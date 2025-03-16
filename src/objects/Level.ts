@@ -15,14 +15,16 @@ export default class Level {
 
   public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3) {
     this.location = new THREE.Vector3(index * 150, 0, Math.floor(index / 10) * 150);
-    pieces.forEach((piece, index) => {
-      if (index != pieces.length - 1) {
-        this.pieces.push(this.createObstacle(piece[0], piece[1], piece[2], piece[3], piece[4] || 0, piece[5] || 0, piece[6] || 0))
+    pieces.forEach((piece, idx) => {
+      const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
+      const obstacle = this.createObstacle(mesh, posX + this.location.x, posY + this.location.y, posZ + this.location.z, rotationX, rotationY, rotationZ);
+      if (idx !== pieces.length - 1) {
+      this.pieces.push(obstacle);
       } else {
-        this.finishLine = this.createObstacle(piece[0], piece[1], piece[2], piece[3] + this.location.z, piece[4] || 0, piece[5] || 0, piece[6] || 0)
+      this.finishLine = obstacle;
       }
-    })
-    this.spawnPoint = spawnpoint;
+    });
+    this.spawnPoint = spawnpoint.clone().add(this.location);
   }
 
    /**
