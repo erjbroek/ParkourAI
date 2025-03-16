@@ -75,23 +75,23 @@ export default class Player {
     let level: number | null;
     level = 0
 
-    if (level) {
+    if (Parkour.levels[level]) {
+      const spawnPoint = Parkour.levels[level].spawnPoint
       this.playerBody = new CANNON.Body({
         mass: 1,
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z),
+        position: new CANNON.Vec3(spawnPoint.x, spawnPoint.y, spawnPoint.z),
         material: this.physicsMaterial,
         collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
       });
       this.currentLevel = level;
-      MainCanvas.camera.position.set(Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.x + 4, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.y + 10, Parkour.levels[level][Parkour.levels[level].length - 1].mesh.position.z + 15);
     } else {
       // sets it to start
       this.playerBody = new CANNON.Body({
         mass: 1,
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        position: new CANNON.Vec3(0, 1.5, 20),
+        position: new CANNON.Vec3(0, 10, -30),
         material: this.physicsMaterial,
         collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
         collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
@@ -330,27 +330,6 @@ export default class Player {
     MainCanvas.scene.remove(this.mesh)
   }
 
-  public calculateDistance(): number {
-    const checkpoint = Parkour.levels[this.currentLevel][Parkour.levels[this.currentLevel].length - 1];
-
-    const spawnPoint = this.spawnPoint;
-
-    const maxDistance = Math.sqrt(
-      (spawnPoint.x - checkpoint.mesh.position.x) ** 2 +
-      (spawnPoint.y - checkpoint.mesh.position.y) ** 2 +
-      (spawnPoint.z - checkpoint.mesh.position.z) ** 2
-    );
-    const currentDistance = Math.sqrt(
-      (this.playerBody.position.x - checkpoint.mesh.position.x) ** 2 +
-      (this.playerBody.position.y - checkpoint.mesh.position.y) ** 2 +
-      (this.playerBody.position.z - checkpoint.mesh.position.z) ** 2
-    );
-
-    const distanceFitness = currentDistance / maxDistance;
-
-    return (1 - distanceFitness) * 100;
-  }
-
   /**
    * calculates the percentage of the distance the player is to the next obstacle
    * 
@@ -362,8 +341,6 @@ export default class Player {
 
     // will be used for the end point, 100% distance
     const next = this.inputLevels.next.boundingBox;
-    
-
     
     // this first finds the nearest point on the next platform
     const currentCenter = current.getCenter(new THREE.Vector3());

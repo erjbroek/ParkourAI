@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export default class ParkourPieces {
   public static material: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true});
 
-  public static wallMaterial: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, transparent: true, opacity: 0.4})
+  public static wallMaterial: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, transparent: true, opacity: 0.7})
 
   public static activeMaterial1: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0xaaffaa});
 
@@ -25,7 +25,7 @@ export default class ParkourPieces {
 
   public static checkPoint: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(28, 12, 1), this.checkPointInactive);
 
-  public static levelBorder: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(100, 70, 2), this.wallMaterial)
+  public static levelBorder: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(150, 100, 2), this.wallMaterial)
 
   public static meshes: THREE.Mesh[] = [this.normal, this.long1, this.long2, this.platform, this.checkPoint];
 }

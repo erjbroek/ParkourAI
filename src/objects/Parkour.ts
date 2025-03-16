@@ -19,22 +19,10 @@ export default class Parkour {
   // used to display all different objects in the parkour
   public objectArray: Obstacle[] = [];
 
-  private startPosition: THREE.Vector3;
-
   public constructor() {
-    this.startPosition = new THREE.Vector3(0, 0, 0);
+
   }
 
-  /**
- * Creates obstacle
- * 
- * Instead of using mesh, it is used as Obstacle 
- * this way, controlling the parkour jumps is easier
- * think of things like moving obstacles, ect.
- */
-  private createObstacle(mesh: THREE.Mesh, posX: number, posY: number, posZ: number, rotationX = 0, rotationY = 0, rotationZ = 0): Obstacle {
-    return new Obstacle(mesh.clone(), { posX, posY, posZ, rotationX, rotationY, rotationZ });
-  }
 
   /**
    * once i enable level creation, make sure that the levels are seperate from these levels
@@ -45,14 +33,14 @@ export default class Parkour {
    */
   public generateParkour(): void {
     const level1_Obstacles = [
-      this.createObstacle(ParkourPieces.startingPlatform, 0, 0, 20),
-      this.createObstacle(ParkourPieces.normal, 8, 0, 4),
-      this.createObstacle(ParkourPieces.normal, 8, 0, -6),
-      this.createObstacle(ParkourPieces.normal, 8, 0, -16),
-      this.createObstacle(ParkourPieces.platform, 0, 0, -32),
-      this.createObstacle(ParkourPieces.checkPoint, 0, 6.51, -32),
+      [ParkourPieces.startingPlatform, 0, 0, -30],
+      [ParkourPieces.startingPlatform, 0, 0, -50],
+      [ParkourPieces.startingPlatform, 0, 0, -70],
+
+      [ParkourPieces.platform, 0, 0, -90],
+      [ParkourPieces.checkPoint, 0, 6.51, -80],
     ]
-    const level1 = new Level(0, level1_Obstacles.slice(0, -1), level1_Obstacles[level1_Obstacles.length - 1], new THREE.Vector3(0, 0.5, 20));
+    const level1 = new Level(0, level1_Obstacles, new THREE.Vector3(0, 1.5, -30));
 
     Parkour.levels.push(level1);
 
@@ -77,13 +65,13 @@ export default class Parkour {
     let next: Obstacle = null;
 
     const activeLevel: Level = Parkour.levels[this.activeLevel]
-    const finished = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
+    const collidingFinishline = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
 
     // if the player finishes:
-    // - the player finished flas gets sets to true (used to track the percentage of finished players)
+    // - the player finished flag gets sets to true (used to track the percentage of finished players)
     // - the mesh gets updated and becomes green to indicate player has reached it
     // - stats get updated for bar graph
-    if (finished) {
+    if (collidingFinishline && !player.finished) {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
       if (Statistics.checkpointsReached[player.currentLevel]) {
@@ -115,7 +103,7 @@ export default class Parkour {
       }
     })
     if (foundObject.index != null) {
-      if (activeLevel.pieces.length - 2 > foundObject.index) {
+      if (activeLevel.pieces.length - 1 > foundObject.index) {
         next = activeLevel.pieces[foundObject.index + 1]
       } else {
         return ;
