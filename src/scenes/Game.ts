@@ -99,7 +99,7 @@ export default class Game extends Scene {
         }
       }
       if (MouseListener.buttonPressed(0)) {
-        if (UICollision.checkSquareCollision(0.26, 0.89, 0.015, 0.025)) {
+        if (UICollision.checkSquareCollision(0.26, 0.89, 0.012, 0.025)) {
           this.autoProgress = !this.autoProgress;
         }
       }
@@ -230,11 +230,11 @@ export default class Game extends Scene {
       GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.6} players`, canvas.width * 0.31, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
     }
 
-    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.015, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.015, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
     GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.284, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
     if (this.autoProgress) {
-      GUI.fillCircle(canvas, canvas.width * 0.2675, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
+      GUI.fillCircle(canvas, canvas.width * 0.2661, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
     }
 
     // GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
