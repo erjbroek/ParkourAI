@@ -23,10 +23,20 @@ export default class Parkour {
   public constructor() {
     this.generateParkour();
     const loader = new GLTFLoader();
-    loader.load('./assets/floor.glb', function (gltf) {
-      gltf.scene.position.set(0, 0, 50); // Set the position here
-      MainCanvas.scene.add(gltf.scene);
-    });
+    for (let i = 0; i < 200; i++) {
+      loader.load('./assets/floor.glb', function (gltf) {
+        const row = Math.floor(i / 10);
+        const col = i % 10;
+        gltf.scene.position.set(col * 10, 0, row * 10);
+        
+        // Random rotation on y-axis (90, 180, 270, or 360 degrees)
+        const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
+        const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
+        gltf.scene.rotation.y = randomRotation;
+
+        MainCanvas.scene.add(gltf.scene);
+      });
+    }
   }
 
 
