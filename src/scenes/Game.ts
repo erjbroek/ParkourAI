@@ -36,6 +36,8 @@ export default class Game extends Scene {
 
   public autoProgress: boolean = false;
 
+  public updateCamera: boolean = true;
+
   public userPlayer: Player;
 
   public statistics: Statistics = new Statistics();
@@ -99,10 +101,14 @@ export default class Game extends Scene {
         }
       }
       if (MouseListener.buttonPressed(0)) {
+        if (UICollision.checkSquareCollision(0.26, 0.85, 0.012, 0.025)) {
+          this.updateCamera = !this.updateCamera;
+        }
         if (UICollision.checkSquareCollision(0.26, 0.89, 0.012, 0.025)) {
           this.autoProgress = !this.autoProgress;
         }
       }
+  // canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025
     }
     if (KeyListener.keyPressed('Digit2')) {
       if (Game.colorMode < 10) {
@@ -178,9 +184,12 @@ export default class Game extends Scene {
       if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
         Parkour.activeLevel++
         this.readyNextLevel = false
-        const position = Parkour.levels[Parkour.activeLevel].location
-        MainCanvas.camera.position.set(position.x - 40, position.y + 30, position.z);
-        MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275)
+
+        if (this.updateCamera) {
+          const position = Parkour.levels[Parkour.activeLevel].location
+          MainCanvas.camera.position.set(position.x - 40, position.y + 30, position.z);
+          MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275)
+        }
       }
 
       Game.neat.endGeneration();      
@@ -237,9 +246,16 @@ export default class Game extends Scene {
 
     GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
     GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-    GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.284, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
+    GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.28, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
     if (this.autoProgress) {
       GUI.fillCircle(canvas, canvas.width * 0.2661, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
+    }
+
+    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    GUI.writeText(canvas, 'Auto-update camera pos', canvas.width * 0.28, canvas.height * 0.868, 'left', 'system-ui', 15, 'black')
+    if (this.updateCamera) {
+      GUI.fillCircle(canvas, canvas.width * 0.2661, canvas.height * 0.863, canvas.height * 0.008, 0, 0, 0, 0.8)
     }
 
     // GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
