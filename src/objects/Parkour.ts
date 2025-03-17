@@ -27,12 +27,13 @@ export default class Parkour {
       loader.load('./assets/floor.glb', function (gltf) {
         const row = Math.floor(i / 10);
         const col = i % 10;
-        gltf.scene.position.set(col * 10, 0, row * 10);
+        gltf.scene.position.set(col * 200, 0, row * 200);
         
-        // Random rotation on y-axis (90, 180, 270, or 360 degrees)
         const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
         const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
         gltf.scene.rotation.y = randomRotation;
+
+        gltf.scene.scale.set(20, 20, 20);
 
         MainCanvas.scene.add(gltf.scene);
       });
