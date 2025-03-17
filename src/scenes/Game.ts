@@ -178,7 +178,11 @@ export default class Game extends Scene {
       if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
         Parkour.activeLevel++
         this.readyNextLevel = false
+        const position = Parkour.levels[Parkour.activeLevel].location
+        MainCanvas.camera.position.set(position.x - 40, position.y + 30, position.z);
+        MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275)
       }
+
       Game.neat.endGeneration();      
     }
     if (this.openEditor) {

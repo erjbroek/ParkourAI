@@ -158,13 +158,15 @@ export default class MainCanvas {
     if (this.isMouseButtonDown) {
         const mouseMovementX = MouseListener.mouseDelta.x;
         const mouseMovementY = MouseListener.mouseDelta.y;
+        console.log(mouseMovementX, mouseMovementY)
   
         this.yaw -= mouseMovementX * mouseSensitivity;
         this.pitch -= mouseMovementY * mouseSensitivity;
 
-        // Limit pitch to prevent flipping
         this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
         MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+        MouseListener.mouseDelta.x = 0;
+        MouseListener.mouseDelta.y = 0;
     }
   }
 
