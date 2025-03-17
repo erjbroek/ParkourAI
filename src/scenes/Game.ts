@@ -9,6 +9,7 @@ import MainCanvas from '../setup/MainCanvas.js';
 import NeatManager from '../utilities/NeatManager.js';
 import KeyListener from '../utilities/KeyListener.js';
 import * as CANNON from 'cannon-es';
+import * as THREE from 'three'
 import Statistics from './Statistics.js';
 
 export default class Game extends Scene {
@@ -186,10 +187,15 @@ export default class Game extends Scene {
         this.readyNextLevel = false
 
         if (this.updateCamera) {
-          const position = Parkour.levels[Parkour.activeLevel].location
+          const position = Parkour.levels[Parkour.activeLevel].location;
           MainCanvas.camera.position.set(position.x - 40, position.y + 30, position.z);
-          MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275)
-        }
+          MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275);
+      
+          // Synchronize yaw and pitch
+          const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
+          MainCanvas.yaw = euler.y;
+          MainCanvas.pitch = euler.x;
+      }
       }
 
       Game.neat.endGeneration();      

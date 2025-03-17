@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Edit from '../scenes/Edit.js';
 import Player from './Player.js';
 import Statistics from '../scenes/Statistics.js';
@@ -21,6 +22,11 @@ export default class Parkour {
 
   public constructor() {
     this.generateParkour();
+    const loader = new GLTFLoader();
+    loader.load('./assets/floor.glb', function (gltf) {
+      gltf.scene.position.set(0, 0, 50); // Set the position here
+      MainCanvas.scene.add(gltf.scene);
+    });
   }
 
 
