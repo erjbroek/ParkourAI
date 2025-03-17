@@ -33,7 +33,7 @@ export default class Parkour {
         const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
         gltf.scene.rotation.y = randomRotation;
 
-        gltf.scene.scale.set(20, 20, 20);
+        gltf.scene.scale.set(20, 10, 20);
 
         MainCanvas.scene.add(gltf.scene);
       });
