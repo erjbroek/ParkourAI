@@ -2,6 +2,7 @@ import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
 import ParkourPieces from './ParkourPieces.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 
 export default class Level {
@@ -19,7 +20,18 @@ export default class Level {
 
   public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3) {
     this.index = index;
-    this.location = new THREE.Vector3((index % 10) * 150, 0, -Math.floor(index / 10) * 150);
+    const spread = 1.2
+    const scale = 1.2
+    this.location = new THREE.Vector3((index % 10) * 150 * spread * scale, 0, -Math.floor(index / 10) * 150 * spread * scale);
+    const loader = new GLTFLoader();
+    loader.load('./assets/floor.glb', function (gltf) {
+      gltf.scene.position.set((index % 10) * 150 * spread * scale, -15, -Math.floor(index / 10) * 150 * spread * scale - 75);
+      const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
+      const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
+      gltf.scene.rotation.y = randomRotation;
+      gltf.scene.scale.set(20 * scale, 10, 20 * scale);
+      MainCanvas.scene.add(gltf.scene);
+    });
     pieces.forEach((piece, idx) => {
       const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
       const obstacle = this.createObstacle(mesh, posX + this.location.x, posY + this.location.y, posZ + this.location.z, rotationX, rotationY, rotationZ);
@@ -42,15 +54,15 @@ export default class Level {
       MainCanvas.scene.add(obstacle.mesh);4    })
 
     MainCanvas.scene.add(this.finishLine.mesh)
-    const wall1 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z})
-    const wall2 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z - 150})
-    const wall3 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x - 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
-    const wall4 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x + 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
+    // const wall1 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z})
+    // const wall2 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z - 150})
+    // const wall3 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x - 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
+    // const wall4 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x + 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
 
-    MainCanvas.scene.add(wall1.mesh)
-    MainCanvas.scene.add(wall2.mesh)
-    MainCanvas.scene.add(wall3.mesh)
-    MainCanvas.scene.add(wall4.mesh)
+    // MainCanvas.scene.add(wall1.mesh)
+    // MainCanvas.scene.add(wall2.mesh)
+    // MainCanvas.scene.add(wall3.mesh)
+    // MainCanvas.scene.add(wall4.mesh)
   }
 
     /**

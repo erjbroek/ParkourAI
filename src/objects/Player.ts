@@ -75,7 +75,6 @@ export default class Player {
       material: this.physicsMaterial,
       collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
       collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-
     })
 
     // this.currentLevel = 3;

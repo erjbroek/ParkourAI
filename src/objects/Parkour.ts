@@ -22,22 +22,7 @@ export default class Parkour {
 
   public constructor() {
     this.generateParkour();
-    const loader = new GLTFLoader();
-    for (let i = 0; i < 200; i++) {
-      loader.load('./assets/floor.glb', function (gltf) {
-        const row = Math.floor(i / 10);
-        const col = i % 10;
-        gltf.scene.position.set(col * 200, 0, row * 200);
-        
-        const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
-        const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
-        gltf.scene.rotation.y = randomRotation;
 
-        gltf.scene.scale.set(20, 10, 20);
-
-        MainCanvas.scene.add(gltf.scene);
-      });
-    }
   }
 
 
