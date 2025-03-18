@@ -34,7 +34,7 @@ export default class Parkour {
    * Generates the levels in the parkour
    */
   public generateParkour(): void {
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 25; i++) {
 
       const level1_Obstacles = [
         [ParkourPieces.startingPlatform, 0, 0, -30],

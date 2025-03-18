@@ -20,12 +20,12 @@ export default class Level {
 
   public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3) {
     this.index = index;
-    const spread = 1.2
+    const spread = 1.4
     const scale = 1.2
-    this.location = new THREE.Vector3((index % 10) * 150 * spread * scale, 0, -Math.floor(index / 10) * 150 * spread * scale);
+    this.location = new THREE.Vector3((index % 5) * 150 * spread * scale, 0, -Math.floor(index / 5) * 150 * spread * scale);
     const loader = new GLTFLoader();
-    loader.load('./assets/floor.glb', function (gltf) {
-      gltf.scene.position.set((index % 10) * 150 * spread * scale, -15, -Math.floor(index / 10) * 150 * spread * scale - 75);
+    loader.load('./assets/floor.glb', (gltf) => {
+      gltf.scene.position.set((index % 5) * 150 * spread * scale, -15, -Math.floor(index / 5) * 150 * spread * scale - 75);
       const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
       const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
       gltf.scene.rotation.y = randomRotation;
