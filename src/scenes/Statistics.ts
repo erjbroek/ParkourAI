@@ -19,11 +19,26 @@ export default class Statistics {
 
   private visualisation: number = 0;
 
-  public procesInput(): void {
+  private hideVisualisations: boolean = false;
 
+  public procesInput(): void {
+    if (MouseListener.buttonPressed(0)) {
+      if (UICollision.checkSquareCollision(0.26, 0.81, 0.012, 0.025)) {
+        this.hideVisualisations = !this.hideVisualisations
+      }
+    }
   }
 
   public chooseVisualisation(): void {
+    GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    
+    // GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    // GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
+    if (this.hideVisualisations) {
+      GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+    }
     const width = window.innerWidth * 0.1 / 4;
 
     for (let i = 0; i < 2; i++) {

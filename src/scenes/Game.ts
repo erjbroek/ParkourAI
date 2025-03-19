@@ -123,6 +123,7 @@ export default class Game extends Scene {
    * processes player input
    */
   public override processInput(): void {
+    this.statistics.procesInput()
     if (KeyListener.isKeyDown('ArrowUp')) {
       this.userPlayer.moveForwardBackward(-1)
     }
