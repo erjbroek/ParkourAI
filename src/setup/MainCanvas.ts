@@ -71,7 +71,7 @@ export default class MainCanvas {
     window.addEventListener("mouseup", () => this.onMouseUp(), false);
 
     this.setupLight();
-    CreateBackground.addBackgroundSphere(); // Add background sphere
+    // CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
   }

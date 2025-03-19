@@ -51,8 +51,6 @@ export default class NeatManager {
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
-
-
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
@@ -72,7 +70,7 @@ export default class NeatManager {
    */
   public endGeneration(): void {
     this.players.forEach((player: Player) => {
-      player.calculateFitness()
+      player.calculateFitness(true)
     })
     this.neat.sort()
     Statistics.averageScores.push(this.neat.getAverage())
@@ -85,7 +83,6 @@ export default class NeatManager {
       this.recordPylon.position.set(bestPlayer.mesh.position.x, bestPlayer.mesh.position.y + 500, bestPlayer.mesh.position.z);
       MainCanvas.scene.add(this.recordPylon);
     }
-    
     Statistics.highscores.push(this.neat.population[0].score)
 
     const newGeneration = []

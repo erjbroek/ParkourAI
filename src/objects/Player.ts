@@ -360,7 +360,7 @@ export default class Player {
     material.emissive.setRGB(0, 0, 0);
     material.emissiveIntensity = 1;
 
-    // MainCanvas.world.removeBody(this.playerBody)
+    MainCanvas.world.removeBody(this.playerBody)
     // MainCanvas.scene.remove(this.mesh)
   }
 
@@ -411,7 +411,8 @@ export default class Player {
    *
    * @returns the fitness of the player
    */
-  public calculateFitness(): void {
+  public calculateFitness(printScore: boolean = false): void {
+
     if (this.ai) {
       this.brain.score = 0;
 

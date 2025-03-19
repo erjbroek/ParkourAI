@@ -1,3 +1,4 @@
+import Level from './Level.js';
 import { platform } from 'os';
 import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
@@ -8,7 +9,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Edit from '../scenes/Edit.js';
 import Player from './Player.js';
 import Statistics from '../scenes/Statistics.js';
-import Level from './level.js';
 
 export default class Parkour {
   public static levels: Level[] = []
@@ -22,6 +22,7 @@ export default class Parkour {
 
   public constructor() {
     this.generateParkour();
+
 
   }
 

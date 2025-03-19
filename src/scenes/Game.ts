@@ -10,6 +10,8 @@ import NeatManager from '../utilities/NeatManager.js';
 import KeyListener from '../utilities/KeyListener.js';
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three'
+import { Water } from 'three/examples/jsm/objects/Water.js'
+import { Sky } from 'three/examples/jsm/objects/Sky.js'
 import Statistics from './Statistics.js';
 
 export default class Game extends Scene {
@@ -43,17 +45,79 @@ export default class Game extends Scene {
 
   public statistics: Statistics = new Statistics();
 
+  private water: Water;
+
+  private sky: Sky;
+
+  private sun: THREE.Vector3;
+
+  private sceneEnv = new THREE.Scene()
+
+  private pmremGenerator = new THREE.PMREMGenerator(MainCanvas.renderer);
+
   public constructor() {
     super();
-    // console.log(Statistics.checkpointsReached)
-    // for(let i = 0; i < Parkour.levels.length - 1; i++) {
-    //   Statistics.checkpointsReached.push(0)
-    // }
+    const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
+
+    this.water = new Water(
+      waterGeometry,
+      {
+        textureWidth: 512,
+        textureHeight: 512,
+        waterNormals: new THREE.TextureLoader().load( './assets/Water_1_M_Normal.jpg', function ( texture ) {
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        } ),
+        sunDirection: new THREE.Vector3(),
+        sunColor: 0xffffff,
+        waterColor: 0x001e0f,
+        distortionScale: 3.7,
+      }
+    );
+
+    this.water.rotation.x = - Math.PI / 2;
+    this.water.position.set(0, -20, 0);
+    MainCanvas.scene.add(this.water);
+
+    this.sun = new THREE.Vector3();
+    this.sky = new Sky()
+    this.sky.scale.setScalar(10000)
+    MainCanvas.scene.add(this.sky)
+
+    const skyUniforms = this.sky.material.uniforms;
+    skyUniforms[ 'turbidity' ].value = 10;
+    skyUniforms[ 'rayleigh' ].value = 2;
+    skyUniforms[ 'mieCoefficient' ].value = 0.005;
+    skyUniforms[ 'mieDirectionalG' ].value = 0.8;
+    this.updateSun();
+
     Game.neat = new NeatManager()
     // this.userPlayer = new Player(0, false);
-
     Game.alivePlayers = Game.neat.players;
   }
+
+  public updateSun() {
+    const parameters = {
+      elevation: 0.2,
+      azimuth: 130
+    };
+    let renderTarget;
+    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+    const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+
+    this.sun.setFromSphericalCoords( 1, phi, theta );
+    this.sky.material.uniforms[ 'sunPosition' ].value.copy( this.sun );
+    this.water.material.uniforms[ 'sunDirection' ].value.copy( this.sun ).normalize();
+
+    if ( renderTarget !== undefined ) renderTarget.dispose();
+
+    this.sceneEnv.add( this.sky );
+    renderTarget = this.pmremGenerator.fromScene( this.sceneEnv );
+    MainCanvas.scene.add( this.sky );
+
+    MainCanvas.scene.environment = renderTarget.texture;
+
+  }
+
 
   /**
    * processes player input
@@ -154,6 +218,7 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
+    this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
     if (!Game.extinct) {
       this.updateLight();
     }
@@ -167,7 +232,7 @@ export default class Game extends Scene {
       this.userPlayer.update(deltaTime);
       this.userPlayer.calculateFitness()
     }
-
+    Game.neat.players[0].calculateObstacleDistance(true)
     if (!Game.extinct) {  
       if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.5 && !Parkour.levels[Parkour.activeLevel].finished) {
         Parkour.levels[Parkour.activeLevel].finished = true

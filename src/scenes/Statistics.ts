@@ -57,7 +57,7 @@ export default class Statistics {
     }
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));
     const maxAverage: number = Math.ceil(Math.max(...Statistics.averageScores));
-
+    
     // first rendering graph itself
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2, 10);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 2, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
@@ -147,7 +147,6 @@ export default class Statistics {
       GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 30, Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2)
       GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
     }
-    console.log(Statistics.checkpointsReached[0])
     for (let i = 0; i < Statistics.checkpointsReached.length ; i++) {
       GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2)
       GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
