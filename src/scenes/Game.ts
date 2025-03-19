@@ -160,21 +160,23 @@ export default class Game extends Scene {
       if (KeyListener.keyPressed('KeyE')) {
         Game.neat.endGeneration();
       }
-      if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(0.26, 0.929, 0.1, 0.05)) || this.autoProgress) {
+      if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
         if (Parkour.levels[Parkour.activeLevel].finished) {
           this.readyNextLevel = true;
           Game.alivePlayers.forEach(player => player.alive = false);
         }
       }
       if (MouseListener.buttonPressed(0)) {
-        if (UICollision.checkSquareCollision(0.26, 0.85, 0.012, 0.025)) {
+        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.85, 0.012, 0.025)) {
           this.updateCamera = !this.updateCamera;
         }
-        if (UICollision.checkSquareCollision(0.26, 0.89, 0.012, 0.025)) {
+        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.89, 0.012, 0.025)) {
           this.autoProgress = !this.autoProgress;
         }
+        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
+          this.statistics.startHidingGraphs = !this.statistics.startHidingGraphs
+        }
       }
-  // canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025
     }
     if (KeyListener.keyPressed('Digit2')) {
       if (Game.colorMode < 10) {
@@ -219,6 +221,7 @@ export default class Game extends Scene {
   }
 
   public override update(deltaTime: number): Scene {
+    this.statistics.hideUI(deltaTime)
     this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
     if (!Game.extinct) {
       this.updateLight();
@@ -304,30 +307,30 @@ export default class Game extends Scene {
     } else {
       GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
     }
-    GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-    GUI.writeText(canvas, `Level: ${Parkour.activeLevel}`, canvas.width * 0.133, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
+    GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21 - this.statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+    GUI.writeText(canvas, `Level: ${Parkour.activeLevel}`, canvas.width * 0.133 - this.statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+    GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
 
     if (Parkour.levels[Parkour.activeLevel].finished) {
-      GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
-      GUI.writeText(canvas, 'Next level', canvas.width * 0.31, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+      GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+      GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
     } else {
-      GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1))
-      GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.6} players`, canvas.width * 0.31, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+      GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1))
+      GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.6} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
     }
 
-    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-    GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.28, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
+    GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.28 - this.statistics.visualisationPosition, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
     if (this.autoProgress) {
-      GUI.fillCircle(canvas, canvas.width * 0.2661, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
+      GUI.fillCircle(canvas, canvas.width * 0.2661 - this.statistics.visualisationPosition, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
     }
 
-    GUI.fillRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-    GUI.drawRectangle(canvas, canvas.width * 0.26, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-    GUI.writeText(canvas, 'Auto-update camera pos', canvas.width * 0.28, canvas.height * 0.868, 'left', 'system-ui', 15, 'black')
+    GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+    GUI.drawRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+    GUI.writeText(canvas, 'Auto-update camera pos', canvas.width * 0.28 - this.statistics.visualisationPosition, canvas.height * 0.868, 'left', 'system-ui', 15, 'black')
     if (this.updateCamera) {
-      GUI.fillCircle(canvas, canvas.width * 0.2661, canvas.height * 0.863, canvas.height * 0.008, 0, 0, 0, 0.8)
+      GUI.fillCircle(canvas, canvas.width * 0.2661 - this.statistics.visualisationPosition, canvas.height * 0.863, canvas.height * 0.008, 0, 0, 0, 0.8)
     }
 
     // GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
@@ -341,7 +344,7 @@ export default class Game extends Scene {
         const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
           (prev.brain.score > current.brain.score) ? prev : current
         );
-        Statistics.renderOutput(bestPlayer);
+        this.statistics.renderOutput(bestPlayer);
       }
     }
   }
