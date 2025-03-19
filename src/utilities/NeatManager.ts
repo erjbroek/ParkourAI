@@ -74,8 +74,8 @@ export default class NeatManager {
     })
     this.neat.sort()
     Statistics.averageScores.push(this.neat.getAverage())
-    Statistics.previousCheckpointsReached = Statistics.checkpointsReached
-    Statistics.checkpointsReached = []
+    // Statistics.checkpointsReached = Statistics.checkpointsReached
+    Statistics.previousCheckpointsReached = [...Statistics.checkpointsReached];
     if (this.neat.population[0].score > Statistics.highscore) {
       Statistics.highscore = this.neat.population[0].score;
       const bestPlayer = this.players.reduce((prev, current) => (prev.brain.score > current.brain.score) ? prev : current);

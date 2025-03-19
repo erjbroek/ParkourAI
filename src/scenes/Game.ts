@@ -232,7 +232,7 @@ export default class Game extends Scene {
     if (this.userPlayer) {
       this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
       this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
-      this.parkour.checkCollision(this.userPlayer);
+      this.parkour.checkCollision(this.userPlayer, Game.neat.players);
       this.userPlayer.update(deltaTime);
       this.userPlayer.calculateFitness()
     }
@@ -246,7 +246,7 @@ export default class Game extends Scene {
         player.mesh.position.copy(player.playerBody.position);
         player.mesh.quaternion.copy(player.playerBody.quaternion);
         
-        this.parkour.checkCollision(player);
+        this.parkour.checkCollision(player, Game.neat.players);
         player.update(deltaTime);
       });
       
@@ -296,6 +296,7 @@ export default class Game extends Scene {
   }
 
   public override render(): void {
+
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
     // Game.neat.renderNetwork(canvas, Game.neat.neat.getFittest());

@@ -9,6 +9,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Edit from '../scenes/Edit.js';
 import Player from './Player.js';
 import Statistics from '../scenes/Statistics.js';
+import NeatManager from '../utilities/NeatManager.js';
 
 export default class Parkour {
   public static levels: Level[] = []
@@ -63,7 +64,7 @@ export default class Parkour {
   * 
   * @param player is the player object that is being checked for collision
   */
-  public checkCollision(player: Player): void {
+  public checkCollision(player: Player, players: Player[]): void {
     player.onGround = false;
     let foundObject: { index: number; object: Obstacle } | null = { index: null, object: null };
     let current: Obstacle = null;
@@ -81,7 +82,7 @@ export default class Parkour {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
       if (Statistics.checkpointsReached[activeIndex]) {
-        Statistics.checkpointsReached[activeIndex]++
+        Statistics.checkpointsReached[activeIndex] = players.filter(p => p.finished).length;
       } else {
         Statistics.checkpointsReached[activeIndex] = 1
       }
