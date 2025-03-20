@@ -162,8 +162,10 @@ export default class Game extends Scene {
       }
       if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
         if (Parkour.levels[Parkour.activeLevel].finished) {
+          if (!this.autoProgress) {
+            Game.alivePlayers.forEach(player => player.alive = false);
+          }
           this.readyNextLevel = true;
-          Game.alivePlayers.forEach(player => player.alive = false);
         }
       }
       if (MouseListener.buttonPressed(0)) {
@@ -254,6 +256,8 @@ export default class Game extends Scene {
       if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
         Parkour.activeLevel++
         this.readyNextLevel = false
+        Statistics.averageScores = []
+        Statistics.highscores = []
 
         if (this.updateCamera) {
           const position = Parkour.levels[Parkour.activeLevel].location;
