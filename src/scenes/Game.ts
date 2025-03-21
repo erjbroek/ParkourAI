@@ -235,7 +235,6 @@ export default class Game extends Scene {
 
     Parkour.levels[Parkour.activeLevel].time -= deltaTime
     if (Parkour.levels[Parkour.activeLevel].time <= 0) {
-      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
       Game.neat.players.forEach((player) => {
         player.killPlayer()
       })
@@ -282,7 +281,7 @@ export default class Game extends Scene {
           MainCanvas.pitch = euler.x;
       }
       }
-
+      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
       Game.neat.endGeneration();      
     }
     if (this.openEditor) {
