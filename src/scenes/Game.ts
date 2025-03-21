@@ -123,20 +123,23 @@ export default class Game extends Scene {
    */
   public override processInput(): void {
     this.statistics.procesInput()
-    if (KeyListener.isKeyDown('ArrowUp')) {
-      this.userPlayer.moveForwardBackward(-1)
-    }
-    if (KeyListener.isKeyDown('ArrowDown')) {
-      this.userPlayer.moveForwardBackward(1)
-    }
-    if (KeyListener.isKeyDown('ArrowLeft')) {
-      this.userPlayer.moveLeft(1)
-    }
-    if (KeyListener.isKeyDown('ArrowRight')) {
-      this.userPlayer.moveRight(1)
-    } 
-    if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
-      this.userPlayer.jump()
+    if (this.userPlayer) {
+
+      if (KeyListener.isKeyDown('ArrowUp')) {
+        this.userPlayer.moveForwardBackward(-1)
+      }
+      if (KeyListener.isKeyDown('ArrowDown')) {
+        this.userPlayer.moveForwardBackward(1)
+      }
+      if (KeyListener.isKeyDown('ArrowLeft')) {
+        this.userPlayer.moveLeft(1)
+      }
+      if (KeyListener.isKeyDown('ArrowRight')) {
+        this.userPlayer.moveRight(1)
+      } 
+      if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
+        this.userPlayer.jump()
+      }
     }
     if (KeyListener.keyPressed('Delete')) {
       Game.neat.players.forEach((player) => {

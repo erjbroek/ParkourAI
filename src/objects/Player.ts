@@ -108,13 +108,6 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
-    // if (this.ai) {
-    //   if (this.deathTimer > 0) {
-    //     this.deathTimer -= deltaTime;
-    //   } else {
-    //     this.killPlayer();
-    //   }
-    // }
     if (this.ai) {
       this.calculateFitness();
     }
