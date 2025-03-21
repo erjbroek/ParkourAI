@@ -35,7 +35,7 @@ export default class Player {
 
   public onGround: boolean = false;
 
-  // public currentLevel: number = 0;
+  public amountOfJumps: number = 0
 
   public index: number = 0;
 
@@ -108,13 +108,13 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
-    if (this.ai) {
-      if (this.deathTimer > 0) {
-        this.deathTimer -= deltaTime;
-      } else {
-        this.killPlayer();
-      }
-    }
+    // if (this.ai) {
+    //   if (this.deathTimer > 0) {
+    //     this.deathTimer -= deltaTime;
+    //   } else {
+    //     this.killPlayer();
+    //   }
+    // }
     if (this.ai) {
       this.calculateFitness();
     }
@@ -423,6 +423,7 @@ export default class Player {
       if (this.finished) {
         this.brain.score *= 1.5;
       }
+      this.brain.score -= (this.amountOfJumps * 10)
     } else {
       this.userFitness = 0;
 
@@ -439,6 +440,8 @@ export default class Player {
     const jumpForce = 14;
     this.playerBody.position.y += 0.01;
     this.playerBody.velocity.y = jumpForce;
+    this.onGround = false
+    this.amountOfJumps++
   }
 
   /**

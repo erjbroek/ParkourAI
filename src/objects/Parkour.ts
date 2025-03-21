@@ -36,19 +36,34 @@ export default class Parkour {
    * Generates the levels in the parkour
    */
   public generateParkour(): void {
-    for (let i = 0; i < 25; i++) {
 
-      const level1_Obstacles = [
-        [ParkourPieces.startingPlatform, 0, -2, -30],
-        [ParkourPieces.startingPlatform, 0, -2, -50],
-        [ParkourPieces.startingPlatform, 0, -2, -70],
-  
-        [ParkourPieces.platform, 0, -2, -90],
-        [ParkourPieces.checkPoint, 0, 5.01, -80],
-      ]
-      const level1 = new Level(i, level1_Obstacles, new THREE.Vector3(0, 1.5, -30));
-      Parkour.levels.push(level1);
-    }
+    let obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.startingPlatform, 0, -2, -50],
+      [ParkourPieces.startingPlatform, 0, -2, -70],
+      [ParkourPieces.platform, 0, -2, -90],
+      [ParkourPieces.checkPoint, 0, 5.01, -80]
+    ]
+    Parkour.levels.push(new Level(0, obstacles, new THREE.Vector3(0, 1.2, -30), 7))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.startingPlatform, 0, -2, -50],
+      [ParkourPieces.startingPlatform, 0, -2, -76],
+      [ParkourPieces.platform, 0, -2, -96],
+      [ParkourPieces.checkPoint, 0, 5.01, -86]
+    ]
+    Parkour.levels.push(new Level(1, obstacles, new THREE.Vector3(0, 1.2, -30), 8))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.startingPlatform, 0, -2, -56],
+      [ParkourPieces.startingPlatform, 0, -2, -82],
+      [ParkourPieces.startingPlatform, 0, -2, -108],
+      [ParkourPieces.startingPlatform, 0, -2, -134],
+      [ParkourPieces.checkPoint, 0, 5.01, -124]
+    ]
+    Parkour.levels.push(new Level(2, obstacles, new THREE.Vector3(0, 1.2, -30), 10))
 
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()

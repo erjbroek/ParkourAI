@@ -223,10 +223,21 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.statistics.hideUI(deltaTime)
+
+    
     this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
     if (!Game.extinct) {
       this.updateLight();
     }
+
+    Parkour.levels[Parkour.activeLevel].time -= deltaTime
+    if (Parkour.levels[Parkour.activeLevel].time <= 0) {
+      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+      Game.neat.players.forEach((player) => {
+        player.killPlayer()
+      })
+    }
+
     Game.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = Game.alivePlayers.length === 0;
 
@@ -239,9 +250,8 @@ export default class Game extends Scene {
     }
     Game.neat.players[0].calculateObstacleDistance(true)
     if (!Game.extinct) {  
-      if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.5 && !Parkour.levels[Parkour.activeLevel].finished) {
+      if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.75 && !Parkour.levels[Parkour.activeLevel].finished) {
         Parkour.levels[Parkour.activeLevel].finished = true
-        // Game.neat.neat.generation = 0
       }
       Game.alivePlayers.forEach((player) => {
         player.mesh.position.copy(player.playerBody.position);
@@ -319,8 +329,8 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
       GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
     } else {
-      GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.6), 1))
-      GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.6} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+      GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
+      GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Game.neat.neat.popsize * 0.75} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
     }
 
     GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)

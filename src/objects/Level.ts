@@ -18,10 +18,14 @@ export default class Level {
 
   public finished: boolean = false;
 
-  public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3) {
+  public time: number;
+
+  public maxTime: number;
+
+  public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3, time: number) {
     this.index = index;
-    const spread = 1.4
-    const scale = 1.2
+    const spread = 1.9
+    const scale = 1.5
     this.location = new THREE.Vector3((index % 5) * 150 * spread * scale, 0, -Math.floor(index / 5) * 150 * spread * scale);
     const loader = new GLTFLoader();
     loader.load('./assets/floor1.glb', (gltf) => {
@@ -43,6 +47,8 @@ export default class Level {
       }
     });
     this.spawnPoint = spawnpoint.clone().add(this.location);
+    this.time = time
+    this.maxTime = time
   }
 
    /**
