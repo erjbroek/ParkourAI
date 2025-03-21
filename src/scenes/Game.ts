@@ -8,7 +8,6 @@ import MouseListener from '../utilities/MouseListener.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import NeatManager from '../utilities/NeatManager.js';
 import KeyListener from '../utilities/KeyListener.js';
-import * as CANNON from 'cannon-es';
 import * as THREE from 'three'
 import { Water } from 'three/examples/jsm/objects/Water.js'
 import { Sky } from 'three/examples/jsm/objects/Sky.js'

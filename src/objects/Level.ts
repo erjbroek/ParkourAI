@@ -24,14 +24,15 @@ export default class Level {
     const scale = 1.2
     this.location = new THREE.Vector3((index % 5) * 150 * spread * scale, 0, -Math.floor(index / 5) * 150 * spread * scale);
     const loader = new GLTFLoader();
-    loader.load('./assets/floor.glb', (gltf) => {
-      gltf.scene.position.set((index % 5) * 150 * spread * scale, -15, -Math.floor(index / 5) * 150 * spread * scale - 75);
+    loader.load('./assets/floor1.glb', (gltf) => {
+      gltf.scene.position.set((index % 5) * 150 * spread * scale, -24, -Math.floor(index / 5) * 150 * spread * scale - 75);
       const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
       const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
       gltf.scene.rotation.y = randomRotation;
       gltf.scene.scale.set(20 * scale, 10, 20 * scale);
       MainCanvas.scene.add(gltf.scene);
     });
+
     pieces.forEach((piece, idx) => {
       const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
       const obstacle = this.createObstacle(mesh, posX + this.location.x, posY + this.location.y, posZ + this.location.z, rotationX, rotationY, rotationZ);
@@ -51,7 +52,8 @@ export default class Level {
    */
    public renderParkour(): void {
     this.pieces.forEach((obstacle) => {
-      MainCanvas.scene.add(obstacle.mesh);4    })
+      MainCanvas.scene.add(obstacle.mesh)
+    })
 
     MainCanvas.scene.add(this.finishLine.mesh)
     // const wall1 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z})

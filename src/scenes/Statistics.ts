@@ -79,9 +79,9 @@ export default class Statistics {
     }
 
 
-    if (this.visualisation == 0) {
+    if (this.visualisation == 1) {
       this.renderPerformance();
-    } else if (this.visualisation == 1) {
+    } else if (this.visualisation == 0) {
       this.renderProgression();
     }
   }

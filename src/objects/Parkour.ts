@@ -39,12 +39,12 @@ export default class Parkour {
     for (let i = 0; i < 25; i++) {
 
       const level1_Obstacles = [
-        [ParkourPieces.startingPlatform, 0, 0, -30],
-        [ParkourPieces.startingPlatform, 0, 0, -50],
-        [ParkourPieces.startingPlatform, 0, 0, -70],
+        [ParkourPieces.startingPlatform, 0, -2, -30],
+        [ParkourPieces.startingPlatform, 0, -2, -50],
+        [ParkourPieces.startingPlatform, 0, -2, -70],
   
-        [ParkourPieces.platform, 0, 0, -90],
-        [ParkourPieces.checkPoint, 0, 6.51, -80],
+        [ParkourPieces.platform, 0, -2, -90],
+        [ParkourPieces.checkPoint, 0, 5.01, -80],
       ]
       const level1 = new Level(i, level1_Obstacles, new THREE.Vector3(0, 1.5, -30));
       Parkour.levels.push(level1);
