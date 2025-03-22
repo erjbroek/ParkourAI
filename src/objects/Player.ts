@@ -248,15 +248,6 @@ export default class Player {
             const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
             this.mesh.material = material;
           }
-        } else if (Game.colorMode == 4) {
-          if (!this.loaded) {
-            this.loaded = true;
-            const textureLoader = new THREE.TextureLoader();
-            textureLoader.load("./assets/william.png", (texture) => {
-              const material = new THREE.MeshLambertMaterial({ map: texture });
-              this.mesh.material = material;
-            });
-          }
         } else if (Game.colorMode == 5) {
           if (this.loaded) {
             this.loaded = false;
