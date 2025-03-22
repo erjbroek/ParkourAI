@@ -416,7 +416,7 @@ export default class Player {
       if (this.finished) {
         this.brain.score *= 1.5;
       }
-      this.brain.score -= (this.amountOfJumps * 7)
+      // this.brain.score -= (this.amountOfJumps * 6)
     } else {
       this.userFitness = 0;
 
