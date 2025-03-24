@@ -14,7 +14,7 @@ import NeatManager from '../utilities/NeatManager.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 3;
+  public static activeLevel: number = 0;
 
   public static addedParkour: Obstacle[][] = [[]];
 
