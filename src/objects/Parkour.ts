@@ -56,29 +56,38 @@ export default class Parkour {
     Parkour.levels.push(new Level(1, obstacles, new THREE.Vector3(0, 1.2, -30), 8))
 
     obstacles = [
-      [ParkourPieces.startingPlatform, 0, -2, -30],
-      [ParkourPieces.startingPlatform, 0, -2, -56],
-      [ParkourPieces.startingPlatform, 0, -2, -82],
-      [ParkourPieces.startingPlatform, 0, -2, -108],
-      [ParkourPieces.startingPlatform, 0, -2, -134],
-      [ParkourPieces.checkPoint, 0, 5.01, -124]
+      [ParkourPieces.startingPlatform, -60, -2, -26, 0, Math.PI / 2],
+      [ParkourPieces.normal2, -60, -2, -50],
+      [ParkourPieces.normal2, -60, -2, -64],
+      [ParkourPieces.normal2, -60, -2, -78],
+      [ParkourPieces.normal2, -46, -2, -78],
+      [ParkourPieces.normal2, -32, -2, -78],
+      [ParkourPieces.normal2, -18, -2, -78],
+      [ParkourPieces.platform, 6, -2, -78],
+
+
+      [ParkourPieces.checkPoint, -8, 4.51, -78, 0, Math.PI / 2]
     ]
-    Parkour.levels.push(new Level(2, obstacles, new THREE.Vector3(0, 1.2, -30), 10))
+    Parkour.levels.push(new Level(2, obstacles, new THREE.Vector3(-60, 1.2, -26), 14))
 
     obstacles = [
-      [ParkourPieces.startingPlatform, -60, -2, -80],
-      [ParkourPieces.normal2, -60, -2, -60],
-      [ParkourPieces.normal2, -60, -2, -48],
-      [ParkourPieces.normal2, -60, -2, -34],
-      [ParkourPieces.normal2, -60, -2, -20],
-      [ParkourPieces.normal2, -46, -2, -20],
-      [ParkourPieces.normal2, -32, -2, -20],
-      [ParkourPieces.normal2, -18, -2, -20],
+      [ParkourPieces.startingPlatform, -30, -2, -100],
+      [ParkourPieces.normal2, -30, -2, -80],
+      [ParkourPieces.normal2, -30, -2, -68],
+      [ParkourPieces.normal2, -30, -2, -54],
+      [ParkourPieces.normal2, -30, -2, -40],
+      [ParkourPieces.normal2, -16, -2, -40],
+      [ParkourPieces.normal2, -2, -2, -40],
+      [ParkourPieces.normal2, 12, -2, -40],
+      [ParkourPieces.normal2, 26, -2, -40],
+      [ParkourPieces.normal2, 26, -2, -54],
+      [ParkourPieces.normal2, 26, -2, -68],
+      [ParkourPieces.normal2, 26, -2, -80],
 
-      [ParkourPieces.platform, -0, -2, -20, 0, Math.PI / 2, 0],
-      [ParkourPieces.checkPoint, -0, 5.01, -20, 0, Math.PI / 2]
+      [ParkourPieces.platform, 26, -2, -100],
+      [ParkourPieces.checkPoint, 26, 4.01, -90]
     ]
-    Parkour.levels.push(new Level(3, obstacles, new THREE.Vector3(-60, 1.2, -80), 15))
+    Parkour.levels.push(new Level(3, obstacles, new THREE.Vector3(-30, 1.2, -100), 16))
 
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()

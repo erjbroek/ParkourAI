@@ -34,7 +34,6 @@ export default class NeatManager {
       popsize: NeatManager.popSize,
       elitism: NeatManager.popSize / 5
     })
-    this.neat.generation = generation;
 
     
     if (NeatManager.usePretrainedNetwork) {
@@ -43,8 +42,19 @@ export default class NeatManager {
         this.neat.population[index] = Network.fromJSON(json[index])
       })
     } 
+
     this.initializePopulation()
     console.log(this.neat.generation)
+  }
+
+  public resetGeneration(): void {
+    this.neat = new neat.Neat(8, 5, null, {
+      mutationRate: 0.3,
+      mutationAmount: 1,
+      popsize: NeatManager.popSize,
+      elitism: NeatManager.popSize / 5
+    })
+    this.initializePopulation()
   }
 
   /**

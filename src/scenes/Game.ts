@@ -92,6 +92,14 @@ export default class Game extends Scene {
     Game.neat = new NeatManager()
     // this.userPlayer = new Player(0, false);
     Game.alivePlayers = Game.neat.players;
+
+    // update camera position to first level
+    const position = Parkour.levels[Parkour.activeLevel].location
+    MainCanvas.camera.position.set(position.x - 60, position.y + 70, position.z);
+    MainCanvas.camera.rotation.set(-0.9397751756439171, -0.36884016871031733, -0.45837171574968577);
+    const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
+    MainCanvas.yaw = euler.y;
+    MainCanvas.pitch = euler.x;
   }
 
   public updateSun() {
@@ -160,6 +168,7 @@ export default class Game extends Scene {
     // option to end generation if player gets stuck
     if (!this.openEditor) {
       if (KeyListener.keyPressed('KeyE')) {
+        Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
         Game.neat.endGeneration();
       }
       if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
@@ -269,17 +278,17 @@ export default class Game extends Scene {
         this.readyNextLevel = false
         Statistics.averageScores = []
         Statistics.highscores = []
-
+        Game.neat.resetGeneration()   
         if (this.updateCamera) {
           const position = Parkour.levels[Parkour.activeLevel].location;
-          MainCanvas.camera.position.set(position.x - 40, position.y + 30, position.z);
-          MainCanvas.camera.rotation.set(-0.4926751489803344, -0.5538561901999504, -0.27519259523191275);
+          MainCanvas.camera.position.set(position.x - 60, position.y + 70, position.z);
+          MainCanvas.camera.rotation.set(-0.9397751756439171, -0.36884016871031733, -0.45837171574968577);
       
           // Synchronize yaw and pitch
           const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
           MainCanvas.yaw = euler.y;
           MainCanvas.pitch = euler.x;
-      }
+        }
       }
       Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
       Game.neat.endGeneration();      
