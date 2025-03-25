@@ -138,7 +138,7 @@ export default class Statistics {
     GUI.writeText(MainCanvas.canvas, 'Average', startPosition.x + window.innerWidth * 0.04, startPosition.y + dimensions.height * 1.1 + 50, 'left', 'system-ui', 15, 'black');
   }
 
-  public renderOutput(best_player: Player): void {
+  public renderOutput(best_player: Player, bestPlayeralive): void {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.58 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const bottom = startPosition.y + dimensions.height * 0.8
@@ -147,6 +147,10 @@ export default class Statistics {
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 0, 0, 0, 0.2, 10);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom, startPosition.x + dimensions.width * 0.05 + width * 1.2 * 5, bottom, 0, 0, 0, 0.5, 2)
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom - max_height, dimensions.width * 0.05 + width * 1.2 * 4.72, max_height, 0, 0, 0, 0.15, 10)
+    if (!bestPlayeralive) {
+      GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 255, 0, 0, 0.1, 10);
+      GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.16, 'center', 'system-ui', 18, 'pink', 300)
+    }
     GUI.writeText(MainCanvas.canvas, 'Neural network outputs', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.1, 'center', 'system-ui', 22, 'white', 300)
     
     let output = best_player.brain.activate(best_player.inputValues);

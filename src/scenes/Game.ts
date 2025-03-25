@@ -366,10 +366,8 @@ export default class Game extends Scene {
     } else {
       this.statistics.chooseVisualisation()
       if (!Game.extinct) {
-        const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
-          (prev.brain.score > current.brain.score) ? prev : current
-        );
-        this.statistics.renderOutput(bestPlayer);
+        const bestPlayer = Game.neat.players[0]
+        this.statistics.renderOutput(bestPlayer, bestPlayer.alive);
       }
     }
   }
