@@ -14,7 +14,7 @@ import NeatManager from '../utilities/NeatManager.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 0;
+  public static activeLevel: number = 4;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -63,9 +63,7 @@ export default class Parkour {
       [ParkourPieces.normal2, -46, -2, -78],
       [ParkourPieces.normal2, -32, -2, -78],
       [ParkourPieces.normal2, -18, -2, -78],
-      [ParkourPieces.platform, 6, -2, -78],
-
-
+      [ParkourPieces.platform, 2, -2, -78, 0, Math.PI / 2],
       [ParkourPieces.checkPoint, -8, 4.51, -78, 0, Math.PI / 2]
     ]
     Parkour.levels.push(new Level(2, obstacles, new THREE.Vector3(-60, 1.2, -26), 14))
@@ -85,10 +83,26 @@ export default class Parkour {
       [ParkourPieces.normal2, 26, -2, -80],
 
       [ParkourPieces.platform, 26, -2, -100],
-      [ParkourPieces.checkPoint, 26, 4.01, -90]
+      [ParkourPieces.checkPoint, 26, 4.51, -90]
     ]
     Parkour.levels.push(new Level(3, obstacles, new THREE.Vector3(-30, 1.2, -100), 16))
 
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, -52, -2, -46, 0, Math.PI / 2],
+
+      [ParkourPieces.long2, -32, -2, -44, 0, Math.PI / 2],
+      [ParkourPieces.long2, -12, -2, -44, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, -2, -52],
+      [ParkourPieces.long2, 0, -2, -72],
+      [ParkourPieces.long2, 8, -2, -84, 0, Math.PI / 2],
+      [ParkourPieces.long2, 28, -2, -84, 0, Math.PI / 2],
+
+
+      [ParkourPieces.platform, 48, -2, -88, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, 38, 4.51, -88, 0, Math.PI / 2],
+    ]
+    Parkour.levels.push(new Level(4, obstacles, new THREE.Vector3(-60, 1.5, -46), 17))
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
     }
