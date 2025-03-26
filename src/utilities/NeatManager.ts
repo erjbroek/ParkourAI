@@ -34,7 +34,6 @@ export default class NeatManager {
       popsize: NeatManager.popSize,
       elitism: NeatManager.popSize / 5
     })
-    this.neat.generation = generation;
 
     
     if (NeatManager.usePretrainedNetwork) {
@@ -43,16 +42,25 @@ export default class NeatManager {
         this.neat.population[index] = Network.fromJSON(json[index])
       })
     } 
+
     this.initializePopulation()
     console.log(this.neat.generation)
+  }
+
+  public resetGeneration(): void {
+    this.neat = new neat.Neat(8, 5, null, {
+      mutationRate: 0.3,
+      mutationAmount: 1,
+      popsize: NeatManager.popSize,
+      elitism: NeatManager.popSize / 5
+    })
+    this.initializePopulation()
   }
 
   /**
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
-
-
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
@@ -72,12 +80,12 @@ export default class NeatManager {
    */
   public endGeneration(): void {
     this.players.forEach((player: Player) => {
-      player.calculateFitness()
+      player.calculateFitness(true)
     })
     this.neat.sort()
     Statistics.averageScores.push(this.neat.getAverage())
-    Statistics.previousCheckpointsReached = Statistics.checkpointsReached
-    Statistics.checkpointsReached = []
+    // Statistics.checkpointsReached = Statistics.checkpointsReached
+    Statistics.previousCheckpointsReached = [...Statistics.checkpointsReached];
     if (this.neat.population[0].score > Statistics.highscore) {
       Statistics.highscore = this.neat.population[0].score;
       const bestPlayer = this.players.reduce((prev, current) => (prev.brain.score > current.brain.score) ? prev : current);
@@ -85,7 +93,6 @@ export default class NeatManager {
       this.recordPylon.position.set(bestPlayer.mesh.position.x, bestPlayer.mesh.position.y + 500, bestPlayer.mesh.position.z);
       MainCanvas.scene.add(this.recordPylon);
     }
-    
     Statistics.highscores.push(this.neat.population[0].score)
 
     const newGeneration = []

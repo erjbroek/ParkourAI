@@ -13,5 +13,11 @@ to find the best balance between complexity and efficiency.
 
 
 
+future plans:
+- create different islands, not all flat, maybe river, and change levels surrounding those
+  - trees or foliage might help with that idea
+- change platforms to be prettier, grass, rock? idk make it fit in with the rest
+- option to change mutation rate
+- add more levels 
 
 

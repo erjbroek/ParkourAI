@@ -19,35 +19,69 @@ export default class Statistics {
 
   private visualisation: number = 0;
 
+  public startHidingGraphs: boolean = false;
+
+  public visualisationHidden = true;
+
+  public visualisationPosition: number = 0
+
+  private hidingDuration: number = 1000
+
   public procesInput(): void {
 
   }
+
+  public hideUI(deltatime: number): void {
+    const totalMovement = window.innerWidth * 0.015 + window.innerWidth * 0.23;
+    const easeSpeed = 7;
+  
+    if (this.startHidingGraphs) {
+      this.hidingDuration -= deltatime;
+  
+      if (this.visualisationHidden) {
+        this.visualisationPosition += (totalMovement - this.visualisationPosition) * easeSpeed * deltatime;
+        if (this.visualisationPosition >= totalMovement - 0.1) {
+          this.visualisationPosition = totalMovement;
+          this.visualisationHidden = false;
+          this.startHidingGraphs = false;
+        }
+      } else {
+        this.visualisationPosition += (0 - this.visualisationPosition) * easeSpeed * deltatime;
+        if (this.visualisationPosition <= 0.1) {
+          this.visualisationPosition = 0;
+          this.visualisationHidden = true;
+          this.startHidingGraphs = false;
+        }
+      }
+    }
+  }
+  
 
   public chooseVisualisation(): void {
     const width = window.innerWidth * 0.1 / 4;
 
     for (let i = 0; i < 2; i++) {
-      if (UICollision.checkCollision(window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035)) {
-        GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+      if (UICollision.checkCollision(window.innerWidth * 0.25 + i * width * 1.1 - this.visualisationPosition, window.innerHeight * 0.04, width, window.innerHeight * 0.035)) {
+        GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1 - this.visualisationPosition, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
         if (MouseListener.isButtonDown(0)) {
-          GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 255, 255, 255, 0.4, 3);
+          GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1 - this.visualisationPosition, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 255, 255, 255, 0.4, 3);
           this.visualisation = i;
         }
       }
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, i * width * 1.1 + window.innerWidth * 0.262, window.innerHeight * 0.04 + window.innerHeight * 0.023, 'center', 'system-ui', 15, 'black');
+      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.25 + i * width * 1.1 - this.visualisationPosition, window.innerHeight * 0.04, width, window.innerHeight * 0.035, 0, 0, 0, 0.2, 3);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, i * width * 1.1 + window.innerWidth * 0.262 - this.visualisationPosition, window.innerHeight * 0.04 + window.innerHeight * 0.023, 'center', 'system-ui', 15, 'black');
     }
 
 
-    if (this.visualisation == 0) {
+    if (this.visualisation == 1) {
       this.renderPerformance();
-    } else if (this.visualisation == 1) {
+    } else if (this.visualisation == 0) {
       this.renderProgression();
     }
   }
 
   public renderPerformance(): void {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.04 };
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.04 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
 
@@ -57,7 +91,7 @@ export default class Statistics {
     }
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));
     const maxAverage: number = Math.ceil(Math.max(...Statistics.averageScores));
-
+    
     // first rendering graph itself
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2, 10);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 2, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
@@ -98,8 +132,8 @@ export default class Statistics {
     GUI.writeText(MainCanvas.canvas, 'Average', startPosition.x + window.innerWidth * 0.04, startPosition.y + dimensions.height * 1.1 + 50, 'left', 'system-ui', 15, 'black');
   }
 
-  public static renderOutput(best_player: Player): void {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.58 };
+  public renderOutput(best_player: Player, bestPlayeralive): void {
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.58 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const bottom = startPosition.y + dimensions.height * 0.8
     const max_height = dimensions.height / 2
@@ -107,6 +141,10 @@ export default class Statistics {
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 0, 0, 0, 0.2, 10);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom, startPosition.x + dimensions.width * 0.05 + width * 1.2 * 5, bottom, 0, 0, 0, 0.5, 2)
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, bottom - max_height, dimensions.width * 0.05 + width * 1.2 * 4.72, max_height, 0, 0, 0, 0.15, 10)
+    if (!bestPlayeralive) {
+      GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 255, 0, 0, 0.1, 10);
+      GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.16, 'center', 'system-ui', 18, 'pink', 300)
+    }
     GUI.writeText(MainCanvas.canvas, 'Neural network outputs', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.1, 'center', 'system-ui', 22, 'white', 300)
     
     let output = best_player.brain.activate(best_player.inputValues);
@@ -128,7 +166,7 @@ export default class Statistics {
   }
 
   public renderProgression() {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015, y: window.innerHeight * 0.04 };
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.04 };
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max = window.innerHeight * 0.4;
 
@@ -143,15 +181,22 @@ export default class Statistics {
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height * 1.1 - max / 1.333, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height * 1.1 - max / 1.333, 255, 255, 255, 0.2)
     GUI.writeText(MainCanvas.canvas, '75%', startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 - max / 1.333, 'center', 'system-ui', 15, 'black')
 
-    for (let i = 0; i < Statistics.previousCheckpointsReached.length ; i++) {
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 30, Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2)
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
+    const maxCheckpointsToShow = 7;
+
+    const startIdxPrevious = Math.max(0, Statistics.previousCheckpointsReached.length - maxCheckpointsToShow);
+    const startIdxCurrent = Math.max(0, Statistics.checkpointsReached.length - maxCheckpointsToShow);
+
+    for (let i = startIdxPrevious; i < Statistics.previousCheckpointsReached.length; i++) {
+      const index = i - startIdxPrevious;
+      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 30, Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
     }
-    console.log(Statistics.checkpointsReached[0])
-    for (let i = 0; i < Statistics.checkpointsReached.length ; i++) {
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * i), startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2)
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white')
-      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize * 100)}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * i), startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white')
+
+    for (let i = startIdxCurrent; i < Statistics.checkpointsReached.length; i++) {
+      const index = i - startIdxCurrent;
+      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
+      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize * 100)}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white');
     }
     GUI.writeText(MainCanvas.canvas, '% checkpoint completed', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height * 1.1 + 50, 'center', 'system-ui', 22, 'white')
 

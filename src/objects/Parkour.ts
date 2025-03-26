@@ -1,18 +1,20 @@
+import Level from './Level.js';
 import { platform } from 'os';
 import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
 import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Edit from '../scenes/Edit.js';
 import Player from './Player.js';
 import Statistics from '../scenes/Statistics.js';
-import Level from './level.js';
+import NeatManager from '../utilities/NeatManager.js';
 
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 0;
+  public static activeLevel: number = 6;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -21,6 +23,8 @@ export default class Parkour {
 
   public constructor() {
     this.generateParkour();
+
+
   }
 
 
@@ -32,19 +36,99 @@ export default class Parkour {
    * Generates the levels in the parkour
    */
   public generateParkour(): void {
-    for (let i = 0; i < 150; i++) {
 
-      const level1_Obstacles = [
-        [ParkourPieces.startingPlatform, 0, 0, -30],
-        [ParkourPieces.startingPlatform, 0, 0, -50],
-        [ParkourPieces.startingPlatform, 0, 0, -70],
-  
-        [ParkourPieces.platform, 0, 0, -90],
-        [ParkourPieces.checkPoint, 0, 6.51, -80],
-      ]
-      const level1 = new Level(i, level1_Obstacles, new THREE.Vector3(0, 1.5, -30));
-      Parkour.levels.push(level1);
-    }
+    let obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.startingPlatform, 0, -2, -50],
+      [ParkourPieces.startingPlatform, 0, -2, -70],
+      [ParkourPieces.platform, 0, -2, -90],
+      [ParkourPieces.checkPoint, 0, 5.01, -80]
+    ]
+    Parkour.levels.push(new Level(0, obstacles, new THREE.Vector3(0, 1.2, -30), 7))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.startingPlatform, 0, -2, -50],
+      [ParkourPieces.startingPlatform, 0, -2, -76],
+      [ParkourPieces.platform, 0, -2, -96],
+      [ParkourPieces.checkPoint, 0, 5.01, -86]
+    ]
+    Parkour.levels.push(new Level(1, obstacles, new THREE.Vector3(0, 1.2, -30), 8))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, -60, -2, -26, 0, Math.PI / 2],
+      [ParkourPieces.normal2, -60, -2, -50],
+      [ParkourPieces.normal2, -60, -2, -64],
+      [ParkourPieces.normal2, -60, -2, -78],
+      [ParkourPieces.normal2, -46, -2, -78],
+      [ParkourPieces.normal2, -32, -2, -78],
+      [ParkourPieces.normal2, -18, -2, -78],
+      [ParkourPieces.platform, 2, -2, -78, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, -8, 4.51, -78, 0, Math.PI / 2]
+    ]
+    Parkour.levels.push(new Level(2, obstacles, new THREE.Vector3(-60, 1.2, -26), 14))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, -30, -2, -100],
+      [ParkourPieces.normal2, -30, -2, -80],
+      [ParkourPieces.normal2, -30, -2, -68],
+      [ParkourPieces.normal2, -30, -2, -54],
+      [ParkourPieces.normal2, -30, -2, -40],
+      [ParkourPieces.normal2, -16, -2, -40],
+      [ParkourPieces.normal2, -2, -2, -40],
+      [ParkourPieces.normal2, 12, -2, -40],
+      [ParkourPieces.normal2, 26, -2, -40],
+      [ParkourPieces.normal2, 26, -2, -54],
+      [ParkourPieces.normal2, 26, -2, -68],
+      [ParkourPieces.normal2, 26, -2, -80],
+
+      [ParkourPieces.platform, 26, -2, -100],
+      [ParkourPieces.checkPoint, 26, 4.51, -90]
+    ]
+    Parkour.levels.push(new Level(3, obstacles, new THREE.Vector3(-30, 1.2, -100), 16))
+
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, -52, -2, -46, 0, Math.PI / 2],
+
+      [ParkourPieces.long2, -32, -2, -44, 0, Math.PI / 2],
+      [ParkourPieces.long2, -12, -2, -44, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, -2, -52],
+      [ParkourPieces.long2, 0, -2, -72],
+      [ParkourPieces.long2, 8, -2, -84, 0, Math.PI / 2],
+      [ParkourPieces.long2, 28, -2, -84, 0, Math.PI / 2],
+
+
+      [ParkourPieces.platform, 48, -2, -88, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, 38, 4.51, -88, 0, Math.PI / 2],
+    ]
+    Parkour.levels.push(new Level(4, obstacles, new THREE.Vector3(-60, 1.5, -46), 17))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, 30,  -30],
+      [ParkourPieces.normal2, 0, 30, -50],
+      [ParkourPieces.normal2, 0, 30, -64],
+      [ParkourPieces.normal2, 0, -2, -100],
+      [ParkourPieces.platform, 0, -2, -120],
+      [ParkourPieces.checkPoint, 0, 4.51, -110],
+    ]
+    Parkour.levels.push(new Level(5, obstacles, new THREE.Vector3(0, 34, -30), 8))
+
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, 0],
+      [ParkourPieces.normal2, 0, -2, -20],
+      [ParkourPieces.normal2, 0, -2, -34],
+      [ParkourPieces.long1, 0, 2, -45, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 0, 6, -34],
+      [ParkourPieces.long1, 0, 10, -45, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 0, 14, -34],
+      [ParkourPieces.long1, 0, 18, -45, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 0, 22, -34],
+      [ParkourPieces.normal2, 0, 26, -20],
+      [ParkourPieces.platform, 0, 30, 0],
+      [ParkourPieces.checkPoint, 0, 35.51, -10],
+    ]
+    Parkour.levels.push(new Level(6, obstacles, new THREE.Vector3(0, 0, 0), 16))
 
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
@@ -60,7 +144,7 @@ export default class Parkour {
   * 
   * @param player is the player object that is being checked for collision
   */
-  public checkCollision(player: Player): void {
+  public checkCollision(player: Player, players: Player[]): void {
     player.onGround = false;
     let foundObject: { index: number; object: Obstacle } | null = { index: null, object: null };
     let current: Obstacle = null;
@@ -78,7 +162,7 @@ export default class Parkour {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
       if (Statistics.checkpointsReached[activeIndex]) {
-        Statistics.checkpointsReached[activeIndex]++
+        Statistics.checkpointsReached[activeIndex] = players.filter(p => p.finished).length;
       } else {
         Statistics.checkpointsReached[activeIndex] = 1
       }

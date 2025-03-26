@@ -1,17 +1,24 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import Scene from "../scenes/Scene.js";
 import Game from "../scenes/Game.js";
 import GUI from "../utilities/GUI.js";
 import MouseListener from "../utilities/MouseListener.js";
 import UICollision from "../utilities/UICollision.js";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FlyControls } from 'three/examples/jsm/controls/FlyControls';
 import KeyListener from '../utilities/KeyListener.js';
-import Player from '../objects/Player.js';
-import Parkour from '../objects/Parkour.js';
-import CreateBackground from './CreateBackground.js';
 import Edit from '../scenes/Edit.js';
+import Stats from 'stats.js'
+
+const stats = new Stats()
+stats.showPanel(0)
+stats.dom.style.position = 'fixed';
+stats.dom.style.bottom = '10px'; 
+stats.dom.style.right = '10px';
+stats.dom.style.left = 'auto';
+stats.dom.style.top = 'auto';
+stats.dom.style.width = '100px'; 
+
+document.body.appendChild(stats.dom)
 
 export default class MainCanvas {
   public static scene: THREE.Scene = new THREE.Scene();
@@ -34,9 +41,9 @@ export default class MainCanvas {
 
   public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);
 
-  private yaw: number = 0;
+  public static yaw: number = 0;
 
-  private pitch: number = -0.1;
+  public static pitch: number = -0.1;
 
   private isMouseButtonDown: boolean = false;
 
@@ -71,7 +78,7 @@ export default class MainCanvas {
     window.addEventListener("mouseup", () => this.onMouseUp(), false);
 
     this.setupLight();
-    CreateBackground.addBackgroundSphere(); // Add background sphere
+    // CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
   }
@@ -101,8 +108,6 @@ export default class MainCanvas {
     MainCanvas.scene.add(MainCanvas.directionalLight);
   }
 
-
-
   /*
    * Starts game loop
    * - processes input of active scene
@@ -111,37 +116,42 @@ export default class MainCanvas {
    */
   public startRendering() {
     MainCanvas.renderer.setAnimationLoop(() => {
-        if (KeyListener.keyPressed('KeyP')) {
-            this.pauzed = !this.pauzed;
-        }
+      stats.begin();
 
-        const deltaTime = this.clock.getDelta();
-
-        // Only step the physics and update the scene when not paused
-        if (!this.pauzed) {
-            if (deltaTime > 0) {
-                MainCanvas.world.step(deltaTime);
-            }
-
-            // Process input and update the active scene
-            this.activeScene.processInput();
-            this.activeScene.update(deltaTime);
-        }
-
-        if (!Edit.editActive) {
-            this.rotateCamera(deltaTime);
-        }
-        this.moveCamera(deltaTime);
-
-        // Always update controls, even when paused
-        MainCanvas.flyControls.update(deltaTime);
-
-        // Render the GUI and the active scene
-        const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
-            GUI.getCanvas()
-        );
-        ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
-        this.activeScene.render(deltaTime);
+      if (KeyListener.keyPressed('KeyP')) {
+      this.pauzed = !this.pauzed;
+      }
+      
+      const deltaTime = this.clock.getDelta();
+      
+      // Only step the physics and update the scene when not paused
+      if (!this.pauzed) {
+      if (deltaTime > 0) {
+        MainCanvas.world.step(deltaTime);
+      }
+      
+      // Process input and update the active scene
+      this.activeScene.processInput();
+      this.activeScene.update(deltaTime);
+      }
+      
+      if (!Edit.editActive) {
+      this.rotateCamera(deltaTime);
+      }
+      this.moveCamera(deltaTime);
+      
+      // Always update controls, even when paused
+      MainCanvas.flyControls.update(deltaTime);
+      
+      // Render the GUI and the active scene
+      const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(
+      GUI.getCanvas()
+      );
+      ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
+      this.activeScene.render();
+      
+    
+      stats.end();
     });
 }
   
@@ -158,13 +168,14 @@ export default class MainCanvas {
     if (this.isMouseButtonDown) {
         const mouseMovementX = MouseListener.mouseDelta.x;
         const mouseMovementY = MouseListener.mouseDelta.y;
-  
-        this.yaw -= mouseMovementX * mouseSensitivity;
-        this.pitch -= mouseMovementY * mouseSensitivity;
 
-        // Limit pitch to prevent flipping
-        this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
-        MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+        MainCanvas.yaw -= mouseMovementX * mouseSensitivity;
+        MainCanvas.pitch -= mouseMovementY * mouseSensitivity;
+
+        MainCanvas.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, MainCanvas.pitch));
+        MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(MainCanvas.pitch, MainCanvas.yaw, 0, 'YXZ'));
+        MouseListener.mouseDelta.x = 0;
+        MouseListener.mouseDelta.y = 0;
     }
   }
 
@@ -181,9 +192,9 @@ export default class MainCanvas {
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
     forward.set(
-        Math.sin(this.yaw),
+        Math.sin(MainCanvas.yaw),
         0,
-        Math.cos(this.yaw)
+        Math.cos(MainCanvas.yaw)
     ).normalize();
 
     right.copy(forward).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2);

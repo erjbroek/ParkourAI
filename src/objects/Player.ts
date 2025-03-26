@@ -20,31 +20,40 @@ const Methods = neat.methods;
 export default class Player {
   public rotation: THREE.Vector3 = new THREE.Vector3(0, Math.PI * 1.5, 0);
 
-  public mesh: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshLambertMaterial({ color: 0x00aaff }));
+  public mesh: THREE.Mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 2, 2),
+    new THREE.MeshLambertMaterial({ color: 0x00aaff })
+  );
 
   public physicsMaterial: CANNON.Material = new CANNON.Material();
 
   public playerBody: CANNON.Body;
 
-  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 0.5, 20)
+  public spawnPoint: THREE.Vector3 = new THREE.Vector3(0, 0.5, 20);
 
   public boundingBox: THREE.Box3;
 
   public onGround: boolean = false;
 
-  // public currentLevel: number = 0;
+  public amountOfJumps: number = 0
 
   public index: number = 0;
 
   public brain: any;
 
-  public inputLevels: { current: Obstacle, next: Obstacle } = { current: Parkour.levels[0].pieces[0], next: Parkour.levels[0].pieces[1] };
+  public inputLevels: { current: Obstacle; next: Obstacle } = {
+    current: Parkour.levels[0].pieces[0],
+    next: Parkour.levels[0].pieces[1],
+  };
 
-  public obstacleCoordinations: { current: THREE.Vector3, next: THREE.Vector3 } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
+  public obstacleCoordinations: {
+    current: THREE.Vector3;
+    next: THREE.Vector3;
+  } = { current: new THREE.Vector3(), next: new THREE.Vector3() };
 
   public finished: boolean = false;
 
-  public inputValues: number[] = []
+  public inputValues: number[] = [];
 
   public alive: boolean = true;
 
@@ -62,12 +71,12 @@ export default class Player {
     this.index = index;
     this.ai = ai;
     this.brain = brain;
-    
+
     // used to set player spawnpoint
     let level: number | null;
-    level = 0
+    level = 0;
 
-    const spawnPoint = Parkour.levels[Parkour.activeLevel].spawnPoint
+    const spawnPoint = Parkour.levels[Parkour.activeLevel].spawnPoint;
     this.playerBody = new CANNON.Body({
       mass: 1,
       shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
@@ -75,111 +84,126 @@ export default class Player {
       material: this.physicsMaterial,
       collisionFilterGroup: PLAYER_GROUP, // Player belongs to PLAYER_GROUP
       collisionFilterMask: OBSTACLE_GROUP, // Player can only collide with OBSTACLE_GROUP
-
-    })
+    });
 
     // this.currentLevel = 3;
     // this.playerBody.position = new CANNON.Vec3(0, 1.5, -290);
 
-    const platformPlaterContactMaterial = new CANNON.ContactMaterial(this.physicsMaterial, Obstacle.material, { friction: 0, restitution: 0 });
+    const platformPlaterContactMaterial = new CANNON.ContactMaterial(
+      this.physicsMaterial,
+      Obstacle.material,
+      { friction: 0, restitution: 0 }
+    );
     this.mesh.castShadow = true;
     MainCanvas.world.addBody(this.playerBody);
     MainCanvas.world.addContactMaterial(platformPlaterContactMaterial);
     MainCanvas.scene.add(this.mesh);
-    
+
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 
   /**
    * updates the player movement and input values for nn
-   * 
+   *
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
     if (this.ai) {
-      if (this.deathTimer > 0) {
-        this.deathTimer -= deltaTime;
-      } else {
-        this.killPlayer()
-      }
-    }
-    if (this.ai) {
-      this.calculateFitness()
+      this.calculateFitness();
     }
     const currentObstacle = this.inputLevels.current.boundingBox;
     const nextObstacle = this.inputLevels.next.boundingBox;
 
     this.obstacleCoordinations.current = new THREE.Vector3();
-    currentObstacle.clampPoint(nextObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.current);
+    currentObstacle.clampPoint(
+      nextObstacle.getCenter(new THREE.Vector3()),
+      this.obstacleCoordinations.current
+    );
     this.obstacleCoordinations.next = new THREE.Vector3();
-    nextObstacle.clampPoint(currentObstacle.getCenter(new THREE.Vector3()), this.obstacleCoordinations.next);
+    nextObstacle.clampPoint(
+      currentObstacle.getCenter(new THREE.Vector3()),
+      this.obstacleCoordinations.next
+    );
 
-    const playerPosition = new THREE.Vector3(Math.round(this.playerBody.position.x * 1000) / 1000, Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000, Math.round(this.playerBody.position.z * 1000) / 1000)
-    this.obstacleCoordinations.next.subVectors(this.obstacleCoordinations.next, playerPosition)
-    this.obstacleCoordinations.current.subVectors(this.obstacleCoordinations.current, playerPosition)
-    const playerVelocity = Math.abs(this.playerBody.velocity.x) + Math.abs(this.playerBody.velocity.y) + Math.abs(this.playerBody.velocity.z)  
+    const playerPosition = new THREE.Vector3(
+      Math.round(this.playerBody.position.x * 1000) / 1000,
+      Math.round((this.playerBody.position.y - 1.5) * 1000) / 1000,
+      Math.round(this.playerBody.position.z * 1000) / 1000
+    );
+    this.obstacleCoordinations.next.subVectors(
+      this.obstacleCoordinations.next,
+      playerPosition
+    );
+    this.obstacleCoordinations.current.subVectors(
+      this.obstacleCoordinations.current,
+      playerPosition
+    );
+    const playerVelocity =
+      Math.abs(this.playerBody.velocity.x) +
+      Math.abs(this.playerBody.velocity.y) +
+      Math.abs(this.playerBody.velocity.z);
 
     const decimals = 3;
     const inputValues = [
-      Math.round(this.obstacleCoordinations.current.x * 10 ** decimals) / 10 ** decimals,
-      Math.round(this.obstacleCoordinations.current.y * 10 ** decimals) / 10 ** decimals,
-      Math.round(this.obstacleCoordinations.current.z * 10 ** decimals) / 10 ** decimals,
+      Math.round(this.obstacleCoordinations.current.x * 10 ** decimals) /
+        10 ** decimals,
+      Math.round(this.obstacleCoordinations.current.y * 10 ** decimals) /
+        10 ** decimals,
+      Math.round(this.obstacleCoordinations.current.z * 10 ** decimals) /
+        10 ** decimals,
       this.obstacleCoordinations.next.x,
       this.obstacleCoordinations.next.y,
       this.obstacleCoordinations.next.z,
-      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10
+      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10,
     ];
-    
-    const extremes: { max: number, min: number } = {
+
+    const extremes: { max: number; min: number } = {
       max: Math.max(...inputValues),
-      min: Math.min(...inputValues)
+      min: Math.min(...inputValues),
     };
-    
-    const normalizedValues = inputValues.map(value => {
+
+    const normalizedValues = inputValues.map((value) => {
       if (extremes.max === extremes.min) {
         return 0;
       }
-      return 2 * (value - extremes.min) / (extremes.max - extremes.min) - 1;
+      return (2 * (value - extremes.min)) / (extremes.max - extremes.min) - 1;
     });
-    
+
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
-    
+
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
-  
+
   public updateMovement(deltaTime: number) {
     if (this.ai) {
       let output = this.brain.activate(this.inputValues);
       const max = Math.max(...output);
       const min = Math.min(...output);
-      output = output.map(value => (value - min) / (max - min));
+      output = output.map((value) => (value - min) / (max - min));
 
       const outputForwards = output[0];
       const outputBackwards = output[1];
-      const outputLeft = output[2];  
-      const outputRight = output[3]; 
+      const outputLeft = output[2];
+      const outputRight = output[3];
       const outputJump = output[4];
-      
 
       output.forEach((value, index) => {
         if (value > 1 || value < 0) {
           console.log(`Output ${index}: ${value}`);
         }
       });
-      
-      
-      this.moveForward(outputForwards)
-      this.moveBackward(outputBackwards)
+
+      this.moveForward(outputForwards);
+      this.moveBackward(outputBackwards);
       this.moveLeft(outputLeft);
       this.moveRight(outputRight);
-    
+
       if (outputJump > 0.5) {
         if (this.onGround) {
-          this.jump()
+          this.jump();
         }
       }
-
       if (this.ai) {
         // const inputNodes = this.brain.nodes.filter((node: any) => node.type === 'input');
         // const hiddenNodes = this.brain.nodes.filter((node: any) => node.type === 'hidden');
@@ -191,12 +215,21 @@ export default class Player {
         } else if (Game.colorMode == 1) {
           const material = this.mesh.material as THREE.MeshLambertMaterial;
           material.color.setRGB(0 / 255, 0 / 255, 0 / 255);
-        
-          const energy = outputForwards + outputBackwards + outputLeft + outputRight + outputJump;
+
+          const energy =
+            outputForwards +
+            outputBackwards +
+            outputLeft +
+            outputRight +
+            outputJump;
           const normalizedEnergy = Math.min(energy / 5, 1);
-        
+
           const meshMaterial = this.mesh.material as THREE.MeshStandardMaterial;
-          meshMaterial.emissive.setRGB(normalizedEnergy, normalizedEnergy * 0.5, 0);
+          meshMaterial.emissive.setRGB(
+            normalizedEnergy,
+            normalizedEnergy * 0.5,
+            0
+          );
           meshMaterial.emissiveIntensity = normalizedEnergy;
         } else if (Game.colorMode == 2) {
           const forwardBackward = outputForwards - outputBackwards;
@@ -215,15 +248,6 @@ export default class Player {
             const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
             this.mesh.material = material;
           }
-        } else if (Game.colorMode == 4) {
-          if (!this.loaded) {
-            this.loaded = true;
-            const textureLoader = new THREE.TextureLoader();
-            textureLoader.load('./assets/william.png', (texture) => {
-              const material = new THREE.MeshLambertMaterial({ map: texture });
-              this.mesh.material = material;
-            });
-         }
         } else if (Game.colorMode == 5) {
           if (this.loaded) {
             this.loaded = false;
@@ -249,12 +273,16 @@ export default class Player {
             }
             if (index >= 2 && index < 4) {
               b += weight * 0.4;
-            }}
-          );
+            }
+          });
           r = Math.min(Math.max(r / X, 0), 1);
           g = Math.min(Math.max(g / X, 0), 1);
           b = Math.min(Math.max(b / X, 0), 1);
-          (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(r, g, b);
+          (this.mesh.material as THREE.MeshLambertMaterial).color.setRGB(
+            r,
+            g,
+            b
+          );
         } else if (Game.colorMode == 6) {
           const forwardBackward = outputForwards - outputBackwards;
           const leftRight = outputRight - outputLeft;
@@ -265,18 +293,24 @@ export default class Player {
             Math.abs(forwardBackward),
             Math.abs(leftRight),
             jumpEffect
-          ); 
+          );
         } else if (Game.colorMode == 7) {
         } else if (Game.colorMode == 8) {
         } else if (Game.colorMode == 9) {
         } else if (Game.colorMode == 10) {
-          const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-          const wireframeMesh = new THREE.Mesh(this.mesh.geometry, wireframeMaterial);
+          const wireframeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            wireframe: true,
+          });
+          const wireframeMesh = new THREE.Mesh(
+            this.mesh.geometry,
+            wireframeMaterial
+          );
           this.mesh.add(wireframeMesh);
         }
 
-        const bestPlayer = Game.alivePlayers.reduce((prev, current) => 
-          (prev.brain.score > current.brain.score) ? prev : current
+        const bestPlayer = Game.alivePlayers.reduce((prev, current) =>
+          prev.brain.score > current.brain.score ? prev : current
         );
         if (this.brain == bestPlayer.brain) {
           const material = this.mesh.material as THREE.MeshLambertMaterial;
@@ -284,10 +318,10 @@ export default class Player {
         }
       }
     }
-      
+
     // if player falls, reset position to last reached checkpoint
-    if (this.playerBody.position.y < -10) {
-      this.killPlayer()
+    if (this.playerBody.position.y < -2) {
+      this.killPlayer();
     }
 
     // apply friction when player is not moving
@@ -301,18 +335,22 @@ export default class Player {
 
     // needs to be fixed someday, since it causes non-realistic physics/ collisions
     this.playerBody.quaternion.setFromEuler(0, this.rotation.y, 0);
-    
   }
 
   public killPlayer() {
     this.alive = false;
+    const material = this.mesh.material as THREE.MeshLambertMaterial;
+    material.color.setRGB(1, 0, 0); // Set color to red
+    material.emissive.setRGB(0, 0, 0);
+    material.emissiveIntensity = 1;
+
     MainCanvas.world.removeBody(this.playerBody)
-    MainCanvas.scene.remove(this.mesh)
+    // MainCanvas.scene.remove(this.mesh)
   }
 
   /**
    * calculates the percentage of the distance the player is to the next obstacle
-   * 
+   *
    * @returns percentage that player has reached to the next jump from the current
    */
   public calculateObstacleDistance(): number {
@@ -321,12 +359,12 @@ export default class Player {
 
     // will be used for the end point, 100% distance
     const next = this.inputLevels.next.boundingBox;
-    
+
     // this first finds the nearest point on the next platform
     const currentCenter = current.getCenter(new THREE.Vector3());
     const nextPosition = new THREE.Vector3();
     next.clampPoint(currentCenter, nextPosition);
-    
+
     // then it gets the point that is furthest away from the nextPosition on the current platform
     const directionVector = new THREE.Vector3();
     directionVector.subVectors(nextPosition, currentCenter);
@@ -337,43 +375,49 @@ export default class Player {
     // next, the distance is calculated between these 2 points
     const maxDistance = Math.sqrt(
       (currentPosition.x - nextPosition.x) ** 2 +
-      (currentPosition.y - nextPosition.y) ** 2 +
-      (currentPosition.z - nextPosition.z) ** 2
+        (currentPosition.y - nextPosition.y) ** 2 +
+        (currentPosition.z - nextPosition.z) ** 2
     );
-    
+
     const currentDistance = Math.sqrt(
       (this.playerBody.position.x - nextPosition.x) ** 2 +
-      (this.playerBody.position.y - nextPosition.y) ** 2 +
-      (this.playerBody.position.z - nextPosition.z) ** 2
+        (this.playerBody.position.y - nextPosition.y) ** 2 +
+        (this.playerBody.position.z - nextPosition.z) ** 2
     );
 
     // when using both of these distances (the total distance, and the current players distance), we know how far the player is to the next jump
     // if the player is halfway, it would return 0.5 (which can then be used for the players fitness function)
-    return (1 - currentDistance / maxDistance);
+    return 1 - currentDistance / maxDistance;
   }
 
   /**
    * the fitness of the player is based on progress in the course
-   * 
+   *
    * @returns the fitness of the player
    */
-  public calculateFitness(): void {
+  public calculateFitness(printScore: boolean = false): void {
+
     if (this.ai) {
       this.brain.score = 0;
-      
+
       // progress in level
       // this.brain.score += this.finished ? 10 : 0
-      this.brain.score += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      this.brain.score +=
+        25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25;
       if (this.finished) {
-        this.brain.score *= 1.5
+        this.brain.score *= 1.5;
+      } else {
+        this.brain.score -= (this.amountOfJumps * 2)
       }
+      
     } else {
       this.userFitness = 0;
-      
+
       // progress in level
-      this.userFitness += 25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25
+      this.userFitness +=
+        25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25;
       if (this.finished) {
-        this.brain.score *= 1.5
+        this.brain.score *= 1.5;
       }
     }
   }
@@ -382,11 +426,13 @@ export default class Player {
     const jumpForce = 14;
     this.playerBody.position.y += 0.01;
     this.playerBody.velocity.y = jumpForce;
+    this.onGround = false
+    this.amountOfJumps++
   }
 
   /**
    * moves player left or right based on player rotation
-   * 
+   *
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveLeft(amount: number) {
@@ -397,36 +443,36 @@ export default class Player {
     this.normalizeVelocity();
   }
 
-    /**
+  /**
    * moves player left or right based on player rotation
-   * 
+   *
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
-    public moveRight(amount: number) {
-      const speed = 4;
-  
-      this.playerBody.velocity.x -= amount * -speed;
-      // this.playerBody.velocity.z += amount * -speed;
-      this.normalizeVelocity();
-    }
+  public moveRight(amount: number) {
+    const speed = 4;
 
-    public moveForward(amount: number) {
-      const speed = 4;
+    this.playerBody.velocity.x -= amount * -speed;
+    // this.playerBody.velocity.z += amount * -speed;
+    this.normalizeVelocity();
+  }
 
-      this.playerBody.velocity.z -= amount * speed;
-      this.normalizeVelocity();
-    }
+  public moveForward(amount: number) {
+    const speed = 4;
 
-    public moveBackward(amount: number) {
-      const speed = 4;
+    this.playerBody.velocity.z -= amount * speed;
+    this.normalizeVelocity();
+  }
 
-      this.playerBody.velocity.z += amount * speed;
-      this.normalizeVelocity();
-    }
+  public moveBackward(amount: number) {
+    const speed = 4;
+
+    this.playerBody.velocity.z += amount * speed;
+    this.normalizeVelocity();
+  }
 
   /**
    * moves player forwards or backwards based on player rotation
-   * 
+   *
    * @param amount is the multiplier for the speed of the player between -1 and 1
    */
   public moveForwardBackward(amount: number) {
@@ -445,7 +491,7 @@ export default class Player {
     const maxSpeed = 16;
     const speed = Math.sqrt(
       this.playerBody.velocity.x * this.playerBody.velocity.x +
-      this.playerBody.velocity.z * this.playerBody.velocity.z
+        this.playerBody.velocity.z * this.playerBody.velocity.z
     );
 
     if (speed > maxSpeed) {

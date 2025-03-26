@@ -13,7 +13,9 @@ export default class ParkourPieces {
 
   public static checkPointActive: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, transparent: true, opacity: 0.15 });
 
-  public static normal: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), this.material);
+  public static normal1: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 4), this.material);
+
+  public static normal2: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 8), this.material)
 
   public static long1: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 12), this.material);
 
@@ -27,5 +29,5 @@ export default class ParkourPieces {
 
   public static levelBorder: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(150, 100, 2), this.wallMaterial)
 
-  public static meshes: THREE.Mesh[] = [this.normal, this.long1, this.long2, this.platform, this.checkPoint];
+  public static meshes: THREE.Mesh[] = [this.normal1, this.long1, this.long2, this.platform, this.checkPoint];
 }
