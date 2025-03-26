@@ -12,5 +12,11 @@ this is to find the best balance between complexity and efficiency.
 
 ![gif_parkour](https://github.com/user-attachments/assets/f8fd1075-7acd-413f-8540-fc97ffe4ca21)
 
+future plans:
+- create different islands, not all flat, maybe river, and change levels surrounding those
+  - trees or foliage might help with that idea
+- change platforms to be prettier, grass, rock? idk make it fit in with the rest
+- option to change mutation rate
+- add more levels 
 
 
