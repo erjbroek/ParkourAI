@@ -21,7 +21,7 @@ export default class Statistics {
 
   public startHidingGraphs: boolean = false;
 
-  private visualisationHidden = true;
+  public visualisationHidden = true;
 
   public visualisationPosition: number = 0
 
@@ -33,7 +33,7 @@ export default class Statistics {
 
   public hideUI(deltatime: number): void {
     const totalMovement = window.innerWidth * 0.015 + window.innerWidth * 0.23;
-    const easeSpeed = 7; // Adjust for slower or faster ease-in/out
+    const easeSpeed = 7;
   
     if (this.startHidingGraphs) {
       this.hidingDuration -= deltatime;
@@ -58,12 +58,6 @@ export default class Statistics {
   
 
   public chooseVisualisation(): void {
-    GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - this.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-    GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - this.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-    GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - this.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
-    if (!this.visualisationHidden) {
-      GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - this.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
-    }
     const width = window.innerWidth * 0.1 / 4;
 
     for (let i = 0; i < 2; i++) {
