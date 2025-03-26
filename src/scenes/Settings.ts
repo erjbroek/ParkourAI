@@ -46,8 +46,6 @@ export default class Settings {
   public render(canvas: HTMLCanvasElement) {
     if (this.visible) {
       GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 4)
-      // GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.07, canvas.width * 0.04, canvas.height * 0.07, 255, 255, 255, this.closeOpacity, 10)
-      // GUI.writeText(canvas, 'Close', canvas.width * 0.92, canvas.height * 0.11, 'center', 'system-ui', 20, 'white', 1)
     } else {
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);
