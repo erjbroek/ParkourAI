@@ -207,8 +207,6 @@ export default class Game extends Scene {
             this.readyClickEditor = false;
             this.openEditor = !this.openEditor;
             Edit.gridHelper.visible = this.openEditor;
-
-            // this.settings.visible = !this.openEditor
         
             // makes sure obstacle gets removed if it didn't get saved
             if (!this.editor.confirmedAdded) {
@@ -247,9 +245,6 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.statistics.hideUI(deltaTime)
-    if (this.settings.visible && this.statistics.visualisationHidden) {
-      this.statistics.startHidingGraphs = true
-    }
     this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
     if (!Game.extinct) {
       this.updateLight();
