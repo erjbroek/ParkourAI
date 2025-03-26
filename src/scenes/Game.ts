@@ -206,8 +206,9 @@ export default class Game extends Scene {
           if (this.readyClickEditor) {
             this.readyClickEditor = false;
             this.openEditor = !this.openEditor;
-  
             Edit.gridHelper.visible = this.openEditor;
+
+            // this.settings.visible = !this.openEditor
         
             // makes sure obstacle gets removed if it didn't get saved
             if (!this.editor.confirmedAdded) {
@@ -239,6 +240,8 @@ export default class Game extends Scene {
 
     if (this.openEditor) {
       this.editor.processInput();    
+    } else {
+      this.settings.processInput()
     }
   }
 
@@ -394,8 +397,9 @@ export default class Game extends Scene {
     // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     if (this.openEditor) { 
       this.editor.render(canvas)
-    } 
+    } else {
+      this.settings.render(canvas)
+    }
 
-    this.settings.render(canvas)
   }
 }
