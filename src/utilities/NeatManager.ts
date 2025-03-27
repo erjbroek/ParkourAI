@@ -147,15 +147,16 @@ export default class NeatManager {
     const width = canvas.width * 0.2065;
     const height = canvas.height * 0.35;
 
-    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.2, 10)
+    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.2)
 
     // ads layerSize and index to the nodes for positioning
     nodes.forEach((node: any) => {
       node.layerSize = nodes.filter((n: any) => n.layer === node.layer).length;
       node.index = nodes.filter((n: any) => n.layer === node.layer).indexOf(node);
     })
-    
+
     // draws all connections for each node
+    const inputValues = player.inputValues
     nodes.forEach((node: any) => {
       if (node.type != 'output') {
         node.connections.out.forEach((connection: any) => {
@@ -168,19 +169,19 @@ export default class NeatManager {
           const y1 = startY + height * (current.index + 1) / (current.layerSize + 1);
           const x2 = startX + width * next.layer;
           const y2 = startY + height * (next.index + 1) / (next.layerSize + 1);
-          const weight = connection
+          const weight = connection.weight
           if (node.layer + 1 == next.layer) {
             // GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.5, 2 * connection.weight)
 
-            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.2 * connection.weight, 2 * connection.weight)
+            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / weight, 70 * weight, 0, 0.2 * weight, 1 * (weight ** 1.8))
           } else if (node.layer != next.layer) {
-            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.2 * connection.weight, 2 * connection.weight)
+            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / weight, 70 * weight, 0, 0.2 * weight, 1 * (weight ** 1.8))
           }
         })
       }
     })
     
-    const inputValues = ['Δ X currentPlatform', 'Δ Y currentPlatform', 'Δ Z currentPlatform', 'Δ X nextPlatform', 'Δ Y nextPlatform', 'Δ Z nextPlatform', 'totalVelocity', 'onGround']
+    const inputCategories = ['Δ X currentPlatform', 'Δ Y currentPlatform', 'Δ Z currentPlatform', 'Δ X nextPlatform', 'Δ Y nextPlatform', 'Δ Z nextPlatform', 'totalVelocity', 'onGround']
     inputNodes.forEach((node: any, i: number) => {
       const x = startX + width * node.layer;
       const y = startY + height * (node.index + 1) / (node.layerSize + 1);
@@ -194,7 +195,7 @@ export default class NeatManager {
       } else {
         color = '#FFFFB3'
       }
-      GUI.writeText(canvas, inputValues[i], x + window.innerWidth * 0.075, y, 'right', 'system-ui', 18, color)
+      GUI.writeText(canvas, inputCategories[i], x + window.innerWidth * 0.075, y, 'right', 'system-ui', 18, color)
       GUI.fillCircle(canvas, x + window.innerWidth * 0.09, y, 10, 255, 255, 255, 1)
     })
 
@@ -213,8 +214,8 @@ export default class NeatManager {
     })
 
     if (!player.alive) {
-      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.7, 10)
-      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 255, 0, 0, 0.1, 10)
+      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.7)
+      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 255, 0, 0, 0.1)
       GUI.writeText(canvas, 'This player died :(', startX + width * 1.15, startY + height * 0.55, 'center', 'system-ui', 30, 'Pink', 300)
     }
 

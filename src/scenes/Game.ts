@@ -169,7 +169,7 @@ export default class Game extends Scene {
     }
 
     // option to end generation if player gets stuck
-    if (!this.openEditor && !this.settings.visible) {
+    if (!this.openEditor) {
       // ending generation
       if (KeyListener.keyPressed('KeyE')) {
         Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
@@ -383,7 +383,7 @@ export default class Game extends Scene {
       this.statistics.chooseVisualisation()
       if (!Game.extinct) {
         const bestPlayer = Game.neat.players[0]
-        this.statistics.renderOutput(bestPlayer, bestPlayer.alive);
+        this.statistics.renderOutput(bestPlayer);
       }
     }
 

@@ -45,12 +45,14 @@ export default class Settings {
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
     if (this.visible) {
-      GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 7)
-      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.045, canvas.width * 0.3, canvas.height * 0.91, 0, 0, 0, 0.2)
-      statistics.renderProgression(canvas.width * 0.35, canvas.height * 0.02)
-      statistics.renderPerformance(canvas.width * 0.6, canvas.height * 0.02)
-
+      GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 0)
+      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.047, canvas.width * 0.3, canvas.height * 0.52, 0, 0, 0, 0.2)
+      statistics.renderProgression(canvas.width * 0.35, canvas.height * 0.02, true)
+      statistics.renderPerformance(canvas.width * 0.614, canvas.height * 0.02, true)
       const bestPlayer = Game.neat.players[0]
+      
+      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.6, canvas.width * 0.3, canvas.height * 0.35, 0, 0, 0, 0.2)
+      statistics.renderOutput(bestPlayer, canvas.width * 0.06, 0, true)
       Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
     } else {
     }

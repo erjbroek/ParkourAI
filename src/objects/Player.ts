@@ -404,10 +404,10 @@ export default class Player {
       // this.brain.score += this.finished ? 10 : 0
       this.brain.score +=
         25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25;
+      this.brain.score -= (this.amountOfJumps * 3)
       if (this.finished) {
         this.brain.score *= 1.5;
       } else {
-        this.brain.score -= (this.amountOfJumps * 2)
       }
       
     } else {
