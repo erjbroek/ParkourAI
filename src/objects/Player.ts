@@ -154,7 +154,7 @@ export default class Player {
       this.obstacleCoordinations.next.x,
       this.obstacleCoordinations.next.y,
       this.obstacleCoordinations.next.z,
-      Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10,
+      // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10,
     ];
 
     const extremes: { max: number; min: number } = {
@@ -404,7 +404,7 @@ export default class Player {
       // this.brain.score += this.finished ? 10 : 0
       this.brain.score +=
         25 * this.calculateObstacleDistance() + this.highestObstacleIndex * 25;
-      this.brain.score -= (this.amountOfJumps * 3)
+      // this.brain.score -= (this.amountOfJumps * 3)
       if (this.finished) {
         this.brain.score *= 1.5;
       } else {

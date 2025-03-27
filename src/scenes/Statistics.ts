@@ -164,7 +164,7 @@ export default class Statistics {
     if (!best_player.alive) {
       if (!inSettings) {
         GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 255, 0, 0, 0.1, 10);
-        GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.16, 'center', 'system-ui', 18, 'pink', 300)
+        GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.19, 'center', 'system-ui', 18, 'pink', 300)
       } else {
         GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.04, MainCanvas.canvas.height * 0.6, MainCanvas.canvas.width * 0.3, MainCanvas.canvas.height * 0.35, 0, 0, 0, 0.7)
         GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.04, MainCanvas.canvas.height * 0.6, MainCanvas.canvas.width * 0.3, MainCanvas.canvas.height * 0.35, 255, 0, 0, 0.1)
