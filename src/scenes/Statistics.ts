@@ -76,12 +76,12 @@ export default class Statistics {
     if (this.visualisation == 1) {
       this.renderPerformance();
     } else if (this.visualisation == 0) {
-      this.renderProgression();
+      this.renderProgression(0, 0);
     }
   }
 
-  public renderPerformance(): void {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.04 };
+  public renderPerformance(addedX: number = 0, addedY: number = 0): void {
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition + addedX, y: window.innerHeight * 0.04 + addedY};
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
 
@@ -165,8 +165,8 @@ export default class Statistics {
     }
   }
 
-  public renderProgression() {
-    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition, y: window.innerHeight * 0.04 };
+  public renderProgression(addedX: number = 0, addedY: number = 0) {
+    const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - this.visualisationPosition + addedX, y: window.innerHeight * 0.04 + addedY};
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
     const max = window.innerHeight * 0.4;
 
@@ -188,17 +188,16 @@ export default class Statistics {
 
     for (let i = startIdxPrevious; i < Statistics.previousCheckpointsReached.length; i++) {
       const index = i - startIdxPrevious;
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 30, Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
+      GUI.fillRectangle(MainCanvas.canvas, startPosition.x + window.innerWidth * 0.04 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 30, Statistics.previousCheckpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, startPosition.x + window.innerWidth * 0.04 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
     }
 
     for (let i = startIdxCurrent; i < Statistics.checkpointsReached.length; i++) {
       const index = i - startIdxCurrent;
-      GUI.fillRectangle(MainCanvas.canvas, window.innerWidth * 0.05 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
-      GUI.writeText(MainCanvas.canvas, `${i + 1}`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
-      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize * 100)}%`, window.innerWidth * 0.05 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white');
+      GUI.fillRectangle(MainCanvas.canvas, startPosition.x + window.innerWidth * 0.04 + (window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + (dimensions.height * 1.1) - Statistics.checkpointsReached[i] / NeatManager.popSize * max, 30, Statistics.checkpointsReached[i] / NeatManager.popSize * max, 255, 255, 255, 0.2);
+      GUI.writeText(MainCanvas.canvas, `${i + 1}`, startPosition.x + window.innerWidth * 0.04 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 + 30, 'left', 'system-ui', 12, 'white');
+      GUI.writeText(MainCanvas.canvas, `${Math.round(Statistics.checkpointsReached[i] / NeatManager.popSize * 100)}%`, startPosition.x + window.innerWidth * 0.04 + (10 + window.innerWidth * 0.02 * index) - this.visualisationPosition, startPosition.y + dimensions.height * 1.1 - Statistics.checkpointsReached[i] / NeatManager.popSize * max - 10, 'left', 'system-ui', 12, 'white');
     }
     GUI.writeText(MainCanvas.canvas, '% checkpoint completed', startPosition.x + dimensions.width / 2, startPosition.y + dimensions.height * 1.1 + 50, 'center', 'system-ui', 22, 'white')
-
   }
 }

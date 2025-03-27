@@ -331,7 +331,6 @@ export default class Game extends Scene {
 
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
     const canvas = GUI.getCanvas();
-    // Game.neat.renderNetwork(canvas, Game.neat.neat.getFittest());
     if (!this.settings.visible) {
       if (this.clickEditor) {
         GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
@@ -393,7 +392,7 @@ export default class Game extends Scene {
     if (this.openEditor) { 
       this.editor.render(canvas)
     } else {
-      this.settings.render(canvas)
+      this.settings.render(canvas, this.statistics)
     }
 
   }

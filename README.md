@@ -19,5 +19,6 @@ future plans:
 - change platforms to be prettier, grass, rock? idk make it fit in with the rest
 - option to change mutation rate
 - add more levels 
+- find a way to properly visualise the networks
 
 

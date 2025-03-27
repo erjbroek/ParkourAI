@@ -6,7 +6,7 @@ import Game from './Game.js';
 import Statistics from './Statistics.js';
 
 export default class Settings {
-  public visible: boolean = false;
+  public visible: boolean = true;
 
   private closeOpacity = 0.7
 
@@ -43,9 +43,15 @@ export default class Settings {
 
   }
  
-  public render(canvas: HTMLCanvasElement) {
+  public render(canvas: HTMLCanvasElement, statistics: Statistics) {
     if (this.visible) {
-      GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 4)
+      GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 7)
+      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.045, canvas.width * 0.3, canvas.height * 0.91, 0, 0, 0, 0.2)
+      statistics.renderProgression(canvas.width * 0.35, canvas.height * 0.02)
+      statistics.renderPerformance(canvas.width * 0.6, canvas.height * 0.02)
+
+      const bestPlayer = Game.neat.players[0]
+      Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
     } else {
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);

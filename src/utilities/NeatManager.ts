@@ -118,10 +118,10 @@ export default class NeatManager {
    * @param canvas is the canvas the network gets rendered on
    * @param network the selected network to render
    */
-  public renderNetwork(canvas: HTMLCanvasElement, network: any) {
-    const inputNodes = network.nodes.filter((node: any) => node.type === 'input');
-    const hiddenNodes = network.nodes.filter((node: any) => node.type === 'hidden');
-    const outputNodes = network.nodes.filter((node: any) => node.type === 'output');
+  public renderNetwork(canvas: HTMLCanvasElement, player: any, addedX: number = 0, addedY: number = 0) {
+    const inputNodes = player.brain.nodes.filter((node: any) => node.type === 'input');
+    const hiddenNodes = player.brain.nodes.filter((node: any) => node.type === 'hidden');
+    const outputNodes = player.brain.nodes.filter((node: any) => node.type === 'output');
 
     // adds the layer property to the nodes
     hiddenNodes.forEach((node: any, i: number) => {
@@ -142,46 +142,81 @@ export default class NeatManager {
     // groups nodes together again
     const nodes = [...inputNodes, ...hiddenNodes, ...outputNodes];
 
-    const startX = canvas.width * 0.03;
-    const startY = canvas.height * 0.03;
-    const width = canvas.width * 0.1;
-    const height = canvas.height * 0.3;
+    const startX = canvas.width * 0.03 + addedX;
+    const startY = canvas.height * 0.03 + addedY;
+    const width = canvas.width * 0.2065;
+    const height = canvas.height * 0.35;
 
-    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) + 60, height, 0, 0, 0, 0.2, 10)
+    GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.2, 10)
 
     // ads layerSize and index to the nodes for positioning
     nodes.forEach((node: any) => {
       node.layerSize = nodes.filter((n: any) => n.layer === node.layer).length;
       node.index = nodes.filter((n: any) => n.layer === node.layer).indexOf(node);
     })
-
+    
     // draws all connections for each node
     nodes.forEach((node: any) => {
       if (node.type != 'output') {
         node.connections.out.forEach((connection: any) => {
           const current = node;
           const next = connection.to;
-          const x1 = startX + width * current.layer;
+          let x1 = startX + width * current.layer;
+          if (node.type == 'input') {
+            x1 += window.innerWidth * 0.09
+          }
           const y1 = startY + height * (current.index + 1) / (current.layerSize + 1);
           const x2 = startX + width * next.layer;
           const y2 = startY + height * (next.index + 1) / (next.layerSize + 1);
           const weight = connection
           if (node.layer + 1 == next.layer) {
-            GUI.drawLine(canvas, x1, y1, x2, y2, 0, 255, 0, 0.5, 5)
+            // GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.5, 2 * connection.weight)
+
+            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.2 * connection.weight, 2 * connection.weight)
           } else if (node.layer != next.layer) {
-            // GUI.drawLine(canvas, x1, y1, x2, y2, 255, 0, 0, 0.2, 5)
+            GUI.drawLine(canvas, x1, y1, x2, y2, 300 / connection.weight, 70 * connection.weight, 0, 0.2 * connection.weight, 2 * connection.weight)
           }
         })
       }
     })
+    
+    const inputValues = ['Δ X currentPlatform', 'Δ Y currentPlatform', 'Δ Z currentPlatform', 'Δ X nextPlatform', 'Δ Y nextPlatform', 'Δ Z nextPlatform', 'totalVelocity', 'onGround']
+    inputNodes.forEach((node: any, i: number) => {
+      const x = startX + width * node.layer;
+      const y = startY + height * (node.index + 1) / (node.layerSize + 1);
+      let color = ''
+      if (i < 3) {
+        color = '#FFB3A7'
+      } else if (i >= 3 && i < 6) {
+        color = '#B3FFB7'
+      } else if (i == 6) {
+        color = '#B3C7FF'
+      } else {
+        color = '#FFFFB3'
+      }
+      GUI.writeText(canvas, inputValues[i], x + window.innerWidth * 0.075, y, 'right', 'system-ui', 18, color)
+      GUI.fillCircle(canvas, x + window.innerWidth * 0.09, y, 10, 255, 255, 255, 1)
+    })
 
-    // draws nodes based on layer
-    nodes.forEach((node: any) => {
-      const layer = node.layer;
-      const x = startX + width * layer;
+    hiddenNodes.forEach((node) => {
+      const x = startX + width * node.layer;
       const y = startY + height * (node.index + 1) / (node.layerSize + 1);
       GUI.fillCircle(canvas, x, y, 10, 255, 255, 255, 1)
-    });
+    })
+
+    const output_actions = ['forwards', 'backwards', 'left', 'right', 'Jump']
+    outputNodes.forEach((node: any, i: number) => {
+      const x = startX + width * node.layer;
+      const y = startY + height * (node.index + 1) / (node.layerSize + 1);
+      GUI.writeText(canvas, output_actions[i], x + 20, y, 'left', 'system-ui', 20, 'white')
+      GUI.fillCircle(canvas, x, y, 10, 255, 255, 255, 1)
+    })
+
+    if (!player.alive) {
+      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 0, 0, 0, 0.7, 10)
+      GUI.fillRectangle(canvas, startX - 30, startY, width * (highestLayer + 1) * 1.2, height, 255, 0, 0, 0.1, 10)
+      GUI.writeText(canvas, 'This player died :(', startX + width * 1.15, startY + height * 0.55, 'center', 'system-ui', 30, 'Pink', 300)
+    }
 
     /**
      * uses recursion to get the layer number of the node
