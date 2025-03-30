@@ -83,15 +83,16 @@ export default class Statistics {
   public renderPerformance(addedX: number = 0, addedY: number = 0, inSettings: boolean = false): void {
     const startPosition: { x: number, y: number } = { x: window.innerWidth * 0.015 - (this.visualisationPosition * Number(!inSettings)) + addedX, y: window.innerHeight * 0.04 + addedY};
     const dimensions: { width: number, height: number } = { width: window.innerWidth * 0.23, height: window.innerHeight * 0.4 };
-    const max: number = Math.ceil(Math.max(...Statistics.highscores) / 250) * 250;
+    const max: number = Math.ceil(Math.max(...Statistics.highscores) / 225) * 225;
 
     let min = 0;
     if (!NeatManager.usePretrainedNetwork) {
-      min = Math.min(...Statistics.highscores, ...Statistics.averageScores);
+      min = Math.min(...Statistics.averageScores);
     }
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));
     const maxAverage: number = Math.ceil(Math.max(...Statistics.averageScores));
     
+    console.log(maxHighscore)
     // first rendering graph itself
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 2, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
@@ -112,18 +113,18 @@ export default class Statistics {
     // next rendering average scores and highscores
     Statistics.highscores.forEach((score: number, index: number) => {
       if (index > 0) {
-        GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + (index - 1) * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (Statistics.highscores[index - 1] - min) / (max - min) * dimensions.height, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 255, 100, 100, 3);
+        GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + (index - 1) * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (Statistics.highscores[index - 1] - min) / (max - min) * dimensions.height / 1.115, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height / 1.115, 255, 100, 100, 1, 2);
       }
-      GUI.fillCircle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 4, 255, 100, 100, 1);
+      // GUI.fillCircle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.highscores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 4, 255, 100, 100, 1);
     });
     Statistics.averageScores.forEach((score: number, index: number) => {
       if (index > 0) {
-        GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + (index - 1) * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (Statistics.averageScores[index - 1] - min) / (max - min) * dimensions.height, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 100, 255, 100, 3);
+        GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + (index - 1) * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (Statistics.averageScores[index - 1] - min) / (max - min) * dimensions.height / 1.115, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height / 1.115, 100, 255, 100, 1, 2);
       }
-      GUI.fillCircle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 4, 100, 255, 100, 1);
+      // GUI.fillCircle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1 + index * dimensions.width * 0.8 / Statistics.averageScores.length, startPosition.y + dimensions.height - (score - min) / (max - min) * dimensions.height, 4, 100, 255, 100, 1);
     });
-    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - (maxHighscore - min) / (max - min) * dimensions.height, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - (maxHighscore - min) / (max - min) * dimensions.height, 255, 100, 100, 0.4, 2);
-    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height, 100, 255, 100, 0.4, 2);
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - (maxHighscore - min) / (max - min) * dimensions.height / 1.115, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - (maxHighscore - min) / (max - min) * dimensions.height / 1.115, 255, 100, 100, 0.4, 2);
+    GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height / 1.115, startPosition.x + dimensions.width * 0.9, startPosition.y + dimensions.height - (maxAverage - min) / (max - min) * dimensions.height / 1.115, 100, 255, 100, 0.4, 2);
 
     // legenda
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x + dimensions.width * 0.05, startPosition.y + dimensions.height * 1.1 + 10, window.innerWidth * 0.02, 15, 255, 100, 100, 1);
@@ -164,7 +165,7 @@ export default class Statistics {
     if (!best_player.alive) {
       if (!inSettings) {
         GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y, dimensions.width, dimensions.height, 255, 0, 0, 0.1, 10);
-        GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.19, 'center', 'system-ui', 18, 'pink', 300)
+        GUI.writeText(MainCanvas.canvas, 'Player died', startPosition.x + dimensions.width * 0.5, startPosition.y + dimensions.height * 0.08, 'center', 'system-ui', 18, 'pink', 300)
       } else {
         GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.04, MainCanvas.canvas.height * 0.6, MainCanvas.canvas.width * 0.3, MainCanvas.canvas.height * 0.35, 0, 0, 0, 0.7)
         GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.04, MainCanvas.canvas.height * 0.6, MainCanvas.canvas.width * 0.3, MainCanvas.canvas.height * 0.35, 255, 0, 0, 0.1)
