@@ -7,21 +7,24 @@ import Slider from './Slider.js';
 import Statistics from './Statistics.js';
 
 export default class Settings {
-  public visible: boolean = true;
+  public visible: boolean = false;
 
   private closeOpacity = 0.7
 
   private readyClick: boolean = true;
 
-  private mutationSlider: Slider;
+  private mutationRateSlider: Slider;
+
+  private mutationAmountSlider: Slider;
 
   public constructor() {
-    console.log(Game.neat.neat.mutationRate)
-    this.mutationSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.12, 0.2)
+    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.13, 0.2, 1)
+    this.mutationAmountSlider = new Slider('Mutation Amount', 0, 5, 1, 0.05, MainCanvas.canvas.height * 0.23, 0.2, 0)
   }
 
   public processInput() {
-    this.mutationSlider.processInput()
+    this.mutationRateSlider.processInput()
+    this.mutationAmountSlider.processInput()
     if (MouseListener.isButtonDown(0)) {
       if (UICollision.checkSquareCollision(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
         this.visible = !this.visible
@@ -42,7 +45,9 @@ export default class Settings {
   
 
   public update() {
-
+    Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
+    Game.neat.mutationAmounnt = this.mutationAmountSlider.activeValue;
+    console.log(this.mutationAmountSlider.activeValue)
   }
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
@@ -56,7 +61,8 @@ export default class Settings {
       GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.6, canvas.width * 0.3, canvas.height * 0.35, 0, 0, 0, 0.2)
       statistics.renderOutput(bestPlayer, canvas.width * 0.06, 0, true)
       Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
-      this.mutationSlider.render(canvas)
+      this.mutationRateSlider.render(canvas);
+      this.mutationAmountSlider.render(canvas)
     } else {  
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);
