@@ -17,7 +17,7 @@ export default class Settings {
 
   public constructor() {
     console.log(Game.neat.neat.mutationRate)
-    this.mutationSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, window.innerWidth * 0.05, window.innerHeight * 0.12, window.innerWidth * 0.2)
+    this.mutationSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.12, 0.2)
   }
 
   public processInput() {

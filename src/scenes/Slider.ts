@@ -36,7 +36,7 @@ export default class Slider {
   public processInput() {
     // once the player holds the button, the this.holding gets set to true so the player is also able to move it while not hovering the slider
     // this way, the mouse doesnt have to be on the exact position of the slider constantly
-    if (UICollision.checkCollision(this.posX + this.width * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, window.innerWidth * 0.02, window.innerHeight * 0.03)) {
+    if (UICollision.checkCollision(this.posX * window.innerWidth + this.width * window.innerWidth * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, window.innerWidth * 0.02, window.innerHeight * 0.03)) {
       if (MouseListener.isButtonDown(0)) {
         this.holding = true
       }
@@ -45,12 +45,11 @@ export default class Slider {
       this.holding = false
     }
     if (this.holding) {
-      this.activeValue = Math.max(this.minValue, Math.min(this.maxValue, (MouseListener.x2 - this.posX) / this.width))
+      this.activeValue = Math.max(this.minValue, Math.min(this.maxValue, (MouseListener.x2 - this.posX * window.innerWidth) / (this.width * window.innerWidth)))
     }
     if (MouseListener.isButtonDown(0) && !this.holding) {
-      if (UICollision.checkCollision(this.posX + this.width + window.innerWidth * 0.02 + window.innerWidth * 0.01, this.posY, window.innerWidth * 0.04, window.innerHeight * 0.03)) {
+      if (UICollision.checkCollision(this.posX * window.innerWidth + this.width * window.innerWidth + window.innerWidth * 0.02 + window.innerWidth * 0.01, this.posY, window.innerWidth * 0.04, window.innerHeight * 0.03)) {
         this.resetToDefault()
-        console.log('click')
       }
     }
 
@@ -63,11 +62,11 @@ export default class Slider {
 
   public render(canvas: HTMLCanvasElement) {
     const sliderWidth = canvas.width * 0.02
-    GUI.fillRectangle(canvas, this.posX, this.posY, this.width + sliderWidth, canvas.height * 0.03, 200, 200, 200, 0.8, 10)
-    GUI.fillRectangle(canvas, this.posX + this.width * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, sliderWidth, canvas.height * 0.03, 0, 0, 0, 1, 10)
-    GUI.writeText(canvas, `${this.text}: ${Math.round(100 * (this.maxValue - this.minValue) * this.activeValue + this.minValue) / 100}`, this.posX + ((this.width + sliderWidth) / 2) - canvas.width * 0.025, this.posY - canvas.height * 0.01, 'left', 'system-ui', 15, 'white')
+    GUI.fillRectangle(canvas, this.posX * window.innerWidth, this.posY, this.width * window.innerWidth + sliderWidth, canvas.height * 0.03, 200, 200, 200, 0.8, 10)
+    GUI.fillRectangle(canvas, this.posX * window.innerWidth + this.width * window.innerWidth * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, sliderWidth, canvas.height * 0.03, 0, 0, 0, 1, 10)
+    GUI.writeText(canvas, `${this.text}: ${Math.round(100 * (this.maxValue - this.minValue) * this.activeValue + this.minValue) / 100}`, this.posX * window.innerWidth + ((this.width * window.innerWidth + sliderWidth) / 2) - canvas.width * 0.025, this.posY - canvas.height * 0.01, 'left', 'system-ui', 15, 'white')
 
-    GUI.fillRectangle(canvas, this.posX + this.width + sliderWidth + canvas.width * 0.01, this.posY, canvas.width * 0.04, canvas.height * 0.03, 255, 255, 255, 0.6, 10)
-    GUI.writeText(canvas, 'Reset', this.posX + this.width + sliderWidth + canvas.width * 0.01 + (canvas.width * 0.04 / 2), this.posY + canvas.height * 0.022, 'center', 'system-ui', 18, 'black', 400)
+    GUI.fillRectangle(canvas, this.posX * window.innerWidth + this.width * window.innerWidth + sliderWidth + canvas.width * 0.01, this.posY, canvas.width * 0.04, canvas.height * 0.03, 255, 255, 255, 0.6, 10)
+    GUI.writeText(canvas, 'Reset', this.posX * window.innerWidth + this.width * window.innerWidth + sliderWidth + canvas.width * 0.01 + (canvas.width * 0.04 / 2), this.posY + canvas.height * 0.022, 'center', 'system-ui', 18, 'black', 400)
   }
 }
