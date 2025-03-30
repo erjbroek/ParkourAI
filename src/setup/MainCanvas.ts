@@ -45,6 +45,8 @@ export default class MainCanvas {
 
   public static pitch: number = -0.1;
 
+  public static rotate: boolean = true;
+
   private isMouseButtonDown: boolean = false;
 
   private network: any;
@@ -166,16 +168,18 @@ export default class MainCanvas {
   private rotateCamera(deltaTime: number) {
     const mouseSensitivity = 0.002;
     if (this.isMouseButtonDown) {
+      if (MainCanvas.rotate) {
         const mouseMovementX = MouseListener.mouseDelta.x;
         const mouseMovementY = MouseListener.mouseDelta.y;
-
+        
         MainCanvas.yaw -= mouseMovementX * mouseSensitivity;
         MainCanvas.pitch -= mouseMovementY * mouseSensitivity;
-
+        
         MainCanvas.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, MainCanvas.pitch));
         MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(MainCanvas.pitch, MainCanvas.yaw, 0, 'YXZ'));
         MouseListener.mouseDelta.x = 0;
         MouseListener.mouseDelta.y = 0;
+      }
     }
   }
 
