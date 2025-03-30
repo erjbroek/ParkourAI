@@ -35,7 +35,7 @@ export default class Game extends Scene {
 
   public static colorMode: number = 1;
 
-  private settings: Settings = new Settings()
+  private settings: Settings;
 
   public readyNextLevel: boolean = false;
 
@@ -95,6 +95,8 @@ export default class Game extends Scene {
     Game.neat = new NeatManager()
     // this.userPlayer = new Player(0, false);
     Game.alivePlayers = Game.neat.players;
+
+    this.settings = new Settings()
 
     // update camera position to first level
     const position = Parkour.levels[Parkour.activeLevel].location

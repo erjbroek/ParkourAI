@@ -3,22 +3,26 @@ import GUI from '../utilities/GUI.js';
 import MouseListener from '../utilities/MouseListener.js';
 import UICollision from '../utilities/UICollision.js';
 import Game from './Game.js';
+import Slider from './Slider.js';
 import Statistics from './Statistics.js';
 
 export default class Settings {
-  public visible: boolean = false;
+  public visible: boolean = true;
 
   private closeOpacity = 0.7
 
   private readyClick: boolean = true;
 
-  public constructor() {
+  private mutationSlider: Slider;
 
+  public constructor() {
+    console.log(Game.neat.neat.mutationRate)
+    this.mutationSlider = new Slider(0, 1, Game.neat.neat.mutationRate, window.innerWidth * 0.05, window.innerHeight * 0.12, window.innerWidth * 0.2)
   }
 
   public processInput() {
+    this.mutationSlider.processInput()
     if (MouseListener.isButtonDown(0)) {
-      console.log('test')
       if (UICollision.checkSquareCollision(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
         this.visible = !this.visible
         this.readyClick = false
@@ -52,7 +56,8 @@ export default class Settings {
       GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.6, canvas.width * 0.3, canvas.height * 0.35, 0, 0, 0, 0.2)
       statistics.renderOutput(bestPlayer, canvas.width * 0.06, 0, true)
       Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
-    } else {
+      this.mutationSlider.render(canvas)
+    } else {  
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);
     GUI.writeText(canvas, 'Settings', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.12 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')

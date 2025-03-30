@@ -1,3 +1,7 @@
+import GUI from '../utilities/GUI.js';
+import MouseListener from '../utilities/MouseListener.js';
+import UICollision from '../utilities/UICollision.js';
+
 export default class Slider {
   private minValue: number;
 
@@ -5,13 +9,13 @@ export default class Slider {
 
   public activeValue: number;
 
-  public defaultValue: number;
+  private defaultValue: number;
 
-  public posX: number;
+  private posX: number;
 
-  public posY: number;
+  private posY: number;
 
-  public width: number;
+  private width: number;
 
   public constructor(minValue: number, maxValue: number, activeValue: number, posX: number, posY: number, width: number) {
     this.minValue = minValue;
@@ -24,14 +28,22 @@ export default class Slider {
   }
 
   public processInput() {
-
+    if (UICollision.checkCollision(this.posX + this.width * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, window.innerWidth * 0.02, window.innerHeight * 0.03)) {
+      console.log('yippee')
+      if (MouseListener.isButtonDown(0)) {
+      }
+    }
   }
 
   public resetToDefault() {
-
+    this.activeValue = this.defaultValue
   }
 
-  public render() {
-    
+  public render(canvas: HTMLCanvasElement) {
+    const sliderWidth = canvas.width * 0.02
+    console.log(this.activeValue - this.minValue / (this.maxValue - this.minValue))
+    GUI.fillRectangle(canvas, this.posX, this.posY, this.width + sliderWidth, canvas.height * 0.03, 200, 200, 200, 0.8, 0)
+    GUI.fillRectangle(canvas, this.posX + this.width * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, sliderWidth, canvas.height * 0.03, 0, 0, 0, 1, 0)
+    // GUI.drawRectangle(canvas, this.posX  + this.width * (this.activeValue - this.minValue / (this.maxValue - this.minValue)), this.posY, sliderWidth, canvas.height * 0.03, 200, 200, 255, 0.8, 3, 0)
   }
 }

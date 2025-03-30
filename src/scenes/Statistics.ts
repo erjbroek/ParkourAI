@@ -92,7 +92,6 @@ export default class Statistics {
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));
     const maxAverage: number = Math.ceil(Math.max(...Statistics.averageScores));
     
-    console.log(maxHighscore)
     // first rendering graph itself
     GUI.fillRectangle(MainCanvas.canvas, startPosition.x, startPosition.y * 0.8, dimensions.width, dimensions.height * 1.3, 0, 0, 0, 0.2);
     GUI.drawLine(MainCanvas.canvas, startPosition.x + dimensions.width * 0.1, startPosition.y * 2, startPosition.x + dimensions.width * 0.1, startPosition.y + dimensions.height, 255, 255, 255, 1);
