@@ -7,7 +7,7 @@ import Slider from './Slider.js';
 import Statistics from './Statistics.js';
 
 export default class Settings {
-  public visible: boolean = false;
+  public visible: boolean = true;
 
   private closeOpacity = 0.7
 
@@ -18,7 +18,7 @@ export default class Settings {
   private mutationAmountSlider: Slider;
 
   public constructor() {
-    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.13, 0.2, 1)
+    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.16, 0.2, 2)
     this.mutationAmountSlider = new Slider('Mutation Amount', 0, 5, 1, 0.05, MainCanvas.canvas.height * 0.23, 0.2, 0)
   }
 
@@ -53,7 +53,6 @@ export default class Settings {
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
     if (this.visible) {
       GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 0)
-      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.047, canvas.width * 0.3, canvas.height * 0.52, 0, 0, 0, 0.2)
       statistics.renderProgression(canvas.width * 0.35, canvas.height * 0.02, true)
       statistics.renderPerformance(canvas.width * 0.614, canvas.height * 0.02, true)
       const bestPlayer = Game.neat.players[0]
@@ -61,6 +60,12 @@ export default class Settings {
       GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.6, canvas.width * 0.3, canvas.height * 0.35, 0, 0, 0, 0.2)
       statistics.renderOutput(bestPlayer, canvas.width * 0.06, 0, true)
       Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
+      
+      
+      GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.047, canvas.width * 0.3, canvas.height * 0.52, 0, 0, 0, 0.2)
+      GUI.fillRectangle(canvas, canvas.width * 0.045, canvas.height * 0.125, canvas.width * 0.29, canvas.height * 0.43, 0, 0, 0, 0.2)
+      GUI.writeText(canvas, 'Settings', canvas.width * 0.18, canvas.height * 0.1, 'center', 'system-ui', 30, 'white', 100)
+      GUI.drawLine(canvas, canvas.width * 0.1, canvas.height * 0.115, canvas.width * 0.26, canvas.height * 0.115, 255, 255, 255, 1, 1)
       this.mutationRateSlider.render(canvas);
       this.mutationAmountSlider.render(canvas)
     } else {  
