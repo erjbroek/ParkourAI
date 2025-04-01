@@ -6,7 +6,7 @@ import UICollision from '../utilities/UICollision.js';
 export default class Slider {
   private minValue: number;
 
-  private maxValue: number;
+  public maxValue: number;
 
   public activeValue: number;
 
@@ -18,7 +18,7 @@ export default class Slider {
 
   private width: number;
 
-  private holding: boolean = false;
+  public holding: boolean = false;
 
   private text: string;
   

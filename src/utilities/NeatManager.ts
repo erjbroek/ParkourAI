@@ -30,7 +30,7 @@ export default class NeatManager {
   public constructor() {
     this.neat = new neat.Neat(8, 5, null, {
       mutationRate: 0.3,
-      mutationAmount: 1,
+      mutationAmount: 2,
       popsize: NeatManager.popSize,
       elitism: NeatManager.popSize / 5
     })
@@ -50,7 +50,7 @@ export default class NeatManager {
   public resetGeneration(): void {
     this.neat = new neat.Neat(8, 5, null, {
       mutationRate: 0.3,
-      mutationAmount: 1,
+      mutationAmount: 2,
       popsize: NeatManager.popSize,
       elitism: NeatManager.popSize / 5
     })

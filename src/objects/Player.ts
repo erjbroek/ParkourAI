@@ -168,9 +168,8 @@ export default class Player {
       }
       return (2 * (value - extremes.min)) / (extremes.max - extremes.min) - 1;
     });
-    // this.inputValues = [...inputValues]
+
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
-    // this.inputValues = [...inputValues];
 
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);

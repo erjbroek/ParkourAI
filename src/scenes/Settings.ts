@@ -18,13 +18,23 @@ export default class Settings {
   private mutationAmountSlider: Slider;
 
   public constructor() {
-    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.16, 0.2, 2)
-    this.mutationAmountSlider = new Slider('Mutation Amount', 0, 5, 1, 0.05, MainCanvas.canvas.height * 0.23, 0.2, 0)
+    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
+    this.mutationAmountSlider = new Slider('Mutation Amount', 0, 10, Game.neat.neat.mutationAmount, 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
   }
 
   public processInput() {
-    this.mutationRateSlider.processInput()
-    this.mutationAmountSlider.processInput()
+    const sliders = [this.mutationRateSlider, this.mutationAmountSlider] 
+
+    sliders.forEach(slider => {
+      if (sliders.some(slider => slider.holding)) {
+        if (slider.holding) {
+          slider.processInput();
+        }
+      } else {
+        slider.processInput();
+      }
+    });
+    
     if (MouseListener.isButtonDown(0)) {
       if (UICollision.checkSquareCollision(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
         this.visible = !this.visible
@@ -46,8 +56,8 @@ export default class Settings {
 
   public update() {
     Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
-    Game.neat.mutationAmounnt = this.mutationAmountSlider.activeValue;
-    console.log(this.mutationAmountSlider.activeValue)
+    Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
+    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount )
   }
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
