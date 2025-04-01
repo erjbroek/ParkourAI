@@ -176,6 +176,7 @@ export default class Game extends Scene {
       if (KeyListener.keyPressed('KeyE')) {
         Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
         Game.neat.endGeneration();
+        this.settings.update()
       }
       if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
         if (Parkour.levels[Parkour.activeLevel].finished) {
@@ -301,12 +302,12 @@ export default class Game extends Scene {
         }
       }
       Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+      this.settings.update()
+
       Game.neat.endGeneration();      
     }
     if (this.openEditor) {
       this.editor.update(deltaTime);    
-    } else {
-      this.settings.update()
     }
     return this;
   }

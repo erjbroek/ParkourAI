@@ -17,13 +17,16 @@ export default class Settings {
 
   private mutationAmountSlider: Slider;
 
+  private populationSizeSlider: Slider;
+
   public constructor() {
     this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
-    this.mutationAmountSlider = new Slider('Mutation Amount', 0, 10, Game.neat.neat.mutationAmount, 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
+    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
+    this.populationSizeSlider = new Slider('Population size', 0, 100, Game.neat.neat.popsize, 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
   }
 
   public processInput() {
-    const sliders = [this.mutationRateSlider, this.mutationAmountSlider] 
+    const sliders = [this.mutationRateSlider, this.mutationAmountSlider, this.populationSizeSlider] 
 
     sliders.forEach(slider => {
       if (sliders.some(slider => slider.holding)) {
@@ -57,7 +60,8 @@ export default class Settings {
   public update() {
     Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
     Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
-    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount )
+    Game.neat.neat.popsize = this.populationSizeSlider.activeValue;
+    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount, Game.neat.neat.popsize)
   }
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
@@ -78,6 +82,7 @@ export default class Settings {
       GUI.drawLine(canvas, canvas.width * 0.1, canvas.height * 0.115, canvas.width * 0.26, canvas.height * 0.115, 255, 255, 255, 1, 1)
       this.mutationRateSlider.render(canvas);
       this.mutationAmountSlider.render(canvas)
+      this.populationSizeSlider.render(canvas)
     } else {  
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);

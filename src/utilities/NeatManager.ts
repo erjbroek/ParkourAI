@@ -49,10 +49,10 @@ export default class NeatManager {
 
   public resetGeneration(): void {
     this.neat = new neat.Neat(8, 5, null, {
-      mutationRate: 0.3,
-      mutationAmount: 2,
-      popsize: NeatManager.popSize,
-      elitism: NeatManager.popSize / 5
+      mutationRate: this.neat.mutationRate,
+      mutationAmount: this.neat.mutationAmount,
+      popsize: this.neat.popsize,
+      elitism: this.neat.popsize / 5
     })
     this.initializePopulation()
   }
