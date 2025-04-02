@@ -11,7 +11,7 @@ export default class UICollision {
    * @param height - The height of the square.
    * @returns A boolean indicating whether there is a collision or not.
    */
-  public static checkSquareCollision(xMult: number, yMult: number, width: number, height: number): boolean {
+  public static checkSquareCollisionMult(xMult: number, yMult: number, width: number, height: number): boolean {
     if (
       MouseListener.x2 > window.innerWidth * xMult &&
       MouseListener.x2 < window.innerWidth * xMult + window.innerWidth * width &&
@@ -20,6 +20,17 @@ export default class UICollision {
     ) {
       return true;
     } 
+    return false;
+  }
+
+  public static checkCircleCollision(posX: number, posY: number, radius: number): boolean {
+    const distX = MouseListener.x2 - posX;
+    const distY = MouseListener.y2 - posY;
+    const distance = Math.sqrt(distX * distX + distY * distY);
+
+    if (distance <= radius) {
+      return true;
+    }
     return false;
   }
 

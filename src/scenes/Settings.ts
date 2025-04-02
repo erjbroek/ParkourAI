@@ -22,10 +22,10 @@ export default class Settings {
   private elitismSlider: Slider;
 
   public constructor() {
-    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, [0.2, 0.42], 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
-    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, [1, 4], 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
-    this.populationSizeSlider = new Slider('Population size', 20, 200, Game.neat.neat.popsize, [50, 217], 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
-    this.elitismSlider = new Slider('Elitism percentage', 0, 100, Game.neat.neat.elitism, [20, 40], 0.05, MainCanvas.canvas.height * 0.42, 0.2, 0)
+    this.mutationRateSlider = new Slider('Mutation rate', 'The mutation rate is the chance that a mutation happends. If the <br>mutation rate is too low, the agents will stop converging and they will all <br>get the same score after some generations.', 0, 1, Game.neat.neat.mutationRate, [0.2, 0.42], 0.08, MainCanvas.canvas.height * 0.18, 0.17, 2)
+    this.mutationAmountSlider = new Slider('Amount of mutations','The mutation amount is the amount of mutations done (with a chance <br>equal to the mutation rate for each mutation). Too many mutations will <br>make growth unstable but increase exploration.', 0, 10, Game.neat.neat.mutationAmount, [1, 4], 0.08, MainCanvas.canvas.height * 0.26, 0.17, 0)
+    this.populationSizeSlider = new Slider('Population size', 'Population size sets the amount of players. Usually, more players is <br>better, as there is higher diversity. However, more players can lead to <br>agent performance issues because of large amount of computations needed ', 20, 200, Game.neat.neat.popsize, [50, 217], 0.08, MainCanvas.canvas.height * 0.34, 0.17, 0)
+    this.elitismSlider = new Slider('Elitism percentage','The top percentage of players skipping mutation, to make sure the best <br>players are preserved. Having this at 100% means the players will never <br>mutate and change, leading to identical scores', 0, 80, Game.neat.neat.elitism, [20, 40], 0.08, MainCanvas.canvas.height * 0.42, 0.17, 0)
   }
 
   public processInput() {
@@ -42,7 +42,7 @@ export default class Settings {
     });
     
     if (MouseListener.isButtonDown(0)) {
-      if (UICollision.checkSquareCollision(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
+      if (UICollision.checkSquareCollisionMult(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
         this.visible = !this.visible
         this.readyClick = false
         this.closeOpacity = 0.7
@@ -52,7 +52,7 @@ export default class Settings {
     }
 
     // hovering effect
-    if (UICollision.checkSquareCollision(0.9, 0.11, 0.08, 0.05)) {
+    if (UICollision.checkSquareCollisionMult(0.9, 0.11, 0.08, 0.05)) {
       this.closeOpacity = 0.5
     } else {
       this.closeOpacity = 0.7
@@ -64,7 +64,7 @@ export default class Settings {
     Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
     Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
     Game.neat.neat.popsize = this.populationSizeSlider.activeValue;
-    Game.neat.neat.elitism = Game.neat.neat.popsize * (this.elitismSlider.activeValue / 100)
+    Game.neat.neat.elitism = Math.round(Game.neat.neat.popsize * (this.elitismSlider.activeValue / 100))
     console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount, Game.neat.neat.popsize, Game.neat.neat.elitism)
   }
  

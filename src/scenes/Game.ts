@@ -178,7 +178,7 @@ export default class Game extends Scene {
         Game.neat.endGeneration();
         this.settings.update()
       }
-      if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
+      if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
         if (Parkour.levels[Parkour.activeLevel].finished) {
           if (!this.autoProgress) {
             Game.alivePlayers.forEach(player => player.alive = false);
@@ -189,20 +189,20 @@ export default class Game extends Scene {
 
       // the three small buttons from hide-ui, auto-update camera position and auto progress
       if (MouseListener.buttonPressed(0)) {
-        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.85, 0.012, 0.025)) {
+        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.85, 0.012, 0.025)) {
           this.updateCamera = !this.updateCamera;
         }
-        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.89, 0.012, 0.025)) {
+        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.89, 0.012, 0.025)) {
           this.autoProgress = !this.autoProgress;
         }
-        if (UICollision.checkSquareCollision(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
+        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
           this.statistics.startHidingGraphs = !this.statistics.startHidingGraphs
         }
       }
     } 
     if (!this.settings.visible) {
       // edit button (with hover animation)
-      if (UICollision.checkSquareCollision(0.9, 0.04, 0.08, 0.05)) {
+      if (UICollision.checkSquareCollisionMult(0.9, 0.04, 0.08, 0.05)) {
         this.hoverEditor = true;
         if (MouseListener.isButtonDown(0)) {
           this.clickEditor = true;
