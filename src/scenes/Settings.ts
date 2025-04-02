@@ -20,9 +20,9 @@ export default class Settings {
   private populationSizeSlider: Slider;
 
   public constructor() {
-    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
-    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
-    this.populationSizeSlider = new Slider('Population size', 0, 100, Game.neat.neat.popsize, 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
+    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, [0.2, 0.4], 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
+    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, [1, 3], 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
+    this.populationSizeSlider = new Slider('Population size', 0, 200, Game.neat.neat.popsize, [50, 200], 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
   }
 
   public processInput() {

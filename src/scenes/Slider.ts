@@ -24,11 +24,14 @@ export default class Slider {
   
   private numDecimals: number;
 
-  public constructor(sliderText: string, minValue: number, maxValue: number, activeValue: number, posX: number, posY: number, width: number, numDecimals: number) {
+  private recommendedValue: number[];
+
+  public constructor(sliderText: string, minValue: number, maxValue: number, activeValue: number, recommendedValue: number[], posX: number, posY: number, width: number, numDecimals: number) {
     this.text = sliderText;
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.activeValue = activeValue;
+    this.recommendedValue = recommendedValue;
     this.defaultValue = this.activeValue;
     this.posX = posX;
     this.posY = posY;

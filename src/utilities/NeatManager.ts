@@ -20,7 +20,7 @@ export default class NeatManager {
 
   public static usePretrainedNetwork: boolean = false;
 
-  public static popSize: number = 50
+  public static popSize: number = 150
 
   public recordPylon: THREE.Mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(0.4, 1.2, 1000, 32),
