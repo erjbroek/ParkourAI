@@ -7,7 +7,7 @@ import Slider from './Slider.js';
 import Statistics from './Statistics.js';
 
 export default class Settings {
-  public visible: boolean = true;
+  public visible: boolean = false;
 
   private closeOpacity = 0.7
 

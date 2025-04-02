@@ -68,7 +68,6 @@ export default class Slider {
     }
 
     this.hoverInfo = UICollision.checkCircleCollision(this.posX * window.innerWidth * 0.85, this.posY + window.innerHeight * 0.015, window.innerHeight * 0.012)
-
   }
 
   public resetToDefault() {
