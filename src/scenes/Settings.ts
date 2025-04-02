@@ -19,14 +19,17 @@ export default class Settings {
 
   private populationSizeSlider: Slider;
 
+  private elitismSlider: Slider;
+
   public constructor() {
-    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, [0.2, 0.4], 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
-    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, [1, 3], 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
-    this.populationSizeSlider = new Slider('Population size', 0, 200, Game.neat.neat.popsize, [50, 200], 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
+    this.mutationRateSlider = new Slider('Mutation rate', 0, 1, Game.neat.neat.mutationRate, [0.2, 0.42], 0.05, MainCanvas.canvas.height * 0.18, 0.2, 2)
+    this.mutationAmountSlider = new Slider('Amount of mutations', 0, 10, Game.neat.neat.mutationAmount, [1, 4], 0.05, MainCanvas.canvas.height * 0.26, 0.2, 0)
+    this.populationSizeSlider = new Slider('Population size', 20, 200, Game.neat.neat.popsize, [50, 217], 0.05, MainCanvas.canvas.height * 0.34, 0.2, 0)
+    this.elitismSlider = new Slider('Elitism percentage', 0, 100, Game.neat.neat.elitism, [20, 40], 0.05, MainCanvas.canvas.height * 0.42, 0.2, 0)
   }
 
   public processInput() {
-    const sliders = [this.mutationRateSlider, this.mutationAmountSlider, this.populationSizeSlider] 
+    const sliders = [this.mutationRateSlider, this.mutationAmountSlider, this.populationSizeSlider, this.elitismSlider] 
 
     sliders.forEach(slider => {
       if (sliders.some(slider => slider.holding)) {
@@ -61,7 +64,8 @@ export default class Settings {
     Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
     Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
     Game.neat.neat.popsize = this.populationSizeSlider.activeValue;
-    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount, Game.neat.neat.popsize)
+    Game.neat.neat.elitism = Game.neat.neat.popsize * (this.elitismSlider.activeValue / 100)
+    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount, Game.neat.neat.popsize, Game.neat.neat.elitism)
   }
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
@@ -83,6 +87,7 @@ export default class Settings {
       this.mutationRateSlider.render(canvas);
       this.mutationAmountSlider.render(canvas)
       this.populationSizeSlider.render(canvas)
+      this.elitismSlider.render(canvas)
     } else {  
     }
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);
