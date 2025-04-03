@@ -31,6 +31,8 @@ export default class Settings {
   public processInput() {
     const sliders = [this.mutationRateSlider, this.mutationAmountSlider, this.populationSizeSlider, this.elitismSlider] 
 
+    // processing the input for the sliders
+    // it's done like this so you can only move 1 slider at a time
     sliders.forEach(slider => {
       if (sliders.some(slider => slider.holding)) {
         if (slider.holding) {
@@ -41,6 +43,7 @@ export default class Settings {
       }
     });
     
+    // closes/ opens settings
     if (MouseListener.isButtonDown(0)) {
       if (UICollision.checkSquareCollisionMult(0.9, 0.11, 0.08, 0.05) && this.readyClick) {
         this.visible = !this.visible
@@ -59,8 +62,8 @@ export default class Settings {
     }
   }
   
-
   public update() {
+    // sets the values from the sliders to the correct places
     Game.neat.neat.mutationRate = this.mutationRateSlider.activeValue;
     Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
     Game.neat.neat.popsize = this.populationSizeSlider.activeValue;
@@ -70,16 +73,18 @@ export default class Settings {
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
     if (this.visible) {
+      // rendering of the graphs
       GUI.fillRectangle(canvas, canvas.width * 0.03, canvas.height * 0.03, canvas.width * 0.84, canvas.height * 0.94, 0, 0, 0, 0.5, 0)
       statistics.renderProgression(canvas.width * 0.35, canvas.height * 0.02, true)
       statistics.renderPerformance(canvas.width * 0.614, canvas.height * 0.02, true)
+
+      // rendering the network outputs of the best player
       const bestPlayer = Game.neat.players[0]
-      
       GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.6, canvas.width * 0.3, canvas.height * 0.35, 0, 0, 0, 0.2)
       statistics.renderOutput(bestPlayer, canvas.width * 0.06, 0, true)
       Game.neat.renderNetwork(canvas, bestPlayer, canvas.width * 0.35, canvas.height * 0.57);
       
-      
+      // rendering the sliders
       GUI.fillRectangle(canvas, canvas.width * 0.04, canvas.height * 0.047, canvas.width * 0.3, canvas.height * 0.52, 0, 0, 0, 0.2)
       GUI.fillRectangle(canvas, canvas.width * 0.045, canvas.height * 0.125, canvas.width * 0.29, canvas.height * 0.43, 0, 0, 0, 0.2)
       GUI.writeText(canvas, 'Settings', canvas.width * 0.18, canvas.height * 0.1, 'center', 'system-ui', 30, 'white', 100)
@@ -88,8 +93,9 @@ export default class Settings {
       this.mutationAmountSlider.render(canvas)
       this.populationSizeSlider.render(canvas)
       this.elitismSlider.render(canvas)
-    } else {  
     }
+
+    // renders the button
     GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.11, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, this.closeOpacity, 10);
     GUI.writeText(canvas, 'Settings', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.12 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
   }
