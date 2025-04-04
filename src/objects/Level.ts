@@ -45,8 +45,8 @@ export default class Level {
       fragmentShader: `
         varying float vHeight;
         void main() {
-          float opacity = 0.7 - (vHeight + 5.0) / 8.0; // Map height to opacity
-          gl_FragColor = vec4(0.6, 1.0, 0.4, opacity);
+          float opacity = 0.55 - (vHeight + 5.0) / 8.0; // Map height to opacity
+          gl_FragColor = vec4(0.4, 1.0, 0.8, opacity);
         }
       `,
       transparent: true,

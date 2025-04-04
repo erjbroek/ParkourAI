@@ -15,7 +15,7 @@ import Island from './Island.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 9;
+  public static activeLevel: number = 2;
 
   public static addedParkour: Obstacle[][] = [[]];
 
