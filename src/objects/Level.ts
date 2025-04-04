@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import ParkourPieces from './ParkourPieces.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import Island from './Island.js';
 
 
 export default class Level {
@@ -22,21 +23,24 @@ export default class Level {
 
   public maxTime: number;
 
-  public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3, time: number) {
+  public islands: Island[];
+
+  public constructor(index: number, pieces: any[][], islands: Island[], spawnpoint: THREE.Vector3, time: number) {
     this.index = index;
+    this.islands = islands
     const spread = 1.6
     const scale = 1.2
     const gridSize = 3
     this.location = new THREE.Vector3((index % gridSize) * 150 * spread * scale, 0, -Math.floor(index / gridSize) * 150 * spread * scale);
     const loader = new GLTFLoader();
-    loader.load('./assets/floorflat.glb', (gltf) => {
-      gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
-      const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
-      const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
-      gltf.scene.rotation.y = randomRotation;
-      gltf.scene.scale.set(20 * scale, 10, 20 * scale);
-      MainCanvas.scene.add(gltf.scene);
-    });
+    // loader.load('./assets/floorflat.glb', (gltf) => {
+    //   gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
+    //   const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
+    //   const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
+    //   gltf.scene.rotation.y = randomRotation;
+    //   gltf.scene.scale.set(20 * scale, 10, 20 * scale);
+    //   MainCanvas.scene.add(gltf.scene);
+    // });
 
     pieces.forEach((piece, idx) => {
       const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
@@ -63,6 +67,12 @@ export default class Level {
     })
 
     MainCanvas.scene.add(this.finishLine.mesh)
+  }
+
+  public renderIslands(): void {
+    this.islands.forEach((island) => {
+      island.render(this.location)
+    })
   }
 
   /**
