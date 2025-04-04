@@ -46,7 +46,7 @@ export default class Level {
         varying float vHeight;
         void main() {
           float opacity = 0.55 - (vHeight + 5.0) / 8.0; // Map height to opacity
-          gl_FragColor = vec4(0.4, 1.0, 0.8, opacity);
+          gl_FragColor = vec4(0.6, 0.8, 1.0, opacity);
         }
       `,
       transparent: true,
