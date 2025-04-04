@@ -170,7 +170,16 @@ export default class Parkour {
       [ParkourPieces.checkPoint, 0, 3.51, -120],
     ]
     Parkour.levels.push(new Level(9, obstacles, new THREE.Vector3(0, 0, -30), 16))
-
+    Parkour.levels.push(new Level(10, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(11, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(12, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(13, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(14, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(15, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(16, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(17, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(18, obstacles, new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(19, obstacles, new THREE.Vector3(0, 0, -30), 16))
     
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()

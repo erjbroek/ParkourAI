@@ -24,8 +24,8 @@ export default class Level {
 
   public constructor(index: number, pieces: any[][], spawnpoint: THREE.Vector3, time: number) {
     this.index = index;
-    const spread = 1.3
-    const scale = 1.5
+    const spread = 1.6
+    const scale = 1.2
     const gridSize = 3
     this.location = new THREE.Vector3((index % gridSize) * 150 * spread * scale, 0, -Math.floor(index / gridSize) * 150 * spread * scale);
     const loader = new GLTFLoader();
@@ -52,27 +52,31 @@ export default class Level {
     this.maxTime = time
   }
 
-   /**
-   * Adds the level meshes to the scene
-   * 
-   * @param level is an array containing the meshes/ obstacles that should be added
-   */
-   public renderParkour(): void {
+  /**
+  * Adds the level meshes to the scene
+  * 
+  * @param level is an array containing the meshes/ obstacles that should be added
+  */
+  public renderParkour(): void {
     this.pieces.forEach((obstacle) => {
       MainCanvas.scene.add(obstacle.mesh)
     })
 
     MainCanvas.scene.add(this.finishLine.mesh)
-    // const wall1 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z})
-    // const wall2 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x, posY: 0, posZ: this.location.z - 150})
-    // const wall3 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x - 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
-    // const wall4 = new Obstacle(ParkourPieces.levelBorder.clone(), {posX: this.location.x + 75, posY: 0, posZ: this.location.z - 75, rotationX: 0, rotationY: Math.PI / 2})
-
-    // MainCanvas.scene.add(wall1.mesh)
-    // MainCanvas.scene.add(wall2.mesh)
-    // MainCanvas.scene.add(wall3.mesh)
-    // MainCanvas.scene.add(wall4.mesh)
   }
+
+  /**
+  * Removes the level meshes from the scene
+  */
+  public unloadParkour(): void {
+    this.pieces.forEach((obstacle) => {
+      MainCanvas.scene.remove(obstacle.mesh)
+    })
+
+    MainCanvas.scene.remove(this.finishLine.mesh)
+  }
+
+
 
     /**
  * Creates obstacle
