@@ -318,7 +318,7 @@ export default class Player {
     }
 
     // if player falls, reset position to last reached checkpoint
-    if (this.playerBody.position.y < -2) {
+    if (this.playerBody.position.y < -10) {
       this.killPlayer();
     }
 
@@ -343,7 +343,7 @@ export default class Player {
     material.emissiveIntensity = 1;
 
     MainCanvas.world.removeBody(this.playerBody)
-    // MainCanvas.scene.remove(this.mesh)
+    MainCanvas.scene.remove(this.mesh)
   }
 
   /**
@@ -373,14 +373,14 @@ export default class Player {
     // next, the distance is calculated between these 2 points
     const maxDistance = Math.sqrt(
       (currentPosition.x - nextPosition.x) ** 2 +
-        (currentPosition.y - nextPosition.y) ** 2 +
-        (currentPosition.z - nextPosition.z) ** 2
+      (currentPosition.y - nextPosition.y) ** 2 +
+      (currentPosition.z - nextPosition.z) ** 2
     );
 
     const currentDistance = Math.sqrt(
       (this.playerBody.position.x - nextPosition.x) ** 2 +
-        (this.playerBody.position.y - nextPosition.y) ** 2 +
-        (this.playerBody.position.z - nextPosition.z) ** 2
+      (this.playerBody.position.y - nextPosition.y) ** 2 +
+      (this.playerBody.position.z - nextPosition.z) ** 2
     );
 
     // when using both of these distances (the total distance, and the current players distance), we know how far the player is to the next jump

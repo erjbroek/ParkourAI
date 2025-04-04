@@ -28,11 +28,37 @@ export default class Level {
   public constructor(index: number, pieces: any[][], islands: Island[], spawnpoint: THREE.Vector3, time: number) {
     this.index = index;
     this.islands = islands
-    const spread = 1.6
+    const spread = 1.3
     const scale = 1.2
     const gridSize = 3
     this.location = new THREE.Vector3((index % gridSize) * 150 * spread * scale, 0, -Math.floor(index / gridSize) * 150 * spread * scale);
-    const loader = new GLTFLoader();
+
+    const geometry = new THREE.CylinderGeometry(90, 90, 5, 22, 4, true);
+    const material = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying float vHeight;
+        void main() {
+          vHeight = position.y;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying float vHeight;
+        void main() {
+          float opacity = 0.7 - (vHeight + 5.0) / 8.0; // Map height to opacity
+          gl_FragColor = vec4(0.6, 1.0, 0.4, opacity);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const ring = new THREE.Mesh(geometry, material);
+    ring.position.add(this.location);
+    ring.position.z -= 70; // Adjust the value as needed
+    ring.position.y -= 5.2;
+    MainCanvas.scene.add(ring);
+    // const loader = new GLTFLoader();
     // loader.load('./assets/floorflat.glb', (gltf) => {
     //   gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
     //   const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];

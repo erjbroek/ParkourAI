@@ -77,7 +77,7 @@ export default class Game extends Scene {
     );
 
     this.water.rotation.x = - Math.PI / 2;
-    this.water.position.set(0, -20, 0);
+    this.water.position.set(0, -8, 0);
     MainCanvas.scene.add(this.water);
 
     this.sun = new THREE.Vector3();
