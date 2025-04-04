@@ -28,7 +28,7 @@ export default class NeatManager {
   );
 
   public constructor() {
-    this.neat = new neat.Neat(8, 5, null, {
+    this.neat = new neat.Neat(7, 5, null, {
       mutationRate: 0.3,
       mutationAmount: 2,
       popsize: NeatManager.popSize,
@@ -44,11 +44,10 @@ export default class NeatManager {
     } 
 
     this.initializePopulation()
-    console.log(this.neat.generation)
   }
 
   public resetGeneration(): void {
-    this.neat = new neat.Neat(8, 5, null, {
+    this.neat = new neat.Neat(7, 5, null, {
       mutationRate: this.neat.mutationRate,
       mutationAmount: this.neat.mutationAmount,
       popsize: this.neat.popsize,
@@ -122,6 +121,7 @@ export default class NeatManager {
     const inputNodes = player.brain.nodes.filter((node: any) => node.type === 'input');
     const hiddenNodes = player.brain.nodes.filter((node: any) => node.type === 'hidden');
     const outputNodes = player.brain.nodes.filter((node: any) => node.type === 'output');
+    // console.log(inputNodes)
 
     // adds the layer property to the nodes
     hiddenNodes.forEach((node: any, i: number) => {
@@ -181,7 +181,7 @@ export default class NeatManager {
       }
     })
     
-    const inputCategories = ['Δ X currentPlatform', 'Δ Y currentPlatform', 'Δ Z currentPlatform', 'Δ X nextPlatform', 'Δ Y nextPlatform', 'Δ Z nextPlatform', 'totalVelocity', 'onGround']
+    const inputCategories = ['Δ X currentPlatform', 'Δ Y currentPlatform', 'Δ Z currentPlatform', 'Δ X nextPlatform', 'Δ Y nextPlatform', 'Δ Z nextPlatform', 'onGround']
     inputNodes.forEach((node: any, i: number) => {
       const x = startX + width * node.layer;
       const y = startY + height * (node.index + 1) / (node.layerSize + 1);

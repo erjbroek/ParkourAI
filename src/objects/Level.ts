@@ -29,8 +29,8 @@ export default class Level {
     const gridSize = 3
     this.location = new THREE.Vector3((index % gridSize) * 150 * spread * scale, 0, -Math.floor(index / gridSize) * 150 * spread * scale);
     const loader = new GLTFLoader();
-    loader.load('./assets/floor.glb', (gltf) => {
-      gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -24, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
+    loader.load('./assets/floorflat.glb', (gltf) => {
+      gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
       const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
       const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
       gltf.scene.rotation.y = randomRotation;

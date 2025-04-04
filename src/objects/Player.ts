@@ -156,7 +156,6 @@ export default class Player {
       this.obstacleCoordinations.next.z,
       // Math.round(playerVelocity * 10 ** decimals) / 10 ** decimals / 10,
     ];
-
     const extremes: { max: number; min: number } = {
       max: Math.max(...inputValues),
       min: Math.min(...inputValues),
@@ -168,9 +167,8 @@ export default class Player {
       }
       return (2 * (value - extremes.min)) / (extremes.max - extremes.min) - 1;
     });
-
+    
     this.inputValues = [...normalizedValues, this.onGround ? 1 : 0];
-
     this.boundingBox.setFromObject(this.mesh);
     this.updateMovement(deltaTime);
   }
