@@ -209,7 +209,12 @@ export default class Parkour {
       [ParkourPieces.platform, -28, 22, -110, 0, Math.PI / 2],
       [ParkourPieces.checkPoint, -18, 27.51, -110, 0, Math.PI / 2],
     ]
-    Parkour.levels.push(new Level(8, obstacles, [], new THREE.Vector3(10, 0, -30), 16))
+    islands = [
+      new Island(new THREE.Vector3(10, -2, -30), new THREE.Vector3(24.1, 10, 16.1)),
+      new Island(new THREE.Vector3(-28, 21, -110), new THREE.Vector3(16.1, 10, 24.1)),
+
+    ]
+    Parkour.levels.push(new Level(8, obstacles, islands, new THREE.Vector3(10, 0, -30), 16))
 
     obstacles = [
       [ParkourPieces.startingPlatform, 0, -2, -30],
