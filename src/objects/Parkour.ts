@@ -15,7 +15,7 @@ import Island from './Island.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 7;
+  public static activeLevel: number = 8;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -193,15 +193,21 @@ export default class Parkour {
 
     obstacles = [
       [ParkourPieces.startingPlatform, 10, -2, -30],
-      [ParkourPieces.normal1, 10, 1, -50],
-      [ParkourPieces.normal1, 0, 2, -60],
-      [ParkourPieces.normal1, 10, 3, -70],
-      [ParkourPieces.normal1, 20, 4, -80],
-      [ParkourPieces.normal1, 10, 5, -90],
-      [ParkourPieces.normal1, 0, 6, -100],
-      [ParkourPieces.normal1, -14, 7, -100],
-      [ParkourPieces.platform, -34, 8, -100, 0, Math.PI / 2],
-      [ParkourPieces.checkPoint, -24, 13.51, -100, 0, Math.PI / 2],
+      [ParkourPieces.normal1, 10, 0, -50],
+      [ParkourPieces.normal1, 10, 2, -60],
+      [ParkourPieces.normal1, 0, 4, -60],
+      [ParkourPieces.normal1, 0, 6, -70],
+      [ParkourPieces.normal1, 0, 8, -80],
+      [ParkourPieces.normal1, 10, 10, -80],
+      [ParkourPieces.normal1, 20, 12, -80],
+      [ParkourPieces.normal1, 20, 14, -90],
+      [ParkourPieces.normal1, 20, 16, -100],
+      [ParkourPieces.normal1, 20, 18, -110],
+      [ParkourPieces.normal1, 10, 20, -110],
+      [ParkourPieces.normal1, 0, 22, -110],
+      [ParkourPieces.normal1, -10, 22, -110],
+      [ParkourPieces.platform, -28, 22, -110, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, -18, 27.51, -110, 0, Math.PI / 2],
     ]
     Parkour.levels.push(new Level(8, obstacles, [], new THREE.Vector3(10, 0, -30), 16))
 
