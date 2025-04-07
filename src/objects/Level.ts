@@ -4,6 +4,7 @@ import ParkourPieces from './ParkourPieces.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Island from './Island.js';
+import Foliage from './Foliage.js';
 
 
 export default class Level {
@@ -25,9 +26,12 @@ export default class Level {
 
   public islands: Island[];
 
-  public constructor(index: number, pieces: any[][], islands: Island[], spawnpoint: THREE.Vector3, time: number) {
+  public foliage: Foliage[];
+
+  public constructor(index: number, pieces: any[][], islands: Island[], foliage: Foliage[], spawnpoint: THREE.Vector3, time: number) {
     this.index = index;
     this.islands = islands
+    this.foliage = foliage
     const spread = 1.3
     const scale = 1.2
     const gridSize = 3
@@ -93,13 +97,16 @@ export default class Level {
     })
 
     MainCanvas.scene.add(this.finishLine.mesh)
-  }
 
-  public renderIslands(): void {
     this.islands.forEach((island) => {
       island.render(this.location)
     })
+
+    this.foliage.forEach((piece) => {
+      piece.render(this.location)
+    })
   }
+
 
   /**
   * Removes the level meshes from the scene

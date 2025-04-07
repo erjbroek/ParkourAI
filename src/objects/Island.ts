@@ -21,7 +21,7 @@ export default class Island {
 
     this.grassMesh = new THREE.Mesh(new THREE.BoxGeometry(dimensions.x + 4, 2, dimensions.z + 4), this.grassMaterial)
     this.grassMesh.position.set(position.x, position.y + 0.55, position.z)
-
+    // this.grassMesh.material.color = {r:1, g:1, b:1}
     this.groundMesh = new THREE.Mesh(new THREE.BoxGeometry(dimensions.x, position.y + 30, dimensions.z), this.groundMaterial)
     this.groundMesh.position.set(position.x, (position.y - 30) / 2, position.z)
   }
