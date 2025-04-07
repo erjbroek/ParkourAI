@@ -18,9 +18,10 @@ to find the best balance between complexity and efficiency.
 future plans:
 - create different islands, not all flat, maybe river, and change levels surrounding those
   - trees or foliage might help with that idea
+  the above has been finished, but adding water or trees will help
+
 - change platforms to be prettier, grass, rock? idk make it fit in with the rest
 - option to change mutation rate
 - add more levels 
-- find a way to properly visualise the networks
-
+- custom camera position per level
 

@@ -15,7 +15,7 @@ import Island from './Island.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 8;
+  public static activeLevel: number = 9;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -210,9 +210,8 @@ export default class Parkour {
       [ParkourPieces.checkPoint, -18, 27.51, -110, 0, Math.PI / 2],
     ]
     islands = [
-      new Island(new THREE.Vector3(10, -2, -30), new THREE.Vector3(24.1, 10, 16.1)),
+      new Island(new THREE.Vector3(10, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
       new Island(new THREE.Vector3(-28, 21, -110), new THREE.Vector3(16.1, 10, 24.1)),
-
     ]
     Parkour.levels.push(new Level(8, obstacles, islands, new THREE.Vector3(10, 0, -30), 16))
 
@@ -225,8 +224,11 @@ export default class Parkour {
       [ParkourPieces.platform, 0, -2, -130],
       [ParkourPieces.checkPoint, 0, 3.51, -120],
     ]
-    
-    Parkour.levels.push(new Level(9, obstacles, [], new THREE.Vector3(0, 0, -30), 16))
+    islands = [
+      new Island(new THREE.Vector3(0, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
+      new Island(new THREE.Vector3(0, -2.99, -130), new THREE.Vector3(24.1, 10, 16.1)),
+    ]
+    Parkour.levels.push(new Level(9, obstacles, islands, new THREE.Vector3(0, 0, -30), 16))
     
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
