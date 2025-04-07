@@ -52,8 +52,8 @@ export default class Parkour {
       new Island(new THREE.Vector3(0, -2.99, -60), new THREE.Vector3(25, 10, 80))
     ]
     foliage = [
-      new Foliage('tree', new THREE.Vector3(-10, 0, -35), 3),
-      new Foliage('tree', new THREE.Vector3(10, 0, -65), 3)
+      new Foliage('tree', new THREE.Vector3(-10, 0, -35)),
+      new Foliage('tree', new THREE.Vector3(10, 0, -65))
     ]
     Parkour.levels.push(new Level(0, obstacles, islands, foliage, new THREE.Vector3(0, 1.2, -30), 7))
 

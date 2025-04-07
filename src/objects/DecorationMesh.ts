@@ -33,9 +33,9 @@ export default class DecorationMesh {
   public static createBushGroup(amount: number): THREE.Group {
     const group = new THREE.Group();
     for (let i = 0; i < amount; i++) {
-      const width = Math.random() * 5 + 4;
-      const height = Math.random() * 4 + 4;
-      const depth = Math.random() * 5 + 4;
+      const width = Math.random() * 6 + 2;
+      const height = Math.random() * 2 + 3;
+      const depth = Math.random() * 6 + 2;
   
       const bushGeometry = new THREE.BoxGeometry(width, height, depth);
       const bushMaterial = DecorationMesh.material.clone();

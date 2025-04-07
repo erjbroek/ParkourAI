@@ -20,7 +20,7 @@ export default class Foliage {
           this.mesh.position.set(this.position.x, position.y + 0.5, position.z)
         break;
         case 'bushgroup':
-          this.mesh = DecorationMesh.createBushGroup(3)
+          this.mesh = DecorationMesh.createBushGroup(bushAmount)
           this.mesh.position.set(this.position.x, position.y - 1.5, position.z)
         break;
         default:
