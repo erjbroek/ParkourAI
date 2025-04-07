@@ -1,5 +1,7 @@
 ﻿# ParkourAI
 (project not finished yet, so for now the readme will just show the current progress from newest to oldest)
+![image](https://github.com/user-attachments/assets/d5050467-a790-4927-aaaa-63aaabd5bdae)
+
 ![image](https://github.com/user-attachments/assets/e297d31b-c543-4197-9b88-6e3b8b2fd2e9)
 ![image](https://github.com/user-attachments/assets/2bd18bb6-e5a6-487f-8ab6-49eca426501d)
 
