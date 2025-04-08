@@ -30,7 +30,7 @@ export default class DecorationMesh {
     return group;
   })();
 
-  public static createBushGroup(amount: number): THREE.Group {
+  public static createBushGroup(amount: number, xSpread: number, ySpread: number): THREE.Group {
     const group = new THREE.Group();
     for (let i = 0; i < amount; i++) {
       const width = Math.random() * 6 + 2;
@@ -48,13 +48,24 @@ export default class DecorationMesh {
       const bush = new THREE.Mesh(bushGeometry, bushMaterial);
   
       bush.position.set(
-        Math.random() * 6 - 3,
+        Math.random() * xSpread - 3,
         height / 2,
-        Math.random() * 6 - 3 
+        Math.random() * ySpread - 3 
       );
   
       group.add(bush);
     }
     return group;
+  }
+
+  public static water(position: THREE.Vector3, dimensions: THREE.Vector3): THREE.Mesh {
+    const waterMaterial = DecorationMesh.material.clone();
+    const waterGeometry = new THREE.BoxGeometry(dimensions.x, dimensions.y, dimensions.z)
+    waterMaterial.color = new THREE.Color(0, 0.4, 3);
+    const water = new THREE.Mesh(waterGeometry, waterMaterial);
+  
+    water.position.set(position.x, position.y, position.z);
+  
+    return water;
   }
 }
