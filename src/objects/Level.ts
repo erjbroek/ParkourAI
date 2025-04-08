@@ -59,7 +59,7 @@ export default class Level {
 
     const ring = new THREE.Mesh(geometry, material);
     ring.position.add(this.location);
-    ring.position.z -= 70; // Adjust the value as needed
+    ring.position.z -= 70;
     ring.position.y -= 5.2;
     MainCanvas.scene.add(ring);
     // const loader = new GLTFLoader();
@@ -121,14 +121,14 @@ export default class Level {
 
 
 
-    /**
+  /**
  * Creates obstacle
  * 
  * Instead of using mesh, it is used as Obstacle 
  * this way, controlling the parkour jumps is easier
  * think of things like moving obstacles, ect.
  */
-    private createObstacle(mesh: THREE.Mesh, posX: number, posY: number, posZ: number, rotationX = 0, rotationY = 0, rotationZ = 0): Obstacle {
-      return new Obstacle(mesh.clone(), { posX, posY, posZ, rotationX, rotationY, rotationZ });
-    }
+  private createObstacle(mesh: THREE.Mesh, posX: number, posY: number, posZ: number, rotationX = 0, rotationY = 0, rotationZ = 0): Obstacle {
+    return new Obstacle(mesh.clone(), { posX, posY, posZ, rotationX, rotationY, rotationZ });
+  }
 }

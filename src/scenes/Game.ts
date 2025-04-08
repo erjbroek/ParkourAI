@@ -100,8 +100,8 @@ export default class Game extends Scene {
 
     // update camera position to first level
     const position = Parkour.levels[Parkour.activeLevel].location
-    MainCanvas.camera.position.set(position.x - 60, position.y + 70, position.z);
-    MainCanvas.camera.rotation.set(-0.9397751756439171, -0.36884016871031733, -0.45837171574968577);
+    MainCanvas.camera.position.set(position.x - 60, position.y + 50, position.z);
+    MainCanvas.camera.rotation.set(-0.643536637648491, -0.5225529300689504, -0.3581991118441852 );
     const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
     MainCanvas.yaw = euler.y;
     MainCanvas.pitch = euler.x;
@@ -127,7 +127,6 @@ export default class Game extends Scene {
     MainCanvas.scene.add( this.sky );
 
     MainCanvas.scene.environment = renderTarget.texture;
-
   }
 
 
@@ -135,6 +134,7 @@ export default class Game extends Scene {
    * processes player input
    */
   public override processInput(): void {
+    console.log(MainCanvas.camera.rotation)
     this.statistics.procesInput()
     if (this.userPlayer) {
 
@@ -292,8 +292,8 @@ export default class Game extends Scene {
         Game.neat.resetGeneration()   
         if (this.updateCamera) {
           const position = Parkour.levels[Parkour.activeLevel].location;
-          MainCanvas.camera.position.set(position.x - 60, position.y + 70, position.z);
-          MainCanvas.camera.rotation.set(-0.9397751756439171, -0.36884016871031733, -0.45837171574968577);
+          MainCanvas.camera.position.set(position.x - 60, position.y + 50, position.z);
+          MainCanvas.camera.rotation.set(-0.643536637648491, -0.5225529300689504, -0.3581991118441852);
       
           // Synchronize yaw and pitch
           const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
@@ -360,7 +360,7 @@ export default class Game extends Scene {
         GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
         GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
       }
-      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.365, canvas.height * 0.965, 'left', 'system-ui', 30, 'black', 500)
+      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.365 - this.statistics.visualisationPosition, canvas.height * 0.965, 'left', 'system-ui', 30, 'black', 500)
       
       // the three buttons hide-ui, auto-progress and auto updating camera position
       GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - this.statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
