@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 3;
+  public static activeLevel: number = 8;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -182,9 +182,13 @@ export default class Parkour {
       new Island(new THREE.Vector3(-8, 24, -104), new THREE.Vector3(24.1, 10, 16.1)),
       new Island(new THREE.Vector3(-60, -2, -74), new THREE.Vector3(18.1, 10, 12.1)),
       new Island(new THREE.Vector3(-64, 8, -78), new THREE.Vector3(18.1, 10, 12.1)),
-
     ]
-    Parkour.levels.push(new Level(6, obstacles, islands, [], new THREE.Vector3(0, 0, -10), 16))
+    foliage = [
+      new Foliage('bushgroup', new THREE.Vector3(-68, 8, -78), 6, 8, 8),
+      new Foliage('tree', new THREE.Vector3(-56, 8, -78)),
+      new Foliage('tree', new THREE.Vector3(-20, 24, -104)),
+    ]
+    Parkour.levels.push(new Level(6, obstacles, islands, foliage, new THREE.Vector3(0, 0, -10), 16))
     
     // level 7, jump downwards in other direction
     obstacles = [
@@ -234,8 +238,17 @@ export default class Parkour {
     islands = [
       new Island(new THREE.Vector3(10, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
       new Island(new THREE.Vector3(-28, 21, -110), new THREE.Vector3(16.1, 10, 24.1)),
+
+      new Island(new THREE.Vector3(-45, -4, -55), new THREE.Vector3(32.1, 10, 6.1)),
+      new Island(new THREE.Vector3(-45, -4, -25), new THREE.Vector3(32.1, 10, 1.1)),
+      new Island(new THREE.Vector3(-29.5, -4, -40), new THREE.Vector3(1.1, 10, 31.1)),
+      new Island(new THREE.Vector3(-54.5, -4, -40), new THREE.Vector3(13.1, 10, 31.1)),
     ]
     foliage = [
+      new Water(new THREE.Vector3(-38.5, -8, -39), new THREE.Vector3(15, 10, 23.1)),
+      new Foliage('bushgroup', new THREE.Vector3(-58.5, -2, -50), 6, 12, 24),
+      new Foliage('tree', new THREE.Vector3(-58.5, -2, -50)),
+      new Foliage('tree', new THREE.Vector3(-34, 18, -100)),
     ]
     Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16))
 
