@@ -18,7 +18,7 @@ export default class Foliage extends RenderObject {
         break;
         case 'bush':
           this.mesh = DecorationMesh.bush;
-          this.mesh.position.set(this.position.x, position.y + 0.5, position.z)
+          this.mesh.position.set(this.position.x, position.y + 2.5, position.z)
         break;
         case 'bushgroup':
           this.mesh = DecorationMesh.createBushGroup(bushAmount, xSpread, zSpread)

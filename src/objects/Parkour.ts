@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 8;
+  public static activeLevel: number = 0;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -65,16 +65,32 @@ export default class Parkour {
       [ParkourPieces.startingPlatform, 0, -2, -50],
       [ParkourPieces.startingPlatform, 0, -2, -76],
       [ParkourPieces.platform, 0, -2, -96],
-      [ParkourPieces.checkPoint, 0, 5.01, -86]
+      [ParkourPieces.checkPoint, 0, 5.01, -86]  
     ]
     islands = [
       new Island(new THREE.Vector3(0, -2.99, -40), new THREE.Vector3(24.1, 10, 36.1)),
       new Island(new THREE.Vector3(0, -2.99, -86), new THREE.Vector3(24.1, 10, 36.1)),
     ]
     foliage = [
+      new Foliage('bushgroup', new THREE.Vector3(10, -2, -100), 2),
+      new Foliage('tree', new THREE.Vector3(10, -3, -100))
     ]
     Parkour.levels.push(new Level(1, obstacles, islands, foliage, new THREE.Vector3(0, 1.2, -30), 8))
 
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -30],
+      [ParkourPieces.long2, 0, -3.5, -50, 0, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, -3.5, -70, 0, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, -3.5, -90, 0, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, -3.5, -110, 0, 0, Math.PI / 2],
+      [ParkourPieces.platform, 0, -2, -130],
+      [ParkourPieces.checkPoint, 0, 3.51, -120],
+    ]
+    islands = [
+      new Island(new THREE.Vector3(0, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
+      new Island(new THREE.Vector3(0, -2.99, -130), new THREE.Vector3(24.1, 10, 16.1)),
+    ]
+    Parkour.levels.push(new Level(2, obstacles, islands, [], new THREE.Vector3(0, 0, -30), 16))
 
     // level 2, now also moving right instead of just straight
     obstacles = [
@@ -95,26 +111,8 @@ export default class Parkour {
     foliage = [
       new Foliage('tree', new THREE.Vector3(54, -2, -98))
     ]
-    Parkour.levels.push(new Level(2, obstacles, islands, foliage, new THREE.Vector3(-52, 1, -46), 17))
+    Parkour.levels.push(new Level(3, obstacles, islands, foliage, new THREE.Vector3(-52, 1, -46), 17))
     
-    // level 3, the big jump
-    obstacles = [
-      [ParkourPieces.startingPlatform, 0, 30, -30],
-      [ParkourPieces.normal2, 0, 30, -50],
-      [ParkourPieces.normal2, 0, 30, -64],
-      [ParkourPieces.normal2, 0, -2, -100],
-      [ParkourPieces.platform, 0, -2, -120],
-      [ParkourPieces.checkPoint, 0, 4.51, -110],
-    ]
-    islands = [
-      new Island(new THREE.Vector3(0, 29,  -30), new THREE.Vector3(24.1, 10, 16.1)),
-      new Island(new THREE.Vector3(-8, 14,  -28), new THREE.Vector3(20.1, 10, 22.1)),
-      new Island(new THREE.Vector3( 0, -2.99, -120), new THREE.Vector3(24.1, 10, 16.1)),
-    ]
-    foliage = [
-      new Foliage('tree', new THREE.Vector3(-18, 14, -38))
-    ]
-    Parkour.levels.push(new Level(3, obstacles, islands, foliage, new THREE.Vector3(0, 34, -30), 8))
     
     // level 4, two different directioons
     obstacles = [
@@ -131,33 +129,38 @@ export default class Parkour {
     islands = [
       new Island(new THREE.Vector3(-30, -2.99, -46), new THREE.Vector3(16.1, 10, 24.1)),
       new Island(new THREE.Vector3(32, -2.99, -98), new THREE.Vector3(16.1, 10, 24.1)),
+      
+      new Island(new THREE.Vector3(25, -4, -55), new THREE.Vector3(32.1, 10, 6.1)),
+      new Island(new THREE.Vector3(25, -4, -25), new THREE.Vector3(32.1, 10, 1.1)),
+      new Island(new THREE.Vector3(40.5, -4, -40), new THREE.Vector3(1.1, 10, 31.1)),
+      new Island(new THREE.Vector3(15.5, -4, -40), new THREE.Vector3(13.1, 10, 31.1)),
     ]
-    Parkour.levels.push(new Level(4, obstacles, islands, [], new THREE.Vector3(-30, 1.2, -46), 14))
+    foliage = [
+      new Water(new THREE.Vector3(31, -8, -38), new THREE.Vector3(15, 10, 23.1)),
+      new Foliage('bushgroup', new THREE.Vector3(13, -2, -52), 8, 8, 22),
+      new Foliage('tree', new THREE.Vector3(36, 0, -53)),
+    ]
+    Parkour.levels.push(new Level(4, obstacles, islands, foliage, new THREE.Vector3(-30, 1.2, -46), 14))
     
-    // level 5, three different directions
+    // level 5, the big jump
     obstacles = [
-      [ParkourPieces.startingPlatform, -30, -2, -100],
-      [ParkourPieces.normal2, -30, -2, -80],
-      [ParkourPieces.normal2, -30, -2, -68],
-      [ParkourPieces.normal2, -30, -2, -54],
-      [ParkourPieces.normal2, -30, -2, -40],
-      [ParkourPieces.normal2, -16, -2, -40],
-      [ParkourPieces.normal2, -2, -2, -40],
-      [ParkourPieces.normal2, 12, -2, -40],
-      [ParkourPieces.normal2, 26, -2, -40],
-      [ParkourPieces.normal2, 26, -2, -54],
-      [ParkourPieces.normal2, 26, -2, -68],
-      [ParkourPieces.normal2, 26, -2, -80],
-      [ParkourPieces.platform, 26, -2, -100],
-      [ParkourPieces.checkPoint, 26, 4.51, -90]
+      [ParkourPieces.startingPlatform, 0, 30, -30],
+      [ParkourPieces.normal2, 0, 30, -50],
+      [ParkourPieces.normal2, 0, 30, -64],
+      [ParkourPieces.normal2, 0, -2, -100],
+      [ParkourPieces.platform, 0, -2, -120],
+      [ParkourPieces.checkPoint, 0, 4.51, -110],
     ]
     islands = [
-      new Island(new THREE.Vector3(-30, -2.99, -100), new THREE.Vector3(24.1, 10, 16.1)),
-      new Island(new THREE.Vector3(26, -2.99, -100), new THREE.Vector3(24.1, 10, 16.1)),
-      // new Island(new THREE.Vector3(-2, 8, -93), new THREE.Vector3(28, 10, 36.1)),
+      new Island(new THREE.Vector3(0, 29,  -30), new THREE.Vector3(24.1, 10, 16.1)),
+      new Island(new THREE.Vector3(-8, 14,  -28), new THREE.Vector3(20.1, 10, 22.1)),
+      new Island(new THREE.Vector3( 0, -2.99, -120), new THREE.Vector3(24.1, 10, 16.1)),
     ]
-    Parkour.levels.push(new Level(5, obstacles, islands, [], new THREE.Vector3(-30, 1.2, -100), 18))
-    
+    foliage = [
+      new Foliage('tree', new THREE.Vector3(-18, 14, -38))
+    ]
+    Parkour.levels.push(new Level(5, obstacles, islands, foliage, new THREE.Vector3(0, 34, -30), 8))
+
     // level 6, big climb
     obstacles = [
       [ParkourPieces.startingPlatform, 0, -2, -10],
@@ -251,21 +254,6 @@ export default class Parkour {
       new Foliage('tree', new THREE.Vector3(-34, 18, -100)),
     ]
     Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16))
-
-    obstacles = [
-      [ParkourPieces.startingPlatform, 0, -2, -30],
-      [ParkourPieces.long2, 0, -3.5, -50, 0, 0, Math.PI / 2],
-      [ParkourPieces.long2, 0, -3.5, -70, 0, 0, Math.PI / 2],
-      [ParkourPieces.long2, 0, -3.5, -90, 0, 0, Math.PI / 2],
-      [ParkourPieces.long2, 0, -3.5, -110, 0, 0, Math.PI / 2],
-      [ParkourPieces.platform, 0, -2, -130],
-      [ParkourPieces.checkPoint, 0, 3.51, -120],
-    ]
-    islands = [
-      new Island(new THREE.Vector3(0, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
-      new Island(new THREE.Vector3(0, -2.99, -130), new THREE.Vector3(24.1, 10, 16.1)),
-    ]
-    Parkour.levels.push(new Level(9, obstacles, islands, [], new THREE.Vector3(0, 0, -30), 16))
     
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
