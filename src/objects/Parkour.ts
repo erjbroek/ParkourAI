@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 0;
+  public static activeLevel: number = 2;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -75,7 +75,7 @@ export default class Parkour {
       new Foliage('bushgroup', new THREE.Vector3(10, -2, -100), 2),
       new Foliage('tree', new THREE.Vector3(10, -3, -100))
     ]
-    Parkour.levels.push(new Level(1, obstacles, islands, foliage, new THREE.Vector3(0, 1.2, -30), 8))
+    Parkour.levels.push(new Level(1, obstacles, islands, foliage, new THREE.Vector3(0, 1.2, -30), 10))
 
     obstacles = [
       [ParkourPieces.startingPlatform, 0, -2, -30],
@@ -90,7 +90,7 @@ export default class Parkour {
       new Island(new THREE.Vector3(0, -2.99, -30), new THREE.Vector3(24.1, 10, 16.1)),
       new Island(new THREE.Vector3(0, -2.99, -130), new THREE.Vector3(24.1, 10, 16.1)),
     ]
-    Parkour.levels.push(new Level(2, obstacles, islands, [], new THREE.Vector3(0, 0, -30), 16))
+    Parkour.levels.push(new Level(2, obstacles, islands, [], new THREE.Vector3(0, 0, -30), 9))
 
     // level 2, now also moving right instead of just straight
     obstacles = [
@@ -159,7 +159,7 @@ export default class Parkour {
     foliage = [
       new Foliage('tree', new THREE.Vector3(-18, 14, -38))
     ]
-    Parkour.levels.push(new Level(5, obstacles, islands, foliage, new THREE.Vector3(0, 34, -30), 8))
+    Parkour.levels.push(new Level(5, obstacles, islands, foliage, new THREE.Vector3(0, 34, -30), 8, new THREE.Vector3(6, 3, -38), new THREE.Vector3(-1.1536448230224159, -0.7713877922208295, -1.0045455146402973)))
 
     // level 6, big climb
     obstacles = [
@@ -218,7 +218,7 @@ export default class Parkour {
       new Foliage('tree', new THREE.Vector3(-4, 37, -121)),
       new Foliage('tree', new THREE.Vector3(44, 35, -103)),
     ]
-    Parkour.levels.push(new Level(7, obstacles, islands, foliage, new THREE.Vector3(0, 26, -30), 16))
+    Parkour.levels.push(new Level(7, obstacles, islands, foliage, new THREE.Vector3(0, 26, -30), 16, new THREE.Vector3(110, 0, -20), new THREE.Vector3(-0.5656623449922129, 0.5555232820501848, 0.3230884531027441)))
 
     obstacles = [
       [ParkourPieces.startingPlatform, 10, -2, -30],
@@ -253,7 +253,7 @@ export default class Parkour {
       new Foliage('tree', new THREE.Vector3(-58.5, -2, -50)),
       new Foliage('tree', new THREE.Vector3(-34, 18, -100)),
     ]
-    Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16))
+    Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16, new THREE.Vector3(90, -25, -20), new THREE.Vector3(-0.5199236215038258, 0.6119346976845759, 0.31771115460866395)))
     
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()

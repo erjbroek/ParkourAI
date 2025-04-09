@@ -11,6 +11,10 @@ export default class Level {
   public pieces: Obstacle[] = [];
 
   public location: THREE.Vector3;
+
+  public addedCameraPosition: THREE.Vector3;
+
+  public cameraRotation: THREE.Vector3;
   
   public spawnPoint: THREE.Vector3;
   
@@ -28,7 +32,7 @@ export default class Level {
 
   public foliage: Foliage[];
 
-  public constructor(index: number, pieces: any[][], islands: Island[], foliage: Foliage[], spawnpoint: THREE.Vector3, time: number) {
+  public constructor(index: number, pieces: any[][], islands: Island[], foliage: Foliage[], spawnpoint: THREE.Vector3, time: number, added_camera_position: THREE.Vector3 = new THREE.Vector3(0, 0, 0), camera_rotation: THREE.Vector3 = new THREE.Vector3(-0.643536637648491, -0.5225529300689504, -0.3581991118441852 )) {
     this.index = index;
     this.islands = islands
     this.foliage = foliage
@@ -84,6 +88,8 @@ export default class Level {
     this.spawnPoint = spawnpoint.clone().add(this.location);
     this.time = time
     this.maxTime = time
+    this.addedCameraPosition = added_camera_position
+    this.cameraRotation = camera_rotation
   }
 
   /**

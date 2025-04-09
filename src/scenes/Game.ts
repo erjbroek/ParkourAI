@@ -99,9 +99,10 @@ export default class Game extends Scene {
     this.settings = new Settings()
 
     // update camera position to first level
-    const position = Parkour.levels[Parkour.activeLevel].location
-    MainCanvas.camera.position.set(position.x - 60, position.y + 50, position.z);
-    MainCanvas.camera.rotation.set(-0.643536637648491, -0.5225529300689504, -0.3581991118441852 );
+    const activeLevel = Parkour.levels[Parkour.activeLevel]
+    MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
+    MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+    MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z );
     const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
     MainCanvas.yaw = euler.y;
     MainCanvas.pitch = euler.x;
@@ -291,9 +292,10 @@ export default class Game extends Scene {
         Statistics.highscores = []
         Game.neat.resetGeneration()   
         if (this.updateCamera) {
-          const position = Parkour.levels[Parkour.activeLevel].location;
-          MainCanvas.camera.position.set(position.x - 60, position.y + 50, position.z);
-          MainCanvas.camera.rotation.set(-0.643536637648491, -0.5225529300689504, -0.3581991118441852);
+          const activeLevel = Parkour.levels[Parkour.activeLevel]
+          MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
+          MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+          MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z );
       
           // Synchronize yaw and pitch
           const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
