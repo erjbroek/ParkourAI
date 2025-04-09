@@ -286,7 +286,7 @@ export default class Parkour {
     foliage = [
 
     ]
-    Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(0, 0, -20), 24))
+    Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(0, 0, -20), 34))
     Parkour.activeLevel = 9
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
