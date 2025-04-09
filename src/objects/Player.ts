@@ -57,13 +57,15 @@ export default class Player {
 
   public alive: boolean = true;
 
-  public deathTimer: number = 8;
+  public deathTimer: number = 5;
 
   public highestObstacleIndex: number = 0;
 
   public ai: boolean;
 
   public userFitness: number = 0;
+
+  private maxFitness: number = 0
 
   private loaded: boolean = false;
 
@@ -108,6 +110,18 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
+    if (this.brain.score >= this.maxFitness + 2) {
+      this.deathTimer = 5
+      this.maxFitness = this.brain.score
+    } else {
+      this.deathTimer -= deltaTime
+    }
+    if (this.deathTimer <= 0) {
+      // console.log('died from being too slow')
+      this.killPlayer()
+    }
+    // console.log(`${this.brain.score} / ${this.maxFitness}, ${this.deathTimer}`)
+
     if (this.ai) {
       this.calculateFitness();
     }

@@ -25,5 +25,5 @@ future plans:
 - change platforms to be prettier, grass, rock? idk make it fit in with the rest
 - option to change mutation rate
 - add more levels 
-- custom camera position per level
+- add preloaded networks for each level
 

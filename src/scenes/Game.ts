@@ -135,7 +135,6 @@ export default class Game extends Scene {
    * processes player input
    */
   public override processInput(): void {
-    console.log(MainCanvas.camera.rotation)
     this.statistics.procesInput()
     if (this.userPlayer) {
 

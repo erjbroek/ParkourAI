@@ -21,6 +21,8 @@ export default class ParkourPieces {
 
   public static long2: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 20), this.material);
 
+  public static long3: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 20), this.material);
+
   public static platform: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(28, 1, 20), this.material);
 
   public static startingPlatform: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(28, 1, 20), this.material);
