@@ -261,7 +261,6 @@ export default class Parkour {
       [ParkourPieces.normal2, 0, -2, -56],
       [ParkourPieces.normal2, 0, -2, -72],
       [ParkourPieces.normal2, 0, -2, -88],
-      // [ParkourPieces.normal2, 0, -2, -104],
       [ParkourPieces.long1, 0, 2, -100, 0, Math.PI / 2],
       [ParkourPieces.long1, 0, 6, -108, 0, Math.PI / 2],
       [ParkourPieces.long1, 0, 10, -100, 0, Math.PI / 2],
