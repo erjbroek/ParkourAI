@@ -255,6 +255,35 @@ export default class Parkour {
     ]
     Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16, new THREE.Vector3(90, -25, -20), new THREE.Vector3(-0.5199236215038258, 0.6119346976845759, 0.31771115460866395)))
     
+    obstacles = [
+      [ParkourPieces.startingPlatform, 0, -2, -20],
+      [ParkourPieces.normal2, 0, -2, -40],
+      [ParkourPieces.normal2, 0, -2, -54],
+      [ParkourPieces.normal2, 0, -2, -68],
+      [ParkourPieces.normal2, 0, -2, -82],
+      [ParkourPieces.normal2, 0, -2, -96],
+      [ParkourPieces.long1, 0, 2, -108, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 6, -117, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 10, -108, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 14, -117, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 18, -108, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 22, -117, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 26, -108, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 30, -117, 0, Math.PI / 2],
+      [ParkourPieces.long1, 0, 34, -108, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, 32.5, -96, 0, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, 32.5, -76, 0, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, 32.5, -56, 0, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 0, 34, -42],
+    ]
+    islands = [
+      new Island(new THREE.Vector3(0, -2.99, -20), new THREE.Vector3(24.1, 10, 16.1)),
+    ]
+    foliage = [
+
+    ]
+    Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(10, 0, -20), 24))
+    Parkour.activeLevel = 9
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
     }
