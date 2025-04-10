@@ -275,9 +275,9 @@ export default class Parkour {
       [ParkourPieces.normal2, 0, 30, -24],
       [ParkourPieces.normal2, 16, 30, -24],
       [ParkourPieces.normal2, 32, 30, -24],
-      [ParkourPieces.normal2, 32, 34, -38],
-      [ParkourPieces.normal2, 32, 38, -52],
-      [ParkourPieces.normal2, 32, 42, -66],
+      [ParkourPieces.normal2, 32, 33, -38],
+      [ParkourPieces.normal2, 32, 36, -52],
+      [ParkourPieces.normal2, 32, 39, -66],
     ]
     islands = [
       new Island(new THREE.Vector3(0, -2.99, -20), new THREE.Vector3(24.1, 10, 16.1)),
