@@ -421,7 +421,7 @@ export default class Player {
         this.brain.score *= 1.5;
       } else {
       }
-      
+      this.brain.score = Math.max(this.brain.score, this.maxFitness)
     } else {
       this.userFitness = 0;
 
