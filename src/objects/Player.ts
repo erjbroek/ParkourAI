@@ -110,17 +110,15 @@ export default class Player {
    * @param deltaTime deltatime since last frame
    */
   public update(deltaTime: number) {
-    if (this.brain.score >= this.maxFitness + 2) {
+    if (this.brain.score >= this.maxFitness + 10) {
       this.deathTimer = 5
       this.maxFitness = this.brain.score
     } else {
       this.deathTimer -= deltaTime
     }
     if (this.deathTimer <= 0) {
-      // console.log('died from being too slow')
       this.killPlayer()
     }
-    // console.log(`${this.brain.score} / ${this.maxFitness}, ${this.deathTimer}`)
 
     if (this.ai) {
       this.calculateFitness();

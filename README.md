@@ -19,7 +19,13 @@ to find the best balance between complexity and efficiency.
 
 future plans:
 
-- add more levels 
-- add preloaded networks for each level
+- the option for each level to use neural nets already trained on the level
+- the ability to race the agents:
+  - having only 1 or multiple agents
+  - changing camera into perspective camera focussing player
+- proper intro screen
 - bouncepads.??
+- change fitness calculation to also be related to speed (divided by amount of seconds for example)
+- update fontsize based on screensize
+- manually select the level you want to do on the screen
 

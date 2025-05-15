@@ -6,10 +6,12 @@ import GUI from '../utilities/GUI.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import Statistics from '../scenes/Statistics.js';
 
+import networkJSON from '../../public/jsonProgress/level9finished.json';
+
+
 
 // this is for a population of 1000 players
 const generation = 0;
-import networkJSON from '../jsonProgress/gen70_843.json';
 
 export default class NeatManager {
   public neat: any;
@@ -18,9 +20,17 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
-  public static usePretrainedNetwork: boolean = false;
+  public usePretrainedNetwork: boolean = true;
 
   public static popSize: number = 150
+
+  public static networkLoaded: boolean = false;
+
+  private trainedNetwork: any[] = []
+
+  private untrainedNetwork: any[] = []
+
+  private activeNetwork: any[] = []
 
   public recordPylon: THREE.Mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(0.4, 1.2, 1000, 32),
@@ -35,14 +45,16 @@ export default class NeatManager {
       elitism: NeatManager.popSize / 5
     })
 
-    
-    if (NeatManager.usePretrainedNetwork) {
-      const json = networkJSON;
-      this.neat.population.forEach((network: any, index: number) => {
-        this.neat.population[index] = Network.fromJSON(json[index])
-      })
-    } 
+    this.untrainedNetwork = this.neat.population; 
+    this.activeNetwork = this.untrainedNetwork;
 
+    let population: any[] = []
+    const json = networkJSON;
+    this.neat.population.forEach((network: any, index: number) => {
+      population.push(Network.fromJSON(json[index]))
+    })
+    this.trainedNetwork = population
+    
     this.initializePopulation()
   }
 
@@ -64,13 +76,26 @@ export default class NeatManager {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
     })
-
+    
     this.players = []
     for (let i = 0; i < this.neat.popsize; i++) {
       this.players.push(new Player(i, true, this.neat.population[i]))
       this.players[i].brain.score = 0;
     }
   }
+
+  /**
+   * switches network from pretrained one to the one by the player
+   * (or the other way around)
+   */
+  public switchNetwork(): void {
+    if (this.usePretrainedNetwork) {
+      this.neat.population = this.untrainedNetwork;
+    } else {
+      this.neat.population = this.trainedNetwork;
+    }
+  }
+
 
   /**
    * sorts players based on fitness
@@ -83,7 +108,6 @@ export default class NeatManager {
     })
     this.neat.sort()
     Statistics.averageScores.push(this.neat.getAverage())
-    // Statistics.checkpointsReached = Statistics.checkpointsReached
     Statistics.previousCheckpointsReached = [...Statistics.checkpointsReached];
     if (this.neat.population[0].score > Statistics.highscore) {
       Statistics.highscore = this.neat.population[0].score;
@@ -93,20 +117,28 @@ export default class NeatManager {
       MainCanvas.scene.add(this.recordPylon);
     }
     Statistics.highscores.push(this.neat.population[0].score)
-
+    
     const newGeneration = []
-
+    
     for (let i = 0; i < this.neat.elitism; i++) {
       newGeneration.push(this.neat.population[i])
     }
     for (let i = 0; i < this.neat.popsize - this.neat.elitism; i++) {
       newGeneration.push(this.neat.getOffspring())
     }
-    this.neat.population = newGeneration
+    if (this.activeNetwork != this.trainedNetwork) {
+
+    }
+
+    this.neat.population = newGeneration;
+    if (this.usePretrainedNetwork) {
+      this.trainedNetwork = newGeneration;
+    } else {
+      this.untrainedNetwork = newGeneration;
+    }
 
     this.neat.mutate()
     this.neat.generation++
-
     this.initializePopulation()
   }
 

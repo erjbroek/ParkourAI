@@ -5,33 +5,38 @@ import MainCanvas from '../setup/MainCanvas.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Island from './Island.js';
 import Foliage from './Foliage.js';
+import Game from '../scenes/Game.js';
+import { Network } from 'neataptic';
+
 
 
 export default class Level {
   public pieces: Obstacle[] = [];
-
+  
   public location: THREE.Vector3;
-
+  
   public addedCameraPosition: THREE.Vector3;
-
+  
   public cameraRotation: THREE.Vector3;
   
   public spawnPoint: THREE.Vector3;
   
   public finishLine: Obstacle;
-
+  
   public index: number;
-
+  
   public finished: boolean = false;
-
+  
   public time: number;
-
+  
   public maxTime: number;
-
+  
   public islands: Island[];
-
+  
   public foliage: Foliage[];
-
+  
+  public trainedNetwork: any[];
+  
   public constructor(index: number, pieces: any[][], islands: Island[], foliage: Foliage[], spawnpoint: THREE.Vector3, time: number, added_camera_position: THREE.Vector3 = new THREE.Vector3(0, 0, 0), camera_rotation: THREE.Vector3 = new THREE.Vector3(-0.643536637648491, -0.5225529300689504, -0.3581991118441852 )) {
     this.index = index;
     this.islands = islands
@@ -66,15 +71,18 @@ export default class Level {
     ring.position.z -= 70;
     ring.position.y -= 5.2;
     MainCanvas.scene.add(ring);
-    // const loader = new GLTFLoader();
-    // loader.load('./assets/floorflat.glb', (gltf) => {
-    //   gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75);
-    //   const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
-    //   const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
-    //   gltf.scene.rotation.y = randomRotation;
-    //   gltf.scene.scale.set(20 * scale, 10, 20 * scale);
-    //   MainCanvas.scene.add(gltf.scene);
-    // });
+  //   if (this.index == 9) {
+
+  //     const loader = new GLTFLoader();
+  //     loader.load('./assets/floorflat.glb', (gltf) => {
+  //       gltf.scene.position.set((index % gridSize) * 150 * spread * scale, -22, -Math.floor(index / gridSize) * 150 * spread * scale - 75 - 500);
+  //       const rotations = [Math.PI / 2, Math.PI, 3 * Math.PI / 2, 2 * Math.PI];
+  //       const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
+  //       // gltf.scene.rotation.y = randomRotation;
+  //       gltf.scene.scale.set(20 * scale, 10, 40 * scale);
+  //       MainCanvas.scene.add(gltf.scene);
+  //   });
+  // }
 
     pieces.forEach((piece, idx) => {
       const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
@@ -86,10 +94,27 @@ export default class Level {
       }
     });
     this.spawnPoint = spawnpoint.clone().add(this.location);
-    this.time = time
-    this.maxTime = time
-    this.addedCameraPosition = added_camera_position
-    this.cameraRotation = camera_rotation
+    this.time = time;
+    this.maxTime = time;
+    this.addedCameraPosition = added_camera_position;
+    this.cameraRotation = camera_rotation;
+  }
+
+  async loadJSON() {
+    try {
+      const response = await fetch(`/jsonProgress/level${this.index}finished.json`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      let population: any[] = []
+      const json = await response.json();
+
+      this.trainedNetwork = json
+      console.log(this.trainedNetwork)
+      console.log(`loaded json for level ${this.index}`)
+    } catch (error) {
+      console.error(`Failed to load JSON for level ${this.index}:`, error);
+    }
   }
 
   /**

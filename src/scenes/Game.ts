@@ -95,9 +95,11 @@ export default class Game extends Scene {
     Game.neat = new NeatManager()
     // this.userPlayer = new Player(0, false);
     Game.alivePlayers = Game.neat.players;
+    Parkour.levels.forEach((level) => {
+      level.loadJSON()
+    })
 
     this.settings = new Settings()
-
     // update camera position to first level
     const activeLevel = Parkour.levels[Parkour.activeLevel]
     MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
@@ -164,7 +166,7 @@ export default class Game extends Scene {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gen${Game.neat.neat.generation}_${Math.round(Math.max(...Statistics.highscores))}.json`; 
+      a.download = `level${Parkour.activeLevel}finished.json`; 
       a.click();
       URL.revokeObjectURL(url);
 
@@ -198,6 +200,14 @@ export default class Game extends Scene {
         if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
           this.statistics.startHidingGraphs = !this.statistics.startHidingGraphs
         }
+        if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
+          // Game.neat.usePretrainedNetwork = false;
+          // Game.neat.wasUsingPretrained = Game.neat.wasUsingPretrained
+          Game.neat.switchNetwork();
+          Game.neat.usePretrainedNetwork = !Game.neat.usePretrainedNetwork;
+          Game.neat.initializePopulation();
+        }
+        
       }
     } 
     if (!this.settings.visible) {
@@ -304,7 +314,6 @@ export default class Game extends Scene {
       }
       Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
       this.settings.update()
-
       Game.neat.endGeneration();      
     }
     if (this.openEditor) {
@@ -361,7 +370,7 @@ export default class Game extends Scene {
         GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
         GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
       }
-      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.365 - this.statistics.visualisationPosition, canvas.height * 0.965, 'left', 'system-ui', 30, 'black', 500)
+      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.265 - this.statistics.visualisationPosition, canvas.height * 0.785, 'left', 'system-ui', 30, 'black', 500)
       
       // the three buttons hide-ui, auto-progress and auto updating camera position
       GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - this.statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
@@ -393,7 +402,6 @@ export default class Game extends Scene {
       }
     }
 
-      
     // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
     if (this.openEditor) { 
       this.editor.render(canvas)
@@ -401,5 +409,14 @@ export default class Game extends Scene {
       this.settings.render(canvas, this.statistics)
     }
 
+    // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
+
+    if (!Game.neat.usePretrainedNetwork) {
+      GUI.fillRectangle(canvas, canvas.width * 0.37 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
+      GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - this.statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+    } else {
+      GUI.fillRectangle(canvas, canvas.width * 0.37 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
+      GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - this.statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+    }
   }
 }

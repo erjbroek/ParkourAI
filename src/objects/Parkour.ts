@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 2;
+  public static activeLevel: number = 9;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -257,8 +257,10 @@ export default class Parkour {
     
     obstacles = [
       [ParkourPieces.startingPlatform, 58, -2, -40],
-      [ParkourPieces.normal2, 32, -2, -40],
-      [ParkourPieces.normal2, 16, -2, -40],
+      [ParkourPieces.long3, 34, -2, -40, Math.PI / 2, Math.PI / 2],
+      [ParkourPieces.long3, 14, -2, -40, Math.PI / 2, Math.PI / 2],
+      // [ParkourPieces.normal2, 32, -2, -40],
+      // [ParkourPieces.normal2, 16, -2, -40],
       [ParkourPieces.normal2, 0, -2, -40],
       [ParkourPieces.normal2, 0, -2, -56],
       [ParkourPieces.normal2, 0, -2, -72],
@@ -275,23 +277,38 @@ export default class Parkour {
       [ParkourPieces.long3, 0, 30, -58, 0, 0, Math.PI / 2],
       [ParkourPieces.long3, 0, 30, -38, 0, 0, Math.PI / 2],
       [ParkourPieces.normal2, 0, 30, -24],
-      [ParkourPieces.normal2, 16, 30, -24],
-      [ParkourPieces.normal2, 32, 30, -24],
-      [ParkourPieces.normal2, 32, 33.5, -36],
-      [ParkourPieces.normal2, 32, 37, -48],
-      [ParkourPieces.normal2, 32, 40.5, -60],
-      [ParkourPieces.normal2, 32, 44, -72],
-      [ParkourPieces.long3, 18, 44, -72, 0, Math.PI / 2, Math.PI / 2],
-      [ParkourPieces.long3, -2, 44, -72, 0, Math.PI / 2, Math.PI / 2],
+      [ParkourPieces.long3, 14, 30, -24, 0, Math.PI / 2, Math.PI / 2],
+      [ParkourPieces.normal2, 28, 30, -24],
+      [ParkourPieces.normal2, 28, 33.5, -34],
+      [ParkourPieces.normal2, 28, 37, -44],
+      [ParkourPieces.normal2, 28, 40.5, -54],
+      [ParkourPieces.normal2, 28, 44, -64],
+      [ParkourPieces.long3, 16, 44, -64, 0, Math.PI / 2, Math.PI / 2],
+      [ParkourPieces.long3, -4, 44, -64, 0, Math.PI / 2, Math.PI / 2],
+      [ParkourPieces.normal2, -30, 12, -64],
+      [ParkourPieces.normal2, -38, 12, -64],
+      [ParkourPieces.platform, -52, 12, -64, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, -42, 17.51, -64, 0, Math.PI / 2],
     ]
     islands = [
       new Island(new THREE.Vector3(58, -2.99, -40), new THREE.Vector3(24.1, 10, 16.1)),
+
+      new Island(new THREE.Vector3(-52, 10.99, -64), new THREE.Vector3(16.1, 10, 24.1)),
+      new Island(new THREE.Vector3(-42, 3.99, -14), new THREE.Vector3(16.1, 10, 16.1)),
+
+      new Island(new THREE.Vector3(-22, 30.99, -104), new THREE.Vector3(16.1, 10, 24.1)),
+      new Island(new THREE.Vector3(0, 30.99, -124), new THREE.Vector3(60.1, 10, 24.1)),
+      new Island(new THREE.Vector3(22, 30.99, -104), new THREE.Vector3(16.1, 10, 24.1)),
     ]
     foliage = [
-
+      new Water(new THREE.Vector3(-32, 7.55, -114), new THREE.Vector3(1, 50, 24.1)),
+      new Water(new THREE.Vector3(-24, 32.05, -114), new THREE.Vector3(16, 1, 24.1)),
+      new Water(new THREE.Vector3(-22, 32.05, -110), new THREE.Vector3(12, 1, 24.1)),
+      new Foliage('tree', new THREE.Vector3(-26, 32, -130)),
+      new Foliage('tree', new THREE.Vector3(26, 32, -120)),
+      new Foliage('bushgroup', new THREE.Vector3(-14, 33, -120), 10, 5, 24),
     ]
-    Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(58, 0, -40), 34))
-    Parkour.activeLevel = 9
+    Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(58, 0, -40), 40))
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
     }

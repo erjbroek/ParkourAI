@@ -86,7 +86,7 @@ export default class Statistics {
     const max: number = Math.ceil(Math.max(...Statistics.highscores) / 225) * 225;
 
     let min = 0;
-    if (!NeatManager.usePretrainedNetwork) {
+    if (!Game.neat.usePretrainedNetwork) {
       min = Math.min(...Statistics.averageScores);
     }
     const maxHighscore: number = Math.ceil(Math.max(...Statistics.highscores));

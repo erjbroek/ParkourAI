@@ -68,7 +68,6 @@ export default class Settings {
     Game.neat.neat.mutationAmount = this.mutationAmountSlider.activeValue;
     Game.neat.neat.popsize = this.populationSizeSlider.activeValue;
     Game.neat.neat.elitism = Math.round(Game.neat.neat.popsize * (this.elitismSlider.activeValue / 100))
-    console.log(Game.neat.neat.mutationRate, Game.neat.neat.mutationAmount, Game.neat.neat.popsize, Game.neat.neat.elitism)
   }
  
   public render(canvas: HTMLCanvasElement, statistics: Statistics) {
