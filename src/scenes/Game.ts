@@ -296,10 +296,16 @@ export default class Game extends Scene {
     } else {
       if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
         Parkour.activeLevel++
+        Game.neat.setTrainedNetwork()
+        if (!Game.neat.usePretrainedNetwork) {
+          Game.neat.resetGeneration() 
+        }
+        Game.neat.initializePopulation()
+
         this.readyNextLevel = false
         Statistics.averageScores = []
         Statistics.highscores = []
-        Game.neat.resetGeneration()   
+
         if (this.updateCamera) {
           const activeLevel = Parkour.levels[Parkour.activeLevel]
           MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
@@ -311,10 +317,11 @@ export default class Game extends Scene {
           MainCanvas.yaw = euler.y;
           MainCanvas.pitch = euler.x;
         }
+      } else {
+        Game.neat.endGeneration();      
       }
-      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
       this.settings.update()
-      Game.neat.endGeneration();      
+      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
     }
     if (this.openEditor) {
       this.editor.update(deltaTime);    

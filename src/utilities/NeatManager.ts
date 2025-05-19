@@ -6,7 +6,17 @@ import GUI from '../utilities/GUI.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import Statistics from '../scenes/Statistics.js';
 
-import networkJSON from '../../public/jsonProgress/level9finished.json';
+import jsonLevel0 from '../../public/jsonProgress/level0finished.json';
+import jsonLevel1 from '../../public/jsonProgress/level1finished.json';
+import jsonLevel2 from '../../public/jsonProgress/level2finished.json';
+import jsonLevel3 from '../../public/jsonProgress/level3finished.json';
+import jsonLevel4 from '../../public/jsonProgress/level4finished.json';
+import jsonLevel5 from '../../public/jsonProgress/level5finished.json';
+import jsonLevel6 from '../../public/jsonProgress/level6finished.json';
+import jsonLevel7 from '../../public/jsonProgress/level7finished.json';
+import jsonLevel8 from '../../public/jsonProgress/level8finished.json';
+import jsonLevel9 from '../../public/jsonProgress/level9finished.json';
+import Parkour from '../objects/Parkour.js';
 
 
 
@@ -20,7 +30,7 @@ export default class NeatManager {
 
   public players: Player[] = [];
 
-  public usePretrainedNetwork: boolean = true;
+  public usePretrainedNetwork: boolean = false;
 
   public static popSize: number = 150
 
@@ -37,6 +47,8 @@ export default class NeatManager {
     new THREE.MeshBasicMaterial({ color: 0x00ff0f, transparent: true, opacity: 0.2 })
   );
 
+  public preTrainedAgents: any[] = []
+
   public constructor() {
     this.neat = new neat.Neat(7, 5, null, {
       mutationRate: 0.3,
@@ -49,9 +61,21 @@ export default class NeatManager {
     this.activeNetwork = this.untrainedNetwork;
 
     let population: any[] = []
-    const json = networkJSON;
+    this.preTrainedAgents = [
+      jsonLevel0,
+      jsonLevel1,
+      jsonLevel2,
+      jsonLevel3,
+      jsonLevel4,
+      jsonLevel5,
+      jsonLevel6,
+      jsonLevel7,
+      jsonLevel8,
+      jsonLevel9
+    ];
+
     this.neat.population.forEach((network: any, index: number) => {
-      population.push(Network.fromJSON(json[index]))
+      population.push(Network.fromJSON(this.preTrainedAgents[Parkour.activeLevel][index]))
     })
     this.trainedNetwork = population
     
@@ -72,16 +96,32 @@ export default class NeatManager {
    * initializes the population of players with networks
    */
   public initializePopulation(): void {
+    console.log('initialise population')
     this.players.forEach((player: Player) => {
       MainCanvas.scene.remove(player.mesh);
       MainCanvas.world.removeBody(player.playerBody);
     })
     
     this.players = []
-    for (let i = 0; i < this.neat.popsize; i++) {
-      this.players.push(new Player(i, true, this.neat.population[i]))
-      this.players[i].brain.score = 0;
+    if (this.usePretrainedNetwork) {
+      for (let i = 0; i < this.neat.popsize; i++) {
+        this.players.push(new Player(i, true, this.trainedNetwork[i]))
+        this.players[i].brain.score = 0;
+      }
+    } else {
+      for (let i = 0; i < this.neat.popsize; i++) {
+        this.players.push(new Player(i, true, this.neat.population[i]))
+        this.players[i].brain.score = 0;
+      }
     }
+  }
+
+  public setTrainedNetwork() {
+    const newPopulation = []
+    for (let i = 0; i < this.neat.popsize; i++) {
+      newPopulation.push(Network.fromJSON(this.preTrainedAgents[Parkour.activeLevel][i]))
+    }
+    this.trainedNetwork = newPopulation
   }
 
   /**
@@ -89,6 +129,7 @@ export default class NeatManager {
    * (or the other way around)
    */
   public switchNetwork(): void {
+    Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
     if (this.usePretrainedNetwork) {
       this.neat.population = this.untrainedNetwork;
     } else {
@@ -126,9 +167,6 @@ export default class NeatManager {
     for (let i = 0; i < this.neat.popsize - this.neat.elitism; i++) {
       newGeneration.push(this.neat.getOffspring())
     }
-    if (this.activeNetwork != this.trainedNetwork) {
-
-    }
 
     this.neat.population = newGeneration;
     if (this.usePretrainedNetwork) {
@@ -153,7 +191,6 @@ export default class NeatManager {
     const inputNodes = player.brain.nodes.filter((node: any) => node.type === 'input');
     const hiddenNodes = player.brain.nodes.filter((node: any) => node.type === 'hidden');
     const outputNodes = player.brain.nodes.filter((node: any) => node.type === 'output');
-    // console.log(inputNodes)
 
     // adds the layer property to the nodes
     hiddenNodes.forEach((node: any, i: number) => {

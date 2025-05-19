@@ -110,8 +110,6 @@ export default class Level {
       const json = await response.json();
 
       this.trainedNetwork = json
-      console.log(this.trainedNetwork)
-      console.log(`loaded json for level ${this.index}`)
     } catch (error) {
       console.error(`Failed to load JSON for level ${this.index}:`, error);
     }

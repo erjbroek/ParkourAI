@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 9;
+  public static activeLevel: number = 0;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -253,7 +253,7 @@ export default class Parkour {
       new Foliage('tree', new THREE.Vector3(-58.5, -2, -50)),
       new Foliage('tree', new THREE.Vector3(-34, 18, -100)),
     ]
-    Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 16, new THREE.Vector3(90, -25, -20), new THREE.Vector3(-0.5199236215038258, 0.6119346976845759, 0.31771115460866395)))
+    Parkour.levels.push(new Level(8, obstacles, islands, foliage, new THREE.Vector3(10, 0, -30), 18, new THREE.Vector3(90, -25, -20), new THREE.Vector3(-0.5199236215038258, 0.6119346976845759, 0.31771115460866395)))
     
     obstacles = [
       [ParkourPieces.startingPlatform, 58, -2, -40],

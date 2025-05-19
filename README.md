@@ -24,7 +24,7 @@ future plans:
   - having only 1 or multiple agents
   - changing camera into perspective camera focussing player
 - proper intro screen
-- bouncepads.??
+- redesign jump platforms
 - change fitness calculation to also be related to speed (divided by amount of seconds for example)
 - update fontsize based on screensize
 - manually select the level you want to do on the screen
