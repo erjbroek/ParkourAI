@@ -323,7 +323,7 @@ export default class Parkour {
   * 
   * @param player is the player object that is being checked for collision
   */
-  public checkCollision(player: Player, players: Player[]): void {
+  public checkCollision(player: Player, players: Player[] = []): void {
     player.onGround = false;
     let foundObject: { index: number; object: Obstacle } | null = { index: null, object: null };
     let current: Obstacle = null;
@@ -337,7 +337,7 @@ export default class Parkour {
     // - the player finished flag gets sets to true (used to track the percentage of finished players)
     // - the mesh gets updated and becomes green to indicate player has reached it
     // - stats get updated for bar graph
-    if (collidingFinishline && !player.finished) {
+    if (collidingFinishline && !player.finished && players.length >= 5) {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
       if (Statistics.checkpointsReached[activeIndex]) {

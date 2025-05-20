@@ -87,6 +87,7 @@ export default class TestPlayer {
   }
 
   public updateMovement(deltaTime: number) {
+    
     // calculatesplayer direction based on camera azimuth
     this.forward = new THREE.Vector3();
     MainCanvas.camera.getWorldDirection(this.forward);

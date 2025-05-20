@@ -133,7 +133,7 @@ export default class MainCanvas {
         }
         
         // Process input and update the active scene
-        this.activeScene.processInput();
+        this.activeScene.processInput(deltaTime);
         this.activeScene.update(deltaTime);
       }
       

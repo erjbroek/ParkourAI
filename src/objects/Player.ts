@@ -109,16 +109,22 @@ export default class Player {
    *
    * @param deltaTime deltatime since last frame
    */
-  public update(deltaTime: number) {
-    if (this.brain.score >= this.maxFitness + 10) {
-      this.deathTimer = 5
-      this.maxFitness = this.brain.score
-    } else {
-      this.deathTimer -= deltaTime
-    }
-    if (this.deathTimer <= 0) {
-      this.killPlayer()
-    }
+  public update(deltaTime: number, isRace: boolean = false) {
+
+    // this is used to speed up training, by making sure the agents
+    // are progressing. if they are stuck/ not progressing
+    // they die after 5 seconds
+    if (!isRace) {
+      if (this.brain.score >= this.maxFitness + 10) {
+        this.deathTimer = 5
+        this.maxFitness = this.brain.score
+      } else {
+        this.deathTimer -= deltaTime
+      }
+      if (this.deathTimer <= 0) {
+        this.killPlayer()
+      }
+    } 
 
     if (this.ai) {
       this.calculateFitness();
@@ -319,13 +325,13 @@ export default class Player {
           this.mesh.add(wireframeMesh);
         }
 
-        const bestPlayer = Game.alivePlayers.reduce((prev, current) =>
-          prev.brain.score > current.brain.score ? prev : current
-        );
-        if (this.brain == bestPlayer.brain) {
-          const material = this.mesh.material as THREE.MeshLambertMaterial;
-          material.color.setRGB(1, 0, 0);
-        }
+        // const bestPlayer = Game.alivePlayers.reduce((prev, current) =>
+        //   prev.brain.score > current.brain.score ? prev : current
+        // );
+        // if (this.brain == bestPlayer.brain) {
+        //   const material = this.mesh.material as THREE.MeshLambertMaterial;
+        //   material.color.setRGB(1, 0, 0);
+        // }
       }
     }
 
@@ -467,6 +473,9 @@ export default class Player {
   }
 
   public moveForward(amount: number) {
+    if (!this.ai) {
+      console.log('forward')
+    }
     const speed = 4;
 
     this.playerBody.velocity.z -= amount * speed;

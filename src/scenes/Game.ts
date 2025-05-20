@@ -13,6 +13,7 @@ import { Water } from 'three/examples/jsm/objects/Water.js'
 import { Sky } from 'three/examples/jsm/objects/Sky.js'
 import Statistics from './Statistics.js';
 import Settings from './Settings.js';
+import Race from './Race.js';
 
 export default class Game extends Scene {
   private editor: Edit = new Edit()
@@ -57,9 +58,7 @@ export default class Game extends Scene {
 
   private pmremGenerator = new THREE.PMREMGenerator(MainCanvas.renderer);
 
-  public static isRaceActive: boolean = false;
-
-  private isRaceReady: boolean = false;
+  private race: Race = new Race(this.parkour)
 
   public constructor() {
     super();
@@ -140,26 +139,10 @@ export default class Game extends Scene {
   /**
    * processes player input
    */
-  public override processInput(): void {
+  public override processInput(deltaTime: number): void {
     this.statistics.procesInput()
-    if (this.userPlayer) {
 
-      if (KeyListener.isKeyDown('ArrowUp')) {
-        this.userPlayer.moveForwardBackward(-1)
-      }
-      if (KeyListener.isKeyDown('ArrowDown')) {
-        this.userPlayer.moveForwardBackward(1)
-      }
-      if (KeyListener.isKeyDown('ArrowLeft')) {
-        this.userPlayer.moveLeft(1)
-      }
-      if (KeyListener.isKeyDown('ArrowRight')) {
-        this.userPlayer.moveRight(1)
-      } 
-      if (KeyListener.isKeyDown('KeyQ') && this.userPlayer.onGround) {
-        this.userPlayer.jump()
-      }
-    }
+    // save current generation to json
     if (KeyListener.keyPressed('Delete')) {
       Game.neat.players.forEach((player) => {
         player.calculateFitness()
@@ -173,12 +156,10 @@ export default class Game extends Scene {
       a.download = `level${Parkour.activeLevel}finished.json`; 
       a.click();
       URL.revokeObjectURL(url);
-
     }
 
     // option to end generation if player gets stuck
     if (!this.openEditor) {
-      // ending generation
       if (KeyListener.keyPressed('KeyE')) {
         Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
         Game.neat.endGeneration();
@@ -212,12 +193,20 @@ export default class Game extends Scene {
           Game.neat.initializePopulation();
         }
         if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
-          if (this.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
-            Game.isRaceActive = !Game.isRaceActive
+          if (true || this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
+            this.race.isRaceActive = !this.race.isRaceActive
+            if (this.race.isRaceActive) {
+              this.race.startRace()
+            } else {
+              this.race.endRace()
+            }
           }
         }
       }
-    } 
+    }
+    if (this.race.isRaceActive) {
+      this.race.processInput(deltaTime)
+    }
     if (!this.settings.visible) {
       // edit button (with hover animation)
       if (UICollision.checkSquareCollisionMult(0.9, 0.04, 0.08, 0.05)) {
@@ -266,7 +255,7 @@ export default class Game extends Scene {
 
   public override update(deltaTime: number): Scene {
     this.statistics.hideUI(deltaTime)
-    this.water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+    this.water.material.uniforms['time'].value += 1.0 / 60.0;
     if (!Game.extinct) {
       this.updateLight();
     }
@@ -281,59 +270,57 @@ export default class Game extends Scene {
     Game.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = Game.alivePlayers.length === 0;
 
-    if (this.userPlayer) {
-      this.userPlayer.mesh.position.copy(this.userPlayer.playerBody.position);
-      this.userPlayer.mesh.quaternion.copy(this.userPlayer.playerBody.quaternion);
-      this.parkour.checkCollision(this.userPlayer, Game.neat.players);
-      this.userPlayer.update(deltaTime);
-      this.userPlayer.calculateFitness()
-    }
-    Game.neat.players[0].calculateObstacleDistance(true)
-    if (!Game.extinct) {  
-      if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.75 && !Parkour.levels[Parkour.activeLevel].finished) {
-        Parkour.levels[Parkour.activeLevel].finished = true
-      }
-      Game.alivePlayers.forEach((player) => {
-        player.mesh.position.copy(player.playerBody.position);
-        player.mesh.quaternion.copy(player.playerBody.quaternion);
-        
-        this.parkour.checkCollision(player, Game.neat.players);
-        player.update(deltaTime);
-      });
-      
+
+    if (this.race.isRaceActive) {
+      this.race.update(deltaTime)
     } else {
-      if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
-        Parkour.activeLevel++
-        Game.neat.setTrainedNetwork()
-        if (!Game.neat.usePretrainedNetwork) {
-          Game.neat.resetGeneration() 
+      // Game.neat.players[0].calculateObstacleDistance(true)
+      if (!Game.extinct) {
+        if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.75 && !Parkour.levels[Parkour.activeLevel].finished) {
+          Parkour.levels[Parkour.activeLevel].finished = true
         }
-        Game.neat.initializePopulation()
+        Game.alivePlayers.forEach((player) => {
+          player.mesh.position.copy(player.playerBody.position);
+          player.mesh.quaternion.copy(player.playerBody.quaternion);
 
-        this.readyNextLevel = false
-        this.isRaceReady = false;
-        Statistics.averageScores = []
-        Statistics.highscores = []
-
-        if (this.updateCamera) {
-          const activeLevel = Parkour.levels[Parkour.activeLevel]
-          MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
-          MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
-          MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z );
-      
-          // Synchronize yaw and pitch
-          const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
-          MainCanvas.yaw = euler.y;
-          MainCanvas.pitch = euler.x;
-        }
-      } else {
-        Game.neat.endGeneration();      
+          this.parkour.checkCollision(player, Game.neat.players);
+          player.update(deltaTime);
+        });
       }
-      this.settings.update()
-      Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
-    }
-    if (this.openEditor) {
-      this.editor.update(deltaTime);    
+      else {
+        if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
+          Parkour.activeLevel++
+          Game.neat.setTrainedNetwork()
+          if (!Game.neat.usePretrainedNetwork) {
+            Game.neat.resetGeneration()
+          }
+          Game.neat.initializePopulation()
+
+          this.readyNextLevel = false
+          this.race.isRaceReady = false;
+          Statistics.averageScores = []
+          Statistics.highscores = []
+
+          if (this.updateCamera) {
+            const activeLevel = Parkour.levels[Parkour.activeLevel]
+            MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
+            MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+            MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z);
+
+            // Synchronize yaw and pitch
+            const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
+            MainCanvas.yaw = euler.y;
+            MainCanvas.pitch = euler.x;
+          }
+        } else {
+          Game.neat.endGeneration();
+        }
+        this.settings.update()
+        Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+      }
+      if (this.openEditor) {
+        this.editor.update(deltaTime);
+      }
     }
     return this;
   }
@@ -391,8 +378,8 @@ export default class Game extends Scene {
       const numPlayersNeeded = 0.84
       GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
       GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
-      if (this.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
-        this.isRaceReady = true;
+      if (this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
+        this.race.isRaceReady = true;
         GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
         GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
       } else {
@@ -449,6 +436,5 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.37 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
       GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - this.statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
     }
-    console.log(this.isRaceReady)
   }
 }
