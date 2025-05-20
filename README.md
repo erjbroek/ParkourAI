@@ -19,7 +19,6 @@ to find the best balance between complexity and efficiency.
 
 future plans:
 
-- the option for each level to use neural nets already trained on the level
 - the ability to race the agents:
   - having only 1 or multiple agents
   - changing camera into perspective camera focussing player

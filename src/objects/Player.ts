@@ -69,7 +69,7 @@ export default class Player {
 
   private loaded: boolean = false;
 
-  public constructor(index: number, ai: boolean, brain: any) {
+  public constructor(index: number, ai: boolean, brain: any = []) {
     this.index = index;
     this.ai = ai;
     this.brain = brain;

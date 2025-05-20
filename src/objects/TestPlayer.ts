@@ -76,6 +76,8 @@ export default class TestPlayer {
     // MainCanvas.camera.position.set(326, 68, -88);
     // Parkour.activeLevel = 9
 
+    this.spawnPoint = Parkour.levels[Parkour.activeLevel].spawnPoint
+
     this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
   }
 

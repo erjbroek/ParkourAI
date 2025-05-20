@@ -57,6 +57,10 @@ export default class Game extends Scene {
 
   private pmremGenerator = new THREE.PMREMGenerator(MainCanvas.renderer);
 
+  public static isRaceActive: boolean = false;
+
+  private isRaceReady: boolean = false;
+
   public constructor() {
     super();
     const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
@@ -207,7 +211,11 @@ export default class Game extends Scene {
           Game.neat.usePretrainedNetwork = !Game.neat.usePretrainedNetwork;
           Game.neat.initializePopulation();
         }
-        
+        if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
+          if (this.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
+            Game.isRaceActive = !Game.isRaceActive
+          }
+        }
       }
     } 
     if (!this.settings.visible) {
@@ -303,6 +311,7 @@ export default class Game extends Scene {
         Game.neat.initializePopulation()
 
         this.readyNextLevel = false
+        this.isRaceReady = false;
         Statistics.averageScores = []
         Statistics.highscores = []
 
@@ -377,6 +386,21 @@ export default class Game extends Scene {
         GUI.fillRectangle(canvas, canvas.width * 0.26 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
         GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
       }
+      
+      // race button, needs 84% of players completed instead of 75
+      const numPlayersNeeded = 0.84
+      GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
+      GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
+      if (this.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
+        this.isRaceReady = true;
+        GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+        GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+      } else {
+        GUI.fillRectangle(canvas, canvas.width * 0.485 - this.statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
+        GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * numPlayersNeeded)} players`, canvas.width * 0.535 - this.statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+      }
+
+
       GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.265 - this.statistics.visualisationPosition, canvas.height * 0.785, 'left', 'system-ui', 30, 'black', 500)
       
       // the three buttons hide-ui, auto-progress and auto updating camera position
@@ -425,5 +449,6 @@ export default class Game extends Scene {
       GUI.fillRectangle(canvas, canvas.width * 0.37 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
       GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - this.statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
     }
+    console.log(this.isRaceReady)
   }
 }
