@@ -23,6 +23,7 @@ future plans:
   - having only 1 or multiple agents
   - changing camera into perspective camera focussing player
 - add a true final level
+- display names of level
 - proper intro screen
 - redesign jump platforms
 - change fitness calculation to also be related to speed (divided by amount of seconds for example)

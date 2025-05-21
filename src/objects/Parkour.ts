@@ -17,7 +17,7 @@ import Water from './Water.js';
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 9;
+  public static activeLevel: number = 5;
 
   public static addedParkour: Obstacle[][] = [[]];
 

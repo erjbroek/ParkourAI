@@ -52,13 +52,26 @@ export default class Race {
     } else {
       this.bot = new Player(1, true, Game.neat.untrainedNetwork[0])
     }
-    MainCanvas.switchCameraMode(false, this.player)
+    let direction: string = '';
+    const playerPosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].spawnPoint
+    const obstaclePosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].pieces[2].mesh.position;
+    const dx = obstaclePosition.x - playerPosition.x;
+    const dz = obstaclePosition.z - playerPosition.z;
+    console.log(playerPosition, obstaclePosition)
+    console.log(dx, dz)
+    if (Math.abs(dx) > Math.abs(dz)) {
+      direction = dx > 0 ? 'right' : 'left';
+    } else {
+      direction = dz > 0 ? 'backward' : 'straight';
+    }
+    console.log(direction)
+    MainCanvas.switchCameraMode(false, this.player, direction)
   }
   
   public endRace() {
     this.player.killPlayer();
     this.bot.killPlayer();
-    MainCanvas.switchCameraMode(true, this.player)
+    MainCanvas.switchCameraMode(true, this.player, '')
   }
   
   public processInput(deltaTime: number) {

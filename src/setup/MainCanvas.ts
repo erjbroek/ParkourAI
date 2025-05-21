@@ -60,7 +60,7 @@ export default class MainCanvas {
 
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
-    MainCanvas.camera.position.set(5, 18, 45);
+    // MainCanvas.camera.position.set(5, 18, 45);
     MainCanvas.renderer.setSize(window.innerWidth, window.innerHeight);
     MainCanvas.renderer.shadowMap.enabled = true;
     MainCanvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -165,15 +165,23 @@ export default class MainCanvas {
       this.isMouseButtonDown = false;
   }
 
-  public static switchCameraMode(FreecamOn: boolean, player: any = undefined) {
+  public static switchCameraMode(FreecamOn: boolean, player: any = undefined, direction: string) {
     this.isFreeCam = FreecamOn
+    const correctionOffset = THREE.MathUtils.degToRad(30); // 30 degrees in radians
 
     if (!this.isFreeCam) {
       MainCanvas.targetCameraPlayer = player;
-    } else {
-      MainCanvas.targetCameraPlayer = null;
+
+      if (direction === "left") {
+        this.yaw = Math.PI / 2;
+      } else if (direction === "right") {
+        this.yaw = -Math.PI / 2;
+      } else if (direction === "backward") {
+        this.yaw = Math.PI;
+      } else {
+        this.yaw = 0; 
+      }
     }
-    console.log(MainCanvas.targetCameraPlayer)
   }
 
   private updateCamera(deltaTime: number) {
@@ -200,8 +208,8 @@ export default class MainCanvas {
     // Use spherical coordinates to position camera based on yaw and pitch
     const spherical = new THREE.Spherical(
       distance,
-      Math.PI / 2 + MainCanvas.pitch, // phi (vertical)
-      MainCanvas.yaw                 // theta (horizontal)
+      Math.PI / 2 + MainCanvas.pitch,
+      MainCanvas.yaw
     );
 
     const cameraOffset = new THREE.Vector3().setFromSpherical(spherical);
@@ -218,7 +226,7 @@ export default class MainCanvas {
   }
 
   private rotateCamera(deltaTime: number) {
-    const mouseSensitivity = 0.002;
+    const mouseSensitivity = 0.004;
     if (this.isMouseButtonDown) {
       if (MainCanvas.rotate) {
         const mouseMovementX = MouseListener.mouseDelta.x;
@@ -229,7 +237,7 @@ export default class MainCanvas {
         
         const pitchLimit = Math.PI / 2 - 0.1;
 
-        MainCanvas.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, MainCanvas.pitch));
+        MainCanvas.pitch = Math.max(-pitchLimit, Math.min(pitchLimit, MainCanvas.pitch));
         MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(MainCanvas.pitch, MainCanvas.yaw, 0, 'YXZ'));
         MouseListener.mouseDelta.x = 0;
         MouseListener.mouseDelta.y = 0;
