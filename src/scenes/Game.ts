@@ -58,7 +58,7 @@ export default class Game extends Scene {
 
   private pmremGenerator = new THREE.PMREMGenerator(MainCanvas.renderer);
 
-  private race: Race = new Race(this.parkour)
+  public race: Race = new Race(this.parkour)
 
   public constructor() {
     super();

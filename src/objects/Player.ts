@@ -114,7 +114,6 @@ export default class Player {
     // this is used to speed up training, by making sure the agents
     // are progressing. if they are stuck/ not progressing
     // they die after 5 seconds
-    console.log(isRace)
     if (!isRace) {
       if (this.brain.score >= this.maxFitness + 10) {
         this.deathTimer = 5
@@ -474,9 +473,6 @@ export default class Player {
   }
 
   public moveForward(amount: number) {
-    if (!this.ai) {
-      console.log('forward')
-    }
     const speed = 4;
 
     this.playerBody.velocity.z -= amount * speed;

@@ -8,6 +8,7 @@ import { FlyControls } from 'three/examples/jsm/controls/FlyControls';
 import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
 import Stats from 'stats.js'
+import Player from '../objects/Player.js';
 
 const stats = new Stats()
 stats.showPanel(0)
@@ -55,6 +56,8 @@ export default class MainCanvas {
 
   public static isFreeCam: boolean = true;
 
+  public static targetCameraPlayer: Player;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     MainCanvas.camera.position.set(5, 18, 45);
@@ -85,6 +88,7 @@ export default class MainCanvas {
     // CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
+    MainCanvas.targetCameraPlayer = this.activeScene.race.player
   }
 
   /*
@@ -139,12 +143,7 @@ export default class MainCanvas {
         this.activeScene.update(deltaTime);
       }
       
-      if (MainCanvas.isFreeCam) {
-        if (!Edit.editActive) {
-          this.rotateCamera(deltaTime);
-        }
-        this.moveCamera(deltaTime);
-      }
+      this.updateCamera(deltaTime)
       
       // Always update controls, even when paused
       MainCanvas.flyControls.update(deltaTime);
@@ -166,12 +165,56 @@ export default class MainCanvas {
       this.isMouseButtonDown = false;
   }
 
-  public static switchCameraMode(FreecamOn: boolean) {
+  public static switchCameraMode(FreecamOn: boolean, player: any = undefined) {
     this.isFreeCam = FreecamOn
 
     if (!this.isFreeCam) {
-
+      MainCanvas.targetCameraPlayer = player;
+    } else {
+      MainCanvas.targetCameraPlayer = null;
     }
+    console.log(MainCanvas.targetCameraPlayer)
+  }
+
+  private updateCamera(deltaTime: number) {
+    this.rotateCamera(deltaTime);
+
+    if (MainCanvas.isFreeCam) {
+      if (!Edit.editActive) {
+        this.rotateCamera(deltaTime);
+      }
+      this.moveCamera(deltaTime);
+    } else {
+      this.followPlayerCamera(deltaTime);
+    }
+  }
+
+  private followPlayerCamera(deltaTime: number) {
+    if (!MainCanvas.targetCameraPlayer) return;
+
+    const distance = 10;
+    const heightOffset = 1.5;
+
+    const playerPos = MainCanvas.targetCameraPlayer.playerBody.position;
+
+    // Use spherical coordinates to position camera based on yaw and pitch
+    const spherical = new THREE.Spherical(
+      distance,
+      Math.PI / 2 + MainCanvas.pitch, // phi (vertical)
+      MainCanvas.yaw                 // theta (horizontal)
+    );
+
+    const cameraOffset = new THREE.Vector3().setFromSpherical(spherical);
+
+    MainCanvas.camera.position.set(
+      playerPos.x + cameraOffset.x,
+      playerPos.y + cameraOffset.y + heightOffset,
+      playerPos.z + cameraOffset.z
+    );
+
+    MainCanvas.camera.lookAt(
+      new THREE.Vector3(playerPos.x, playerPos.y + heightOffset, playerPos.z)
+    );
   }
 
   private rotateCamera(deltaTime: number) {
@@ -184,6 +227,8 @@ export default class MainCanvas {
         MainCanvas.yaw -= mouseMovementX * mouseSensitivity;
         MainCanvas.pitch -= mouseMovementY * mouseSensitivity;
         
+        const pitchLimit = Math.PI / 2 - 0.1;
+
         MainCanvas.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, MainCanvas.pitch));
         MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(MainCanvas.pitch, MainCanvas.yaw, 0, 'YXZ'));
         MouseListener.mouseDelta.x = 0;
@@ -193,7 +238,6 @@ export default class MainCanvas {
   }
 
   private moveCamera(deltaTime: number) {
-
     // Handle vertical camera movement
     if (KeyListener.isKeyDown('Space')) {
         MainCanvas.camera.position.y += 0.5;
