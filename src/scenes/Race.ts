@@ -4,6 +4,7 @@ import KeyListener from '../utilities/KeyListener.js';
 import Game from './Game.js';
 import Parkour from '../objects/Parkour.js';
 import Scene from './Scene.js';
+import MainCanvas from '../setup/MainCanvas.js';
 
 export default class Race {
   public player: Player;
@@ -35,13 +36,15 @@ export default class Race {
     } else {
       this.bot = new Player(1, true, Game.neat.untrainedNetwork[0])
     }
+    MainCanvas.switchCameraMode(false)
   }
-
+  
   public endRace() {
     this.player.killPlayer();
     this.bot.killPlayer();
+    MainCanvas.switchCameraMode(true)
   }
-
+  
   public processInput(deltaTime: number) {
     this.parkour.checkCollision(this.player, [])
     this.player.moveForward(1 * (KeyListener.isKeyDown('KeyW') ? 1 : 0))

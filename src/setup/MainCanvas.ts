@@ -53,6 +53,8 @@ export default class MainCanvas {
 
   private pauzed: boolean = false;
 
+  public static isFreeCam: boolean = true;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     MainCanvas.camera.position.set(5, 18, 45);
@@ -137,10 +139,12 @@ export default class MainCanvas {
         this.activeScene.update(deltaTime);
       }
       
-      if (!Edit.editActive) {
-        this.rotateCamera(deltaTime);
+      if (MainCanvas.isFreeCam) {
+        if (!Edit.editActive) {
+          this.rotateCamera(deltaTime);
+        }
+        this.moveCamera(deltaTime);
       }
-      this.moveCamera(deltaTime);
       
       // Always update controls, even when paused
       MainCanvas.flyControls.update(deltaTime);
@@ -160,6 +164,14 @@ export default class MainCanvas {
 
   private onMouseUp() {
       this.isMouseButtonDown = false;
+  }
+
+  public static switchCameraMode(FreecamOn: boolean) {
+    this.isFreeCam = FreecamOn
+
+    if (!this.isFreeCam) {
+
+    }
   }
 
   private rotateCamera(deltaTime: number) {
