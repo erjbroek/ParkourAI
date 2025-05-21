@@ -109,11 +109,12 @@ export default class Player {
    *
    * @param deltaTime deltatime since last frame
    */
-  public update(deltaTime: number, isRace: boolean = false) {
+  public update(deltaTime: number, isRace: boolean) {
 
     // this is used to speed up training, by making sure the agents
     // are progressing. if they are stuck/ not progressing
     // they die after 5 seconds
+    console.log(isRace)
     if (!isRace) {
       if (this.brain.score >= this.maxFitness + 10) {
         this.deathTimer = 5

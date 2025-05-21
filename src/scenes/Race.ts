@@ -62,7 +62,6 @@ export default class Race {
     this.player.mesh.position.copy(this.player.playerBody.position);
     this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
     this.parkour.checkCollision(this.player, []);
-    this.player.update(deltaTime);
     this.player.calculateFitness()
     
     this.bot.mesh.position.copy(this.bot.playerBody.position);

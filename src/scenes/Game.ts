@@ -284,7 +284,7 @@ export default class Game extends Scene {
           player.mesh.quaternion.copy(player.playerBody.quaternion);
 
           this.parkour.checkCollision(player, Game.neat.players);
-          player.update(deltaTime);
+          player.update(deltaTime, false);
         });
       }
       else {
@@ -429,7 +429,7 @@ export default class Game extends Scene {
 
     // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - this.statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
 
-    if (!Game.neat.usePretrainedNetwork) {
+    if (Game.neat.usePretrainedNetwork) {
       GUI.fillRectangle(canvas, canvas.width * 0.37 - this.statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
       GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - this.statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
     } else {
