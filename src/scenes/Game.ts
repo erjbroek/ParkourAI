@@ -260,11 +260,14 @@ export default class Game extends Scene {
       this.updateLight();
     }
 
-    Parkour.levels[Parkour.activeLevel].time -= deltaTime
-    if (Parkour.levels[Parkour.activeLevel].time <= 0) {
-      Game.neat.players.forEach((player) => {
-        player.killPlayer()
-      })
+    
+    if (this.race.ready || !this.race.isRaceActive) {
+      Parkour.levels[Parkour.activeLevel].time -= deltaTime
+      if (Parkour.levels[Parkour.activeLevel].time <= 0) {
+        Game.neat.players.forEach((player) => {
+          player.killPlayer()
+        })
+      }
     }
 
     Game.alivePlayers = Game.neat.players.filter(player => player.alive);

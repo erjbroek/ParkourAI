@@ -30,11 +30,13 @@ export default class Race {
   
   private jumpBuffer: number = 0.1;
 
-  private countdown: number = 3;
-
-  private countdownDone: boolean = false;
+  public ready: boolean = false;
 
   private winner: Player | undefined = undefined;
+
+  private finished: boolean = false;
+
+  private endGameTimer: number = 3;
 
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
@@ -73,21 +75,25 @@ export default class Race {
     this.player.killPlayer();
     this.bot.killPlayer();
     MainCanvas.switchCameraMode(true, this.player, '')
+    this.ready = false;
+    this.isRaceReady = false;
+    this.isRaceActive = false;
   }
   
   public processInput(deltaTime: number) {
-    if (this.countdownDone) {
+    if (this.ready) {
       this.parkour.checkCollision(this.player, [])
       this.playerMovement(deltaTime)
+    } else {
+      if (KeyListener.keyPressed('Space')) {
+        this.ready = true;
+      }
     }
     // Statistics.hideUI(deltaTime)
   }
 
   public update(deltaTime: number) {
-    if (!this.countdownDone) {
-      this.countdown -= deltaTime;
-      this.countdownDone = this.countdown < 0
-    } else {
+    if (this.ready) {
       this.player.update(deltaTime, true);
       this.player.mesh.position.copy(this.player.playerBody.position);
       this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
@@ -105,16 +111,31 @@ export default class Race {
         } else if (this.bot.finished) {
           this.winner = this.bot;
         }
+      } else {
+        this.finished = true;
+        this.endGameTimer -= deltaTime
       }
-      if (this.winner != undefined) {
-        console.log(this.winner.ai)
+      console.log(this.endGameTimer)
+      if (this.endGameTimer <= 0) {
+        // TODO replace with a popup saying if the player
+        // want to continue or race again
+        this.endRace()
       }
     }
   }
 
   public render(canvas: HTMLCanvasElement) {
-    if (!this.countdownDone) {
-      GUI.writeText(canvas, `${Math.round(this.countdown * 100) / 100}s`, window.innerWidth * 0.55, window.innerHeight * 0.45, 'right', 'system-ui', 100, 'rgb(100, 255, 100)', 500)
+    if (!this.ready) {
+      GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
+    }
+    
+    if (this.winner != undefined && this.ready) {
+      if (this.winner == this.player) {
+        GUI.writeText(canvas, `You won! :)`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
+      }
+      if (this.winner == this.bot) {
+        GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
+      }
     }
   }
 
@@ -134,26 +155,21 @@ export default class Race {
         
     // player movement based on inputs
     const speed = 1.2;
-    this.moving = false;
     if (KeyListener.isKeyDown('KeyS')) {
       this.player.playerBody.velocity.x += -speed * this.forward.x;
       this.player.playerBody.velocity.z += -speed * this.forward.z;
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyW')) {
       this.player.playerBody.velocity.x += speed * this.forward.x;
       this.player.playerBody.velocity.z += speed * this.forward.z;
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyA')) {
       this.player.playerBody.velocity.x += -speed * this.right.x;
       this.player.playerBody.velocity.z += -speed * this.right.z;
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('KeyD')) {
       this.player.playerBody.velocity.x += speed * this.right.x;
       this.player.playerBody.velocity.z += speed * this.right.z;
-      this.moving = true;
     }
     if (KeyListener.isKeyDown('Space')) {
       this.jumpBuffer = 0.1;
@@ -166,11 +182,9 @@ export default class Race {
       this.jumpStatus = false;
     }
         
-        
     // if player falls, reset position to last reached checkpoint
     if (this.player.playerBody.position.y < -10) {
       this.player.playerBody.position.set(Parkour.levels[Parkour.activeLevel].spawnPoint.x, Parkour.levels[Parkour.activeLevel].spawnPoint.y, Parkour.levels[Parkour.activeLevel].spawnPoint.z);
-      // this.player.playerBody.position.set(this.spawnPoint.x, this.spawnPoint.y + 8, this.spawnPoint.z);
       this.player.playerBody.velocity.set(0, 0, 0);
       this.player.playerBody.angularVelocity.set(0, 0, 0);
       this.player.playerBody.quaternion.set(0, 0, 0, 1);
