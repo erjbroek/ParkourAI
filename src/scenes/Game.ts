@@ -395,11 +395,13 @@ export default class Game extends Scene {
       GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.265 - Statistics.visualisationPosition, canvas.height * 0.785, 'left', 'system-ui', 30, 'black', 500)
       
       // the three buttons hide-ui, auto-progress and auto updating camera position
-      GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-      GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-      GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
-      if (!Statistics.visualisationHidden) {
-        GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+      if (!this.race.isRaceActive) {
+        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+        GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+        GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
+        if (!Statistics.visualisationHidden) {
+          GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+        }
       }
       
       GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
