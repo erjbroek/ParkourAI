@@ -37,8 +37,6 @@ export default class Statistics {
     
     if (Statistics.startHidingGraphs) {
       Statistics.hidingDuration -= deltatime;
-      console.log('hide')
-      console.log(Statistics.startHidingGraphs)
   
       if (Statistics.visualisationHidden) {
         Statistics.visualisationPosition += (totalMovement - Statistics.visualisationPosition) * easeSpeed * deltatime;

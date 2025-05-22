@@ -34,7 +34,7 @@ export default class Race {
 
   private winner: Player | undefined = undefined;
 
-  private finished: boolean = false;
+  public finished: boolean = false;
 
   public endGameTimer: number = 3;
 
@@ -122,12 +122,11 @@ export default class Race {
         this.finished = true;
         this.endGameTimer -= deltaTime
       }
-      console.log(this.endGameTimer)
-      if (this.endGameTimer <= 0) {
-        // TODO replace with a popup saying if the player
-        // want to continue or race again
-        this.endRace()
-      }
+      console.log(this.finished)
+
+      // if (this.endGameTimer <= 0) {
+      //   this.finished = true;
+      // }
     }
   }
 
@@ -143,6 +142,10 @@ export default class Race {
       if (this.winner == this.bot) {
         GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
       }
+    }
+
+    if (this.finished) {
+      GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
     }
   }
 

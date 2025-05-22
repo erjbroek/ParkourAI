@@ -259,7 +259,7 @@ export default class Game extends Scene {
       this.updateLight();
     }
 
-    if (this.race.ready || !this.race.isRaceActive) {
+    if ((this.race.ready && !this.race.finished) || !this.race.isRaceActive) {
       Parkour.levels[Parkour.activeLevel].time -= deltaTime
       if (Parkour.levels[Parkour.activeLevel].time <= 0) {
         Game.neat.players.forEach((player) => {
@@ -274,9 +274,9 @@ export default class Game extends Scene {
 
     if (this.race.isRaceActive) {
       this.race.update(deltaTime)
-      if (this.race.endGameTimer <= 0) {
-        this.race = new Race(this.parkour, [])
-      }
+      // if (this.race.endGameTimer <= 0) {
+      //   this.race = new Race(this.parkour, [])
+      // }
     } else {
       // Game.neat.players[0].calculateObstacleDistance(true)
       if (!Game.extinct) {
