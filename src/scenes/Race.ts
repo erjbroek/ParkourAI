@@ -6,6 +6,8 @@ import Game from './Game.js';
 import Parkour from '../objects/Parkour.js';
 import Scene from './Scene.js';
 import MainCanvas from '../setup/MainCanvas.js';
+import GUI from '../utilities/GUI.js';
+import Statistics from './Statistics.js';
 
 export default class Race {
   public player: Player;
@@ -17,21 +19,22 @@ export default class Race {
   public isRaceActive: boolean = false;
   
   public isRaceReady: boolean = false;
-
-  private moving: boolean = false;
   
   private forward: THREE.Vector3 = new THREE.Vector3();
   
   private right: THREE.Vector3 = new THREE.Vector3();
-
-  private onGround: boolean = true;
 
   public rotation: THREE.Vector3 = new THREE.Vector3(0, Math.PI * 1.5, 0);
 
   private jumpStatus: boolean = false;
   
   private jumpBuffer: number = 0.1;
-  
+
+  private countdown: number = 3;
+
+  private countdownDone: boolean = false;
+
+  private winner: Player | undefined = undefined;
 
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
@@ -57,15 +60,13 @@ export default class Race {
     const obstaclePosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].pieces[2].mesh.position;
     const dx = obstaclePosition.x - playerPosition.x;
     const dz = obstaclePosition.z - playerPosition.z;
-    console.log(playerPosition, obstaclePosition)
-    console.log(dx, dz)
     if (Math.abs(dx) > Math.abs(dz)) {
       direction = dx > 0 ? 'right' : 'left';
     } else {
       direction = dz > 0 ? 'backward' : 'straight';
     }
-    console.log(direction)
-    MainCanvas.switchCameraMode(false, this.player, direction)
+    MainCanvas.switchCameraMode(false, this.player, direction);
+    Statistics.startHidingGraphs = true
   }
   
   public endRace() {
@@ -75,15 +76,46 @@ export default class Race {
   }
   
   public processInput(deltaTime: number) {
-    this.parkour.checkCollision(this.player, [])
-    // this.player.moveForward(1 * (KeyListener.isKeyDown('KeyW') ? 1 : 0))
-    // this.player.moveBackward(1 * (KeyListener.isKeyDown('KeyS') ? 1 : 0))
-    // this.player.moveLeft(1 * (KeyListener.isKeyDown('KeyA') ? 1 : 0))
-    // this.player.moveRight(1 * (KeyListener.isKeyDown('KeyD') ? 1 : 0))
-    // if (KeyListener.isKeyDown('Space') && this.player.onGround) {
-    //   this.player.jump()
-    // }
-    this.playerMovement(deltaTime)
+    if (this.countdownDone) {
+      this.parkour.checkCollision(this.player, [])
+      this.playerMovement(deltaTime)
+    }
+    // Statistics.hideUI(deltaTime)
+  }
+
+  public update(deltaTime: number) {
+    if (!this.countdownDone) {
+      this.countdown -= deltaTime;
+      this.countdownDone = this.countdown < 0
+    } else {
+      this.player.update(deltaTime, true);
+      this.player.mesh.position.copy(this.player.playerBody.position);
+      this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
+      this.parkour.checkCollision(this.player, []);
+      this.player.calculateFitness()
+      
+      this.bot.mesh.position.copy(this.bot.playerBody.position);
+      this.bot.mesh.quaternion.copy(this.bot.playerBody.quaternion);
+      this.parkour.checkCollision(this.bot, []);
+      this.bot.update(deltaTime, true)
+
+      if (this.winner === undefined) {
+        if (this.player.finished) {
+          this.winner = this.player;
+        } else if (this.bot.finished) {
+          this.winner = this.bot;
+        }
+      }
+      if (this.winner != undefined) {
+        console.log(this.winner.ai)
+      }
+    }
+  }
+
+  public render(canvas: HTMLCanvasElement) {
+    if (!this.countdownDone) {
+      GUI.writeText(canvas, `${Math.round(this.countdown * 100) / 100}s`, window.innerWidth * 0.55, window.innerHeight * 0.45, 'right', 'system-ui', 100, 'rgb(100, 255, 100)', 500)
+    }
   }
 
   public playerMovement(deltaTime: number) {
@@ -153,22 +185,4 @@ export default class Race {
     this.player.playerBody.velocity.z *= 0.95;
   }
 
-  public update(deltaTime: number) {
-    this.player.update(deltaTime, true);
-
-    this.player.mesh.position.copy(this.player.playerBody.position);
-    this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
-    this.parkour.checkCollision(this.player, []);
-    this.player.calculateFitness()
-    
-    this.bot.mesh.position.copy(this.bot.playerBody.position);
-    this.bot.mesh.quaternion.copy(this.bot.playerBody.quaternion);
-
-    this.parkour.checkCollision(this.bot, []);
-    this.bot.update(deltaTime, true)
-  }
-
-  public render() {
-    
-  }
 }

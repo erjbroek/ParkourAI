@@ -21,7 +21,7 @@ future plans:
 
 - the ability to race the agents:
   - having only 1 or multiple agents
-  - changing camera into perspective camera focussing player
+- after race ends, move camera back to previous position
 - add a true final level
 - display names of level
 - proper intro screen

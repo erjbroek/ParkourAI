@@ -167,8 +167,8 @@ export default class MainCanvas {
 
   public static switchCameraMode(FreecamOn: boolean, player: any = undefined, direction: string) {
     this.isFreeCam = FreecamOn
-    const correctionOffset = THREE.MathUtils.degToRad(30); // 30 degrees in radians
-
+    const correctionOffset = THREE.MathUtils.degToRad(30);
+    
     if (!this.isFreeCam) {
       MainCanvas.targetCameraPlayer = player;
 
@@ -181,6 +181,7 @@ export default class MainCanvas {
       } else {
         this.yaw = 0; 
       }
+      this.yaw += 0.01
     }
   }
 

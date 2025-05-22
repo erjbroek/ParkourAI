@@ -337,7 +337,7 @@ export default class Parkour {
     // - the player finished flag gets sets to true (used to track the percentage of finished players)
     // - the mesh gets updated and becomes green to indicate player has reached it
     // - stats get updated for bar graph
-    if (collidingFinishline && !player.finished && players.length >= 5) {
+    if (collidingFinishline && !player.finished) {
       player.finished = true
       activeLevel.finishLine.mesh.material = ParkourPieces.checkPointActive;
       if (Statistics.checkpointsReached[activeIndex]) {
