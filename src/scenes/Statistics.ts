@@ -34,9 +34,11 @@ export default class Statistics {
   public static hideUI(deltatime: number): void {
     const totalMovement = window.innerWidth * 0.015 + window.innerWidth * 0.23;
     const easeSpeed = 7;
-  
+    
     if (Statistics.startHidingGraphs) {
       Statistics.hidingDuration -= deltatime;
+      console.log('hide')
+      console.log(Statistics.startHidingGraphs)
   
       if (Statistics.visualisationHidden) {
         Statistics.visualisationPosition += (totalMovement - Statistics.visualisationPosition) * easeSpeed * deltatime;
@@ -56,7 +58,6 @@ export default class Statistics {
     }
   }
   
-
   public chooseVisualisation(): void {
     const width = window.innerWidth * 0.1 / 4;
 

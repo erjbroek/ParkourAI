@@ -36,7 +36,7 @@ export default class Race {
 
   private finished: boolean = false;
 
-  private endGameTimer: number = 3;
+  public endGameTimer: number = 3;
 
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
@@ -68,7 +68,10 @@ export default class Race {
       direction = dz > 0 ? 'backward' : 'straight';
     }
     MainCanvas.switchCameraMode(false, this.player, direction);
-    Statistics.startHidingGraphs = true
+    if (Statistics.visualisationHidden) {
+      Statistics.startHidingGraphs = true
+      Statistics.visualisationHidden = true
+    }
   }
   
   public endRace() {
@@ -77,7 +80,10 @@ export default class Race {
     MainCanvas.switchCameraMode(true, this.player, '')
     this.ready = false;
     this.isRaceReady = false;
-    this.isRaceActive = false;
+    if (!Statistics.visualisationHidden) {
+      Statistics.startHidingGraphs = true;
+      Statistics.visualisationHidden = false;
+    }
   }
   
   public processInput(deltaTime: number) {
@@ -93,6 +99,7 @@ export default class Race {
   }
 
   public update(deltaTime: number) {
+    Statistics.hideUI(deltaTime)
     if (this.ready) {
       this.player.update(deltaTime, true);
       this.player.mesh.position.copy(this.player.playerBody.position);
