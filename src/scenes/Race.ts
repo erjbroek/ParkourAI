@@ -42,6 +42,8 @@ export default class Race {
 
   private botScore: number =  0;
 
+  private outOfTime: boolean = false;
+
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
     this.bot = new Player(1, true, network)
@@ -57,7 +59,7 @@ export default class Race {
     })
     this.player = new Player(0, false);
     this.bot = new Player(1, true, Game.neat.neat.getFittest());
-    
+
     let direction: string = '';
     const playerPosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].spawnPoint
     const obstaclePosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].pieces[2].mesh.position;
@@ -101,6 +103,10 @@ export default class Race {
   public update(deltaTime: number) {
     Statistics.hideUI(deltaTime)
     if (this.ready) {
+      if (Parkour.levels[Parkour.activeLevel].time <= 0) {
+        this.outOfTime = true;
+      }
+      
       this.player.update(deltaTime, true);
       this.player.mesh.position.copy(this.player.playerBody.position);
       this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
@@ -149,7 +155,7 @@ export default class Race {
     if (this.finished) {
       GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
       if (this.winner != undefined && this.ready) {
-        if (this.winner == this.player) {
+        if (this.winner == this.player && !this.outOfTime) {
           GUI.writeText(canvas, `You won!`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
           GUI.writeText(canvas, `Guess the ai hasn't been trained enough`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(86, 133, 86)', 500)
           if (!this.bot.alive) {
@@ -159,13 +165,22 @@ export default class Race {
           }
           GUI.writeText(canvas, `You were ${Math.round(((this.player.userFitness / this.botScore - 1) * 100) * 10) / 10}% quicker`, window.innerWidth * 0.5, window.innerHeight * 0.54, 'center', 'system-ui', 20, 'rgb(68, 133, 86)', 500)
         }
-        if (this.winner == this.bot) {
+        if (this.winner == this.bot && !this.outOfTime) {
           GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
           GUI.writeText(canvas, `Maybe you are the one that needs more training`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
           GUI.writeText(canvas, `The robot was ${Math.round((this.robotFinishTime - this.playerFinishTime) * 100) / 100} seconds faster`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(255, 100, 100)', 500)
         }
       }
-      // GUI.fillRectangle(canvas, )
+    } else {
+      if (this.outOfTime && !this.bot.finished) {
+        GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
+        GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
+        GUI.writeText(canvas, `Turns out both you and the bot can't<br>do parkour`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
+      } else if (this.outOfTime) {
+        GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
+        GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
+        GUI.writeText(canvas, `Hint: try strafing`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
+      }
     }
   }
 
