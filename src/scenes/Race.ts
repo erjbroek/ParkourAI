@@ -36,7 +36,11 @@ export default class Race {
 
   public finished: boolean = false;
 
-  public endGameTimer: number = 3;
+  private playerFinishTime: number = 0;
+
+  private robotFinishTime: number | undefined = undefined;
+
+  private botScore: number =  0;
 
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
@@ -51,12 +55,9 @@ export default class Race {
     Game.alivePlayers.forEach((player) => {
       player.killPlayer()
     })
-    this.player = new Player(0, false)
-    if (Game.neat.usePretrainedNetwork) {
-      this.bot = new Player(1, true, Game.neat.trainedNetwork[0])
-    } else {
-      this.bot = new Player(1, true, Game.neat.untrainedNetwork[0])
-    }
+    this.player = new Player(0, false);
+    this.bot = new Player(1, true, Game.neat.neat.getFittest());
+    
     let direction: string = '';
     const playerPosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].spawnPoint
     const obstaclePosition: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].pieces[2].mesh.position;
@@ -95,7 +96,6 @@ export default class Race {
         this.ready = true;
       }
     }
-    // Statistics.hideUI(deltaTime)
   }
 
   public update(deltaTime: number) {
@@ -105,12 +105,13 @@ export default class Race {
       this.player.mesh.position.copy(this.player.playerBody.position);
       this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
       this.parkour.checkCollision(this.player, []);
-      this.player.calculateFitness()
       
-      this.bot.mesh.position.copy(this.bot.playerBody.position);
-      this.bot.mesh.quaternion.copy(this.bot.playerBody.quaternion);
-      this.parkour.checkCollision(this.bot, []);
-      this.bot.update(deltaTime, true)
+      if (this.winner != this.player) {
+        this.bot.mesh.position.copy(this.bot.playerBody.position);
+        this.bot.mesh.quaternion.copy(this.bot.playerBody.quaternion);
+        this.parkour.checkCollision(this.bot, []);
+        this.bot.update(deltaTime, true)
+      }
 
       if (this.winner === undefined) {
         if (this.player.finished) {
@@ -118,34 +119,53 @@ export default class Race {
         } else if (this.bot.finished) {
           this.winner = this.bot;
         }
+        this.botScore = this.bot.brain.score
+        this.player.calculateFitness()
       } else {
-        this.finished = true;
-        this.endGameTimer -= deltaTime
+        // if the player wins, the game automatically ends
+        if (this.winner == this.player) {
+          this.finished = true;
+        } else {
+          // if the robot is faster, their time is saved
+          // once the player finishes, it will show how much seconds
+          // the robot was faster than the player
+          if (this.robotFinishTime == undefined) {
+            this.robotFinishTime = Parkour.levels[Parkour.activeLevel].time
+          }
+          if (this.player.finished) {
+            this.playerFinishTime = Parkour.levels[Parkour.activeLevel].time
+            this.finished = true
+          }
+        }
       }
-      console.log(this.finished)
-
-      // if (this.endGameTimer <= 0) {
-      //   this.finished = true;
-      // }
     }
   }
 
   public render(canvas: HTMLCanvasElement) {
     if (!this.ready) {
-      GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
+      GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgba(100, 255, 100, 0.5)', 500)
     }
     
-    if (this.winner != undefined && this.ready) {
-      if (this.winner == this.player) {
-        GUI.writeText(canvas, `You won! :)`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
-      }
-      if (this.winner == this.bot) {
-        GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
-      }
-    }
-
     if (this.finished) {
       GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
+      if (this.winner != undefined && this.ready) {
+        if (this.winner == this.player) {
+          GUI.writeText(canvas, `You won!`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
+          GUI.writeText(canvas, `Guess the ai hasn't been trained enough`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(86, 133, 86)', 500)
+          if (!this.bot.alive) {
+            GUI.writeText(canvas, `The robot died`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(100, 255, 100)', 500)
+          } else {
+            GUI.writeText(canvas, `The robot was simply too slow`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(100, 255, 100)', 500)
+          }
+          GUI.writeText(canvas, `You were ${Math.round(((this.player.userFitness / this.botScore - 1) * 100) * 10) / 10}% quicker`, window.innerWidth * 0.5, window.innerHeight * 0.54, 'center', 'system-ui', 20, 'rgb(68, 133, 86)', 500)
+        }
+        if (this.winner == this.bot) {
+          GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
+          GUI.writeText(canvas, `Maybe you are the one that needs more training`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
+          GUI.writeText(canvas, `The robot was ${Math.round((this.robotFinishTime - this.playerFinishTime) * 100) / 100} seconds faster`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(255, 100, 100)', 500)
+        }
+      }
+      // GUI.fillRectangle(canvas, )
     }
   }
 

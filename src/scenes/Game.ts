@@ -191,7 +191,7 @@ export default class Game extends Scene {
           Game.neat.usePretrainedNetwork = !Game.neat.usePretrainedNetwork;
           Game.neat.initializePopulation();
         }
-        if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
+        if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05) && !this.race.finished) {
           if (true || this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
             this.race.isRaceActive = !this.race.isRaceActive
             if (this.race.isRaceActive) {
