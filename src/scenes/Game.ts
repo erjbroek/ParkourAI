@@ -257,6 +257,9 @@ export default class Game extends Scene {
     this.race.bot.killPlayer()
     this.race = new Race(this.parkour)
     MainCanvas.switchCameraMode(true, this.race.player, '')
+    if (!Statistics.visualisationHidden) {
+      Statistics.startHidingGraphs = true
+    }
     if (restart) {
       this.race.startRace()
     }

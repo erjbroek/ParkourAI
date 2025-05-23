@@ -123,12 +123,23 @@ export default class Race {
     }
 
     if (this.finished) {
+      // end and restart race buttons on screen after race is finished
       if (MouseListener.isButtonDown()) {
         if (UICollision.checkSquareCollisionMult(0.3, 0.75, 0.1, 0.05)) {
           this.endRace()
           game.resetRace(true)
         } else if (UICollision.checkSquareCollisionMult(0.6, 0.75, 0.1, 0.05)) {
           game.resetRace(false)
+        }
+      }
+    } else {
+      // end and restart race buttons in corner of screen while racing
+      if (MouseListener.isButtonDown(0)) {
+        if (UICollision.checkSquareCollisionMult(0.01, 0.93, 0.1, 0.05)) {
+          game.resetRace(false)
+        }
+        if (UICollision.checkSquareCollisionMult(0.175, 0.93, 0.1, 0.05)) {
+          game.resetRace(true)
         }
       }
     }
@@ -183,9 +194,16 @@ export default class Race {
   }
 
   public render(canvas: HTMLCanvasElement) {
+    // renders the end race and restart race buttons
+    GUI.fillRectangle(canvas, canvas.width * 0.01, canvas.height * 0.93, canvas.width * 0.1, canvas.height * 0.05, 255, 255, 255, 0.5, 10);
+    GUI.writeText(canvas, 'End race', canvas.width * 0.06, canvas.height * 0.96, 'center', 'system-ui', 20, 'black');
+    GUI.fillRectangle(canvas, canvas.width * 0.125, canvas.height * 0.93, canvas.width * 0.1, canvas.height * 0.05, 255, 255, 255, 0.5, 10);
+    GUI.writeText(canvas, 'Restart race', canvas.width * 0.175, canvas.height * 0.96, 'center', 'system-ui', 20, 'black');
+
     if (!this.ready) {
       GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgba(255, 255, 255, 0.3)', 500)
     }
+
     if (this.finished && !this.outOfTime) {
       GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10);
       GUI.fillRectangle(canvas, canvas.width * 0.3, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
@@ -212,17 +230,12 @@ export default class Race {
       }
     } else if (this.outOfTime){
       GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10);
-
-      // if (!this.bot.finished || !this.player.finished) {
-      //   console.log('3')
-      GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
-      GUI.writeText(canvas, `Turns out both you and the bot can't<br>do parkour`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
-      // } else {
-      // }
+      GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500);
+      GUI.writeText(canvas, `Turns out both you and the bot can't<br>do parkour`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500);
       GUI.fillRectangle(canvas, canvas.width * 0.3, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
       GUI.fillRectangle(canvas, canvas.width * 0.6, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
-      GUI.writeText(canvas, 'Try again', canvas.width * 0.35, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
-      GUI.writeText(canvas, 'End race', canvas.width * 0.65, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
+      GUI.writeText(canvas, 'Try again', canvas.width * 0.35, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500);
+      GUI.writeText(canvas, 'End race', canvas.width * 0.65, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500);
     }
   }
 
