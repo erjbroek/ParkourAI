@@ -204,7 +204,7 @@ export default class Game extends Scene {
       }
     }
     if (this.race.isRaceActive) {
-      this.race.processInput(deltaTime)
+      this.race.processInput(deltaTime, this)
     }
     if (!this.settings.visible) {
       // edit button (with hover animation)
@@ -249,6 +249,16 @@ export default class Game extends Scene {
       this.editor.processInput();    
     } else {
       this.settings.processInput()
+    }
+  }
+
+  public resetRace(restart: boolean) {
+    this.race.player.killPlayer()
+    this.race.bot.killPlayer()
+    this.race = new Race(this.parkour)
+    MainCanvas.switchCameraMode(true, this.race.player, '')
+    if (restart) {
+      this.race.startRace()
     }
   }
 
@@ -363,46 +373,49 @@ export default class Game extends Scene {
       GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
     }
     
+    GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}s`, canvas.width * 0.55 - (this.race.isRaceActive ? canvas.width * 0.08 : 0), canvas.height * 0.1, 'left', 'system-ui', 60, 'rgba(0, 0, 0, 1)', 100)
+
     // make sure to only render the ui if all other menu's are closed
-    if (!this.settings.visible && !this.openEditor) {
-      GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.05 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-      GUI.writeText(canvas, `Level: ${Parkour.activeLevel + 1}`, canvas.width * 0.133 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-      GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-      GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
-      
-      if (Parkour.levels[Parkour.activeLevel].finished) {
-        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
-        GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
-      } else {
-        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
-        GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
-      }
-      
+    if (!this.race.isRaceActive) {
+      if (!this.settings.visible && !this.openEditor) {
+        GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.05 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+        GUI.writeText(canvas, `Level: ${Parkour.activeLevel + 1}`, canvas.width * 0.133 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+        GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
+        
+        if (Parkour.levels[Parkour.activeLevel].finished) {
+          GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+          GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+        } else {
+          GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
+          GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+        }
+        
       // race button, needs 84% of players completed instead of 75
-      const numPlayersNeeded = 0.84
-      GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
-      GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
-      if (this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
-        this.race.isRaceReady = true;
-        GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
-        GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
-      } else {
+        const numPlayersNeeded = 0.84
+        GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
         GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
-        GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * numPlayersNeeded)} players`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
-      }
-
-
-      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}`, canvas.width * 0.265 - Statistics.visualisationPosition, canvas.height * 0.785, 'left', 'system-ui', 30, 'black', 500)
-      
-      // the three buttons hide-ui, auto-progress and auto updating camera position
-      if (!this.race.isRaceActive) {
-        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-        GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-        GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
-        if (!Statistics.visualisationHidden) {
-          GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+        if (Game.neat.usePretrainedNetwork || this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
+          this.race.isRaceReady = true;
+          GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+          GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+        } else {
+          GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
+          GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * numPlayersNeeded)} players`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
         }
       }
+
+
+      
+      // the three buttons hide-ui, auto-progress and auto updating camera position
+
+      GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+      GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+      GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
+      if (!Statistics.visualisationHidden) {
+        GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+      }
+      
       
       GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
       GUI.drawRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
@@ -424,23 +437,23 @@ export default class Game extends Scene {
         const bestPlayer = Game.neat.players[0]
         this.statistics.renderOutput(bestPlayer);
       }
-    }
-
-    // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
-    if (this.openEditor) { 
+      
+      // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
+      if (this.openEditor) { 
       this.editor.render(canvas)
-    } else {
-      this.settings.render(canvas, this.statistics)
-    }
+      } else {
+        this.settings.render(canvas, this.statistics)
+      }
 
-    // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
+      // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
 
-    if (Game.neat.usePretrainedNetwork) {
-      GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
-      GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
-    } else {
-      GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
-      GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+      if (Game.neat.usePretrainedNetwork) {
+        GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
+        GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+      } else {
+        GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
+        GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+      }
     }
 
     if (this.race.isRaceActive) {

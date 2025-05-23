@@ -24,9 +24,14 @@ future plans:
 - after race ends, move camera back to previous position
 - add a true final level
 - display names of level
+- remove code duplication in race text rendering
+- increase player gravity a bit when falling 
 - proper intro screen
+- manually select the level you want to do on the screen
+- change design of robots, to not be square. maybe a face is sufficient. Rotating the meshes in the movement direction could also help with this.
+
+- maybe there is some way i can use actual grass. shaders, idk dont know much about them?
 - redesign jump platforms
 - change fitness calculation to also be related to speed (divided by amount of seconds for example)
 - update fontsize based on screensize
-- manually select the level you want to do on the screen
 

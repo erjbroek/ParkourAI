@@ -8,6 +8,10 @@ import Scene from './Scene.js';
 import MainCanvas from '../setup/MainCanvas.js';
 import GUI from '../utilities/GUI.js';
 import Statistics from './Statistics.js';
+import Obstacle from '../objects/Obstacle.js';
+import ParkourPieces from '../objects/ParkourPieces.js';
+import MouseListener from '../utilities/MouseListener.js';
+import UICollision from '../utilities/UICollision.js';
 
 export default class Race {
   public player: Player;
@@ -44,6 +48,10 @@ export default class Race {
 
   private outOfTime: boolean = false;
 
+  private previousPlatform: number = 1
+
+  private cheated: boolean = false;
+
   public constructor(parkour: Parkour, network: any = []) {
     this.player = new Player(0, false)
     this.bot = new Player(1, true, network)
@@ -51,12 +59,15 @@ export default class Race {
   }
 
   public startRace() {
+    // Game.neat.endGeneration()
     Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
     MainCanvas.targetCameraPlayer = this.player
+    this.isRaceActive = true;
 
     Game.alivePlayers.forEach((player) => {
       player.killPlayer()
     })
+
     this.player = new Player(0, false);
     this.bot = new Player(1, true, Game.neat.neat.getFittest());
 
@@ -76,26 +87,49 @@ export default class Race {
       Statistics.visualisationHidden = true
     }
   }
+
+  private checkForCheating() {
+    const currentPlatform: number = Parkour.levels[Parkour.activeLevel].pieces.indexOf(this.player.inputLevels.current)
+    if (currentPlatform >= this.previousPlatform + 3) {
+      this.cheated = true;
+    } else {
+      this.cheated = false;
+    }
+
+    // sets the current platform as the previous
+    if (this.player.onGround) {
+      this.previousPlatform = Parkour.levels[Parkour.activeLevel].pieces.indexOf(this.player.inputLevels.current)
+    }
+  }
   
   public endRace() {
     this.player.killPlayer();
     this.bot.killPlayer();
     MainCanvas.switchCameraMode(true, this.player, '')
-    this.ready = false;
-    this.isRaceReady = false;
     if (!Statistics.visualisationHidden) {
       Statistics.startHidingGraphs = true;
       Statistics.visualisationHidden = false;
     }
   }
   
-  public processInput(deltaTime: number) {
+  public processInput(deltaTime: number, game: Game) {
     if (this.ready) {
       this.parkour.checkCollision(this.player, [])
       this.playerMovement(deltaTime)
     } else {
       if (KeyListener.keyPressed('Space')) {
         this.ready = true;
+      }
+    }
+
+    if (this.finished) {
+      if (MouseListener.isButtonDown()) {
+        if (UICollision.checkSquareCollisionMult(0.3, 0.75, 0.1, 0.05)) {
+          this.endRace()
+          game.resetRace(true)
+        } else if (UICollision.checkSquareCollisionMult(0.6, 0.75, 0.1, 0.05)) {
+          game.resetRace(false)
+        }
       }
     }
   }
@@ -106,11 +140,12 @@ export default class Race {
       if (Parkour.levels[Parkour.activeLevel].time <= 0) {
         this.outOfTime = true;
       }
-      
+
       this.player.update(deltaTime, true);
       this.player.mesh.position.copy(this.player.playerBody.position);
       this.player.mesh.quaternion.copy(this.player.playerBody.quaternion);
       this.parkour.checkCollision(this.player, []);
+      this.checkForCheating()
       
       if (this.winner != this.player) {
         this.bot.mesh.position.copy(this.bot.playerBody.position);
@@ -119,7 +154,7 @@ export default class Race {
         this.bot.update(deltaTime, true)
       }
 
-      if (this.winner === undefined) {
+      if (this.winner === undefined && !this.outOfTime) {
         if (this.player.finished) {
           this.winner = this.player;
         } else if (this.bot.finished) {
@@ -149,38 +184,45 @@ export default class Race {
 
   public render(canvas: HTMLCanvasElement) {
     if (!this.ready) {
-      GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgba(100, 255, 100, 0.5)', 500)
+      GUI.writeText(canvas, `Press space to start`, window.innerWidth * 0.62, window.innerHeight * 0.45, 'right', 'system-ui', 60, 'rgba(255, 255, 255, 0.3)', 500)
     }
-    
-    if (this.finished) {
-      GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
+    if (this.finished && !this.outOfTime) {
+      GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10);
+      GUI.fillRectangle(canvas, canvas.width * 0.3, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
+      GUI.fillRectangle(canvas, canvas.width * 0.6, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
+      GUI.writeText(canvas, 'Try again', canvas.width * 0.35, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
+      GUI.writeText(canvas, 'End race', canvas.width * 0.65, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
+
       if (this.winner != undefined && this.ready) {
         if (this.winner == this.player && !this.outOfTime) {
           GUI.writeText(canvas, `You won!`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(100, 255, 100)', 500)
           GUI.writeText(canvas, `Guess the ai hasn't been trained enough`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(86, 133, 86)', 500)
           if (!this.bot.alive) {
             GUI.writeText(canvas, `The robot died`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(100, 255, 100)', 500)
+            GUI.writeText(canvas, `You got ${Math.round(((this.player.userFitness / this.botScore - 1) * 100) * 10) / 10}% further.`, window.innerWidth * 0.5, window.innerHeight * 0.54, 'center', 'system-ui', 20, 'rgb(68, 133, 86)', 500)
           } else {
             GUI.writeText(canvas, `The robot was simply too slow`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(100, 255, 100)', 500)
+            GUI.writeText(canvas, `You were ${Math.round(((this.player.userFitness / this.botScore - 1) * 100) * 10) / 10}% quicker`, window.innerWidth * 0.5, window.innerHeight * 0.54, 'center', 'system-ui', 20, 'rgb(68, 133, 86)', 500)
           }
-          GUI.writeText(canvas, `You were ${Math.round(((this.player.userFitness / this.botScore - 1) * 100) * 10) / 10}% quicker`, window.innerWidth * 0.5, window.innerHeight * 0.54, 'center', 'system-ui', 20, 'rgb(68, 133, 86)', 500)
-        }
-        if (this.winner == this.bot && !this.outOfTime) {
+        } else if (this.winner == this.bot && !this.outOfTime) {
           GUI.writeText(canvas, `Skill issue`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
           GUI.writeText(canvas, `Maybe you are the one that needs more training`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
           GUI.writeText(canvas, `The robot was ${Math.round((this.robotFinishTime - this.playerFinishTime) * 100) / 100} seconds faster`, window.innerWidth * 0.5, window.innerHeight * 0.51, 'center', 'system-ui', 40, 'rgb(255, 100, 100)', 500)
         }
       }
-    } else {
-      if (this.outOfTime && !this.bot.finished) {
-        GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
-        GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
-        GUI.writeText(canvas, `Turns out both you and the bot can't<br>do parkour`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
-      } else if (this.outOfTime) {
-        GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10)
-        GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
-        GUI.writeText(canvas, `Hint: try strafing`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
-      }
+    } else if (this.outOfTime){
+      GUI.fillRectangle(canvas, window.innerWidth * 0.1, window.innerHeight * 0.1, window.innerWidth * 0.8, window.innerHeight * 0.8, 0, 0, 0, 0.5, 10);
+
+      // if (!this.bot.finished || !this.player.finished) {
+      //   console.log('3')
+      GUI.writeText(canvas, `Out of time`, window.innerWidth * 0.5, window.innerHeight * 0.25, 'center', 'system-ui', 60, 'rgb(255, 100, 100)', 500)
+      GUI.writeText(canvas, `Turns out both you and the bot can't<br>do parkour`, window.innerWidth * 0.5, window.innerHeight * 0.28, 'center', 'system-ui', 20, 'rgb(133, 86, 86)', 500)
+      // } else {
+      // }
+      GUI.fillRectangle(canvas, canvas.width * 0.3, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
+      GUI.fillRectangle(canvas, canvas.width * 0.6, canvas.height * 0.75, canvas.width * 0.1, canvas.height * 0.05, 100 + (155 * ((this.winner == this.player) ? 0 : 1)), 255 - (155 * ((this.winner == this.player) ? 0 : 1)), 100, 0.8, 10);
+      GUI.writeText(canvas, 'Try again', canvas.width * 0.35, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
+      GUI.writeText(canvas, 'End race', canvas.width * 0.65, canvas.height * 0.782, 'center', 'system-ui', 20, 'rgba(0, 0, 0, 0.6)', 500)
     }
   }
 
