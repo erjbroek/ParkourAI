@@ -60,7 +60,7 @@ export default class GUI {
   }
 
   /**
-  * Write text to the canvas, with line breaks for each occurrence of "<br>"
+  * Write text to the canvas, with line breaks for each occurrence of "<br>", and optional rotation.
   *
   * @param canvas Canvas to write to
   * @param text Text to write
@@ -71,21 +71,39 @@ export default class GUI {
   * @param fontSize font size in pixels
   * @param color colour of text to write
   * @param fontWeight
+  * @param rotation rotation in degrees (default 0)
   */
-  public static writeText(canvas: HTMLCanvasElement, text: string, xCoordinate: number, yCoordinate: number, alignment: CanvasTextAlign = "center", fontFamily: string = "sans-serif", fontSize: number = 20, color: string = "red", fontWeight: number = 10): void {
+  public static writeText(
+    canvas: HTMLCanvasElement,
+    text: string,
+    xCoordinate: number,
+    yCoordinate: number,
+    alignment: CanvasTextAlign = "center",
+    fontFamily: string = "sans-serif",
+    fontSize: number = 20,
+    color: string = "red",
+    fontWeight: number = 10,
+    rotation: number = 0
+  ): void {
     const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(canvas);
+    ctx.save();
     ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = color;
     ctx.textAlign = alignment;
 
+    ctx.translate(xCoordinate, yCoordinate);
+    ctx.rotate((rotation * Math.PI) / 180);
+
     // each time <br> is found in the text, a line break is made
     const lines = text.split("<br>");
-    let currentY = yCoordinate;
+    let currentY = 0;
 
     for (const line of lines) {
-      ctx.fillText(line, xCoordinate, currentY);
+      ctx.fillText(line, 0, currentY);
       currentY += fontSize;
     }
+
+    ctx.restore();
   }
 
   /**

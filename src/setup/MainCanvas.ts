@@ -1,4 +1,9 @@
 import * as THREE from "three";
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { HorizontalBlurShader } from 'three/examples/jsm/shaders/HorizontalBlurShader';
+import { VerticalBlurShader } from 'three/examples/jsm/shaders/VerticalBlurShader';
 import * as CANNON from "cannon-es";
 import Game from "../scenes/Game.js";
 import GUI from "../utilities/GUI.js";
@@ -9,15 +14,16 @@ import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
 import Stats from 'stats.js'
 import Player from '../objects/Player.js';
+import Parkour from '../objects/Parkour.js';
 
 const stats = new Stats()
 stats.showPanel(0)
 stats.dom.style.position = 'fixed';
-stats.dom.style.bottom = '10px'; 
+stats.dom.style.bottom = '10px';
 stats.dom.style.right = '10px';
 stats.dom.style.left = 'auto';
 stats.dom.style.top = 'auto';
-stats.dom.style.width = '100px'; 
+stats.dom.style.width = '100px';
 
 document.body.appendChild(stats.dom)
 
@@ -58,6 +64,16 @@ export default class MainCanvas {
 
   public static targetCameraPlayer: Player;
 
+  public static introActive: boolean = false;
+
+  public static clickedStartGame: boolean = false;
+
+  public static composer: EffectComposer;
+
+  public vBlur: ShaderPass;
+
+  public hBlur: ShaderPass;
+
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     // MainCanvas.camera.position.set(5, 18, 45);
@@ -85,10 +101,71 @@ export default class MainCanvas {
     window.addEventListener("mouseup", () => this.onMouseUp(), false);
 
     this.setupLight();
-    // CreateBackground.addBackgroundSphere(); // Add background sphere
     this.startRendering();
     this.activeScene = new Game();
-    MainCanvas.targetCameraPlayer = this.activeScene.race.player
+    this.startIntro()
+  }
+
+  public startIntro() {
+    MainCanvas.introActive = true;
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 1,
+      roughness: 0.4,
+      thickness: 1,
+      transparent: true,
+    });
+
+    const introPlane = new THREE.Mesh(geometry, material);
+    MainCanvas.camera.add(introPlane);
+    introPlane.position.set(0, 0, -0.6);
+    MainCanvas.scene.add(MainCanvas.camera);
+    (MainCanvas as any)._introPlane = introPlane;
+
+    Game.neat.switchNetwork()
+    Game.neat.usePretrainedNetwork = true;
+    Game.neat.initializePopulation();
+    this.hBlur.enabled = true;
+    this.vBlur.enabled = true;
+  }
+
+  public endIntro() {
+    MainCanvas.introActive = false;
+    MainCanvas.clickedStartGame = false;
+    Game.neat.endGeneration();
+    Game.alivePlayers.forEach((player: Player) => {
+      player.killPlayer()
+    })
+
+    // this.hBlur.enabled = false;
+    // this.vBlur.enabled = false;
+
+    const introPlane = (MainCanvas as any)._introPlane;
+    if (introPlane) {
+      MainCanvas.camera.remove(introPlane);
+      (MainCanvas as any)._introPlane = undefined;
+    }
+    // this.activeScene = new Game()
+    // this.activeScene.parkour = new Parkour()
+    Parkour.activeLevel = 0
+    Game.neat.usePretrainedNetwork = false;
+    Game.neat.setTrainedNetwork()
+    if (!Game.neat.usePretrainedNetwork) {
+      Game.neat.resetGeneration()
+    }
+    Game.neat.initializePopulation()
+
+    if (this.updateCamera) {
+      const activeLevel = Parkour.levels[Parkour.activeLevel]
+      MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
+      MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+      MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z);
+      const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
+      MainCanvas.yaw = euler.y;
+      MainCanvas.pitch = euler.x;
+    }
+    // Parkour.activeLevel = 0;
   }
 
   /*
@@ -124,51 +201,59 @@ export default class MainCanvas {
    */
   public startRendering() {
     MainCanvas.renderer.setAnimationLoop(() => {
+      // MainCanvas.composer.render();
+
       stats.begin();
+      if (MainCanvas.clickedStartGame) {
+        this.endIntro();
+      }
 
       if (KeyListener.keyPressed('KeyP')) {
-      this.pauzed = !this.pauzed;
+        this.pauzed = !this.pauzed;
       }
-      
+
       const deltaTime = this.clock.getDelta();
-      
+
       // Only step the physics and update the scene when not paused
       if (!this.pauzed) {
         if (deltaTime > 0) {
           MainCanvas.world.step(deltaTime);
         }
-        
+
         // Process input and update the active scene
         this.activeScene.processInput(deltaTime);
         this.activeScene.update(deltaTime);
       }
-      
-      this.updateCamera(deltaTime)
-      
-      // Always update controls, even when paused
-      MainCanvas.flyControls.update(deltaTime);
-      
+
+      if (!MainCanvas.introActive) {
+
+        this.updateCamera(deltaTime)
+
+        // Always update controls, even when paused
+        MainCanvas.flyControls.update(deltaTime);
+      }
+
       // Render the GUI and the active scene
       const ctx: CanvasRenderingContext2D = GUI.getCanvasContext(GUI.getCanvas());
       ctx.clearRect(0, 0, GUI.canvas.width, GUI.canvas.height);
       this.activeScene.render();
-      
+
       stats.end();
     });
   }
-  
+
   private onMouseDown() {
     this.isMouseButtonDown = true;
   }
 
   private onMouseUp() {
-      this.isMouseButtonDown = false;
+    this.isMouseButtonDown = false;
   }
 
   public static switchCameraMode(FreecamOn: boolean, player: any = undefined, direction: string) {
     this.isFreeCam = FreecamOn
     const correctionOffset = THREE.MathUtils.degToRad(30);
-    
+
     if (!this.isFreeCam) {
       MainCanvas.targetCameraPlayer = player;
 
@@ -179,7 +264,7 @@ export default class MainCanvas {
       } else if (direction === "backward") {
         this.yaw = Math.PI;
       } else {
-        this.yaw = 0; 
+        this.yaw = 0;
       }
       this.yaw += 0.01
     }
@@ -232,10 +317,10 @@ export default class MainCanvas {
       if (MainCanvas.rotate) {
         const mouseMovementX = MouseListener.mouseDelta.x;
         const mouseMovementY = MouseListener.mouseDelta.y;
-        
+
         MainCanvas.yaw -= mouseMovementX * mouseSensitivity;
         MainCanvas.pitch -= mouseMovementY * mouseSensitivity;
-        
+
         const pitchLimit = Math.PI / 2 - 0.1;
 
         MainCanvas.pitch = Math.max(-pitchLimit, Math.min(pitchLimit, MainCanvas.pitch));
@@ -249,18 +334,18 @@ export default class MainCanvas {
   private moveCamera(deltaTime: number) {
     // Handle vertical camera movement
     if (KeyListener.isKeyDown('Space')) {
-        MainCanvas.camera.position.y += 0.5;
+      MainCanvas.camera.position.y += 0.5;
     }
     if (KeyListener.isKeyDown('ShiftLeft') || KeyListener.isKeyDown('ShiftRight')) {
-        MainCanvas.camera.position.y -= 0.5;
+      MainCanvas.camera.position.y -= 0.5;
     }
 
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
     forward.set(
-        Math.sin(MainCanvas.yaw),
-        0,
-        Math.cos(MainCanvas.yaw)
+      Math.sin(MainCanvas.yaw),
+      0,
+      Math.cos(MainCanvas.yaw)
     ).normalize();
 
     right.copy(forward).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2);
@@ -268,16 +353,16 @@ export default class MainCanvas {
 
     const moveSpeed = 50 * deltaTime;
     if (KeyListener.isKeyDown('KeyW')) {
-        MainCanvas.camera.position.sub(forward.clone().multiplyScalar(moveSpeed));
+      MainCanvas.camera.position.sub(forward.clone().multiplyScalar(moveSpeed));
     }
     if (KeyListener.isKeyDown('KeyS')) {
-        MainCanvas.camera.position.sub(forward.clone().multiplyScalar(-moveSpeed));
+      MainCanvas.camera.position.sub(forward.clone().multiplyScalar(-moveSpeed));
     }
     if (KeyListener.isKeyDown('KeyA')) {
-        MainCanvas.camera.position.add(right.clone().multiplyScalar(-moveSpeed));
+      MainCanvas.camera.position.add(right.clone().multiplyScalar(-moveSpeed));
     }
     if (KeyListener.isKeyDown('KeyD')) {
-        MainCanvas.camera.position.add(right.clone().multiplyScalar(moveSpeed));
+      MainCanvas.camera.position.add(right.clone().multiplyScalar(moveSpeed));
     }
 
     MainCanvas.flyControls.update(deltaTime);

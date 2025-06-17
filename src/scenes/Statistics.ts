@@ -19,7 +19,7 @@ export default class Statistics {
 
   private visualisation: number = 0;
 
-  public static startHidingGraphs: boolean = false;
+  public static startHidingGraphs: boolean = true;
 
   public static visualisationHidden = true;
 

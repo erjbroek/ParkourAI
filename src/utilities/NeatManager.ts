@@ -89,6 +89,7 @@ export default class NeatManager {
       popsize: this.neat.popsize,
       elitism: this.neat.popsize / 5
     })
+    console.log('reset gen')
     this.initializePopulation()
   }
 
@@ -177,6 +178,7 @@ export default class NeatManager {
 
     this.neat.mutate()
     this.neat.generation++
+    console.log('end gen')
     this.initializePopulation()
   }
 

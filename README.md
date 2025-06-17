@@ -19,11 +19,10 @@ to find the best balance between complexity and efficiency.
 
 future plans:
 
-- the ability to race the agents:
-  - having only 1 or multiple agents
 - after race ends, move camera back to previous position
 - add a true final level
 - display names of level
+- add proper button for showing visualisations
 - remove code duplication in race text rendering
 - increase player gravity a bit when falling 
 - proper intro screen

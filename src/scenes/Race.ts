@@ -60,6 +60,7 @@ export default class Race {
 
   public startRace() {
     // Game.neat.endGeneration()
+    
     Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
     MainCanvas.targetCameraPlayer = this.player
     this.isRaceActive = true;

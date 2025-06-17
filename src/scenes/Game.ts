@@ -58,7 +58,7 @@ export default class Game extends Scene {
 
   private pmremGenerator = new THREE.PMREMGenerator(MainCanvas.renderer);
 
-  public race: Race = new Race(this.parkour)
+  public race: Race = new Race(this.parkour);
 
   public constructor() {
     super();
@@ -106,11 +106,12 @@ export default class Game extends Scene {
     // update camera position to first level
     const activeLevel = Parkour.levels[Parkour.activeLevel]
     MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
-    MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+    MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z));
     MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z );
     const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
     MainCanvas.yaw = euler.y;
     MainCanvas.pitch = euler.x;
+
   }
 
   public updateSun() {
@@ -139,116 +140,127 @@ export default class Game extends Scene {
    * processes player input
    */
   public override processInput(deltaTime: number): void {
-    this.statistics.procesInput()
-
-    // save current generation to json
-    if (KeyListener.keyPressed('Delete')) {
-      Game.neat.players.forEach((player) => {
-        player.calculateFitness()
-      })
-      Game.neat.neat.sort()
-      const populationJson = Game.neat.neat.export(); // Export the current population
-      const blob = new Blob([JSON.stringify(populationJson)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `level${Parkour.activeLevel}finished.json`; 
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // option to end generation if player gets stuck
-    if (!this.openEditor) {
-      if (KeyListener.keyPressed('KeyE')) {
-        Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
-        Game.neat.endGeneration();
-        this.settings.update()
-      }
-      if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
-        if (Parkour.levels[Parkour.activeLevel].finished) {
-          if (!this.autoProgress) {
-            Game.alivePlayers.forEach(player => player.alive = false);
-          }
-          this.readyNextLevel = true;
-        }
-      }
-
-      // the three small buttons from hide-ui, auto-update camera position and auto progress
-      if (MouseListener.buttonPressed(0)) {
-        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.85, 0.012, 0.025)) {
-          this.updateCamera = !this.updateCamera;
-        }
-        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.89, 0.012, 0.025)) {
-          this.autoProgress = !this.autoProgress;
-        }
-        if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
-          Statistics.startHidingGraphs = !Statistics.startHidingGraphs
-        }
-        if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
-          // Game.neat.usePretrainedNetwork = false;
-          // Game.neat.wasUsingPretrained = Game.neat.wasUsingPretrained
-          Game.neat.switchNetwork();
-          Game.neat.usePretrainedNetwork = !Game.neat.usePretrainedNetwork;
-          Game.neat.initializePopulation();
-        }
-        if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05) && !this.race.finished) {
-          if (this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
-            this.race.isRaceActive = !this.race.isRaceActive
-            if (this.race.isRaceActive) {
-              this.race.startRace()
-            } else {
-              this.race.endRace()
-            }
-          }
-        }
-      }
-    }
-    if (this.race.isRaceActive) {
-      this.race.processInput(deltaTime, this)
-    }
-    if (!this.settings.visible) {
-      // edit button (with hover animation)
-      if (UICollision.checkSquareCollisionMult(0.9, 0.04, 0.08, 0.05)) {
-        this.hoverEditor = true;
+    if (MainCanvas.introActive) {
+      if (UICollision.checkCollision(MainCanvas.canvas.width * 0.65 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.66, MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05)) {
+        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.6 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.66, MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05, 0, 0, 0, 0.1, 5)
         if (MouseListener.isButtonDown(0)) {
-          this.clickEditor = true;
-          if (this.readyClickEditor) {
-            this.readyClickEditor = false;
-            this.openEditor = !this.openEditor;
-            Edit.gridHelper.visible = this.openEditor;
-        
-            // makes sure obstacle gets removed if it didn't get saved
-            if (!this.editor.confirmedAdded) {
-              this.editor.removeObstacle()
+          MainCanvas.clickedStartGame = true;
+        }
+      }
+    } else {
+      this.statistics.procesInput()
+      
+      // save current generation to json
+      if (KeyListener.keyPressed('Delete')) {
+        Game.neat.players.forEach((player) => {
+          player.calculateFitness()
+        })
+        Game.neat.neat.sort()
+        const populationJson = Game.neat.neat.export(); // Export the current population
+        const blob = new Blob([JSON.stringify(populationJson)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `level${Parkour.activeLevel}finished.json`; 
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    
+      // option to end generation if player gets stuck
+      if (!this.openEditor) {
+        if (KeyListener.keyPressed('KeyE')) {
+          Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+          Game.neat.endGeneration();
+          this.settings.update()
+        }
+        if ((MouseListener.isButtonDown(0) && UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) || this.autoProgress) {
+          if (Parkour.levels[Parkour.activeLevel].finished) {
+            if (!this.autoProgress) {
+              Game.alivePlayers.forEach(player => player.alive = false);
             }
+            this.readyNextLevel = true;
+          }
+        }
+        
+        // the three small buttons from hide-ui, auto-update camera position and auto progress
+        if (MouseListener.buttonPressed(0)) {
+          if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.85, 0.012, 0.025)) {
+            this.updateCamera = !this.updateCamera;
+          }
+          if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.89, 0.012, 0.025)) {
+            this.autoProgress = !this.autoProgress;
+          }
+          if (UICollision.checkSquareCollisionMult(((0.26 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.81, 0.012, 0.025)) {
+            Statistics.startHidingGraphs = !Statistics.startHidingGraphs
+          }
+          if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05)) {
+            // Game.neat.usePretrainedNetwork = false;
+            // Game.neat.wasUsingPretrained = Game.neat.wasUsingPretrained
+            Game.neat.switchNetwork();
+            Game.neat.usePretrainedNetwork = !Game.neat.usePretrainedNetwork;
+            Game.neat.initializePopulation();
+          }
+          if (UICollision.checkSquareCollisionMult(((window.innerWidth * 0.485) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05) && !this.race.finished) {
+            if (this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= 0.84) {
+              this.race.isRaceActive = !this.race.isRaceActive
+              if (this.race.isRaceActive) {
+                this.race.startRace()
+              } else {
+                this.race.endRace()
+              }
+            }
+          }
+        }
+      }
+      
+      if (this.race.isRaceActive) {
+        this.race.processInput(deltaTime, this)
+      }
+      
+      if (!this.settings.visible) {
+        // edit button (with hover animation)
+        if (UICollision.checkSquareCollisionMult(0.9, 0.04, 0.08, 0.05)) {
+          this.hoverEditor = true;
+          if (MouseListener.isButtonDown(0)) {
+            this.clickEditor = true;
+            if (this.readyClickEditor) {
+              this.readyClickEditor = false;
+              this.openEditor = !this.openEditor;
+              Edit.gridHelper.visible = this.openEditor;
+          
+              // makes sure obstacle gets removed if it didn't get saved
+              if (!this.editor.confirmedAdded) {
+                this.editor.removeObstacle()
+              }
+            }
+          } else {
+            this.clickEditor = false;
+            this.readyClickEditor = true;
           }
         } else {
+          this.hoverEditor = false;
           this.clickEditor = false;
-          this.readyClickEditor = true;
+        } 
+      }
+
+      if (KeyListener.keyPressed('Digit2')) {
+        if (Game.colorMode < 10) {
+          Game.colorMode++
+          console.log(Game.colorMode)
         }
+      }
+      if (KeyListener.keyPressed('Digit1')) {
+        if (Game.colorMode > 0) {
+          Game.colorMode--
+          console.log(Game.colorMode)
+        }
+      }
+      
+      if (this.openEditor) {
+        this.editor.processInput();    
       } else {
-        this.hoverEditor = false;
-        this.clickEditor = false;
-      } 
-    }
-
-    if (KeyListener.keyPressed('Digit2')) {
-      if (Game.colorMode < 10) {
-        Game.colorMode++
-        console.log(Game.colorMode)
+        this.settings.processInput()
       }
-    }
-    if (KeyListener.keyPressed('Digit1')) {
-      if (Game.colorMode > 0) {
-        Game.colorMode--
-        console.log(Game.colorMode)
-      }
-    }
-
-    if (this.openEditor) {
-      this.editor.processInput();    
-    } else {
-      this.settings.processInput()
     }
   }
 
@@ -260,8 +272,11 @@ export default class Game extends Scene {
     if (!Statistics.visualisationHidden) {
       Statistics.startHidingGraphs = true
     }
+
     if (restart) {
       this.race.startRace()
+    } else {
+      Parkour.levels[Parkour.activeLevel].resetCamera()
     }
   }
 
@@ -271,7 +286,7 @@ export default class Game extends Scene {
     if (!Game.extinct) {
       this.updateLight();
     }
-
+    
     if ((this.race.ready && !this.race.finished) || !this.race.isRaceActive) {
       Parkour.levels[Parkour.activeLevel].time -= deltaTime
       if (Parkour.levels[Parkour.activeLevel].time <= 0) {
@@ -280,65 +295,64 @@ export default class Game extends Scene {
         })
       }
     }
-
+    
     Game.alivePlayers = Game.neat.players.filter(player => player.alive);
     Game.extinct = Game.alivePlayers.length === 0;
-
-
+    
     if (this.race.isRaceActive) {
       this.race.update(deltaTime)
       // if (this.race.endGameTimer <= 0) {
-      //   this.race = new Race(this.parkour, [])
-      // }
-    } else {
-      // Game.neat.players[0].calculateObstacleDistance(true)
-      if (!Game.extinct) {
-        if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.75 && !Parkour.levels[Parkour.activeLevel].finished) {
-          Parkour.levels[Parkour.activeLevel].finished = true
-        }
-        Game.alivePlayers.forEach((player) => {
-          player.mesh.position.copy(player.playerBody.position);
-          player.mesh.quaternion.copy(player.playerBody.quaternion);
-
-          this.parkour.checkCollision(player, Game.neat.players);
-          player.update(deltaTime, false);
-        });
-      }
-      else {
-        if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
-          Parkour.activeLevel++
-          Game.neat.setTrainedNetwork()
-          if (!Game.neat.usePretrainedNetwork) {
-            Game.neat.resetGeneration()
+        //   this.race = new Race(this.parkour, [])
+        // }
+      } else {
+        // Game.neat.players[0].calculateObstacleDistance(true)
+        if (!Game.extinct) {
+          if (Game.neat.players.filter(player => player.finished).length > Game.neat.neat.popsize * 0.75 && !Parkour.levels[Parkour.activeLevel].finished) {
+            Parkour.levels[Parkour.activeLevel].finished = true
           }
-          Game.neat.initializePopulation()
-
-          this.readyNextLevel = false
-          this.race.isRaceReady = false;
-          Statistics.averageScores = []
-          Statistics.highscores = []
-
-          if (this.updateCamera) {
-            const activeLevel = Parkour.levels[Parkour.activeLevel]
-            MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
-            MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
-            MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z);
-
-            // Synchronize yaw and pitch
-            const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
-            MainCanvas.yaw = euler.y;
-            MainCanvas.pitch = euler.x;
-          }
-        } else {
-          Game.neat.endGeneration();
+          Game.alivePlayers.forEach((player) => {
+            player.mesh.position.copy(player.playerBody.position);
+            player.mesh.quaternion.copy(player.playerBody.quaternion);
+            
+            this.parkour.checkCollision(player, Game.neat.players);
+            player.update(deltaTime, false);
+          });
         }
-        this.settings.update()
-        Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+        else {
+          if (Parkour.levels[Parkour.activeLevel].finished && this.readyNextLevel) {
+            Parkour.activeLevel++
+            Game.neat.setTrainedNetwork()
+            if (!Game.neat.usePretrainedNetwork) {
+              Game.neat.resetGeneration()
+            }
+            Game.neat.initializePopulation()
+            
+            this.readyNextLevel = false
+            this.race.isRaceReady = false;
+            Statistics.averageScores = []
+            Statistics.highscores = []
+            
+            if (this.updateCamera) {
+              const activeLevel = Parkour.levels[Parkour.activeLevel]
+              MainCanvas.camera.position.set(activeLevel.location.x - 60, activeLevel.location.y + 50, activeLevel.location.z);
+              MainCanvas.camera.position.add(new THREE.Vector3(activeLevel.addedCameraPosition.x, activeLevel.addedCameraPosition.y, activeLevel.addedCameraPosition.z))
+              MainCanvas.camera.rotation.set(activeLevel.cameraRotation.x, activeLevel.cameraRotation.y, activeLevel.cameraRotation.z);
+              // Synchronize yaw and pitch
+              const euler = new THREE.Euler().setFromQuaternion(MainCanvas.camera.quaternion, 'YXZ');
+              MainCanvas.yaw = euler.y;
+              MainCanvas.pitch = euler.x;
+            }
+          } else {
+            Game.neat.endGeneration();
+          }
+          this.settings.update()
+          Parkour.levels[Parkour.activeLevel].time = Parkour.levels[Parkour.activeLevel].maxTime
+        }
+        if (this.openEditor) {
+          this.editor.update(deltaTime);
+        }
       }
-      if (this.openEditor) {
-        this.editor.update(deltaTime);
-      }
-    }
+
     return this;
   }
 
@@ -364,103 +378,124 @@ export default class Game extends Scene {
 
   public override render(): void {
     MainCanvas.renderer.render(MainCanvas.scene, MainCanvas.camera);
+
+
     const canvas = GUI.getCanvas();
-    if (!this.settings.visible) {
-      if (this.clickEditor) {
-        GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
-      } else if (this.hoverEditor) {
-        GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.4, 10);
-      } else {
-        GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
-      }
-      GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
-    }
-    
-    GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}s`, canvas.width * 0.55 - (this.race.isRaceActive ? canvas.width * 0.08 : 0), canvas.height * 0.1, 'left', 'system-ui', 60, 'rgba(0, 0, 0, 1)', 100)
 
-    // make sure to only render the ui if all other menu's are closed
-    if (!this.race.isRaceActive) {
-      if (!this.settings.visible && !this.openEditor) {
-        GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.05 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-        GUI.writeText(canvas, `Level: ${Parkour.activeLevel + 1}`, canvas.width * 0.133 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-        GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
-        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
-        
-        if (Parkour.levels[Parkour.activeLevel].finished) {
-          GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
-          GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+    if (MainCanvas.introActive) {
+      const now = performance.now();
+      const period = 10000;
+      const time = (now % period) / period;
+      const swing = time < 0.5
+        ? 0.5 * (1 - Math.cos(Math.PI * time * 2))
+        : 0.5 * (1 - Math.cos(Math.PI * (2 - time * 2)));
+      const angle = -3 + 3 * swing;
+
+      GUI.writeText(canvas, 'ParkourAI', canvas.width * 0.08, canvas.height * 0.25, 'left', 'Calibri', 180, 'white', 400, angle);
+      GUI.writeText(canvas, 'Made by: Erik van den Broek', canvas.width * 0.15, canvas.height * 0.3, 'left', 'system-ui', 20, 'rgb(255, 255, 255, 0.4)');
+      GUI.fillRectangle(canvas, canvas.width * 0.68, 0, canvas.width * 0.32, canvas.height, 0, 0, 0, 0.2);
+      GUI.fillRectangle(canvas, canvas.width * 0.7, canvas.height * 0.04, canvas.width * 0.28, canvas.height * 0.6, 0, 0, 0, 0.2, 10);
+      GUI.fillRectangle(canvas, canvas.width * 0.65 + canvas.width * 0.19 - canvas.width * 0.05, canvas.height * 0.66, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 5);
+      GUI.writeText(canvas, 'Start game', canvas.width * 0.65 + canvas.width * 0.19, canvas.height * 0.695, 'center', 'system-ui', 25, 'white');
+      GUI.writeText(canvas, 'ParkourAI is a project i have been working on in my spare time. It is<br>a game where agents are able to traverse different parkour levels. <br>While doing this, they learn from one another and slowly improve <br>until they reach the finish line.<br><br>These agents learn because of a thing called a genetic algoritm. <br>Genetic algoritms are inspired by nature, meaning the agents learn <br>through the process of evolution. <br><br>Each player starts off with a brain (neural net), that converts things <br>they see to actions. Because of this, each player has different <br>strategies. This is also where the genetic algorithm comes in, which <br>causes only the best players to survive. When they survive, some of <br>the agents mutate slighty with the hope that they improve and get <br>further.', canvas.width * 0.71, canvas.height * 0.07, 'left', 'Calibri', 18, 'white')
+      GUI.writeText(canvas, "While the game is using fancy stuff, genetic algorithm using NEAT,<br>the main focus isn't the algorithm itself, it's you experimenting <br>with it. You can adjust parameters like mutation chance, mutation <br>strength, agent count and more.  It's not just about watching the AI <br>improve, the goal is to explore how these changes affect the learning <br>process in a fun, interactive way.", canvas.width * 0.71, canvas.height * 0.4, 'left', 'Calibri', 18, 'rgba(255, 255, 255, 0.3)')
+    } else {
+      if (!this.settings.visible) {
+        if (this.clickEditor) {
+          GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.2, 10);
+        } else if (this.hoverEditor) {
+          GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.4, 10);
         } else {
-          GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
-          GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+          GUI.fillRectangle(canvas, canvas.width * 0.9, canvas.height * 0.04, canvas.width * 0.08, canvas.height * 0.05, 255, 255, 255, 0.7, 10);
         }
-        
-      // race button, needs 84% of players completed instead of 75
-        const numPlayersNeeded = 0.84
-        GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
-        GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
-        if (Game.neat.usePretrainedNetwork || this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
-          this.race.isRaceReady = true;
-          GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
-          GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
-        } else {
+        GUI.writeText(canvas, 'Edit level', canvas.width * 0.9 + canvas.width * 0.04, canvas.height * 0.05 + canvas.height * 0.022, 'center', 'system-ui', 20, 'black')
+      }
+      
+      GUI.writeText(canvas, `${Math.round(Parkour.levels[Parkour.activeLevel].time * 100) / 100}s`, canvas.width * 0.55 - (this.race.isRaceActive ? canvas.width * 0.08 : 0), canvas.height * 0.1, 'left', 'system-ui', 60, 'rgba(0, 0, 0, 1)', 100)
+      
+      // make sure to only render the ui if all other menu's are closed
+      if (!this.race.isRaceActive) {
+        if (!this.settings.visible && !this.openEditor) {
+          GUI.writeText(canvas, `Generation: ${Game.neat.neat.generation}`, canvas.width * 0.05 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+          GUI.writeText(canvas, `Level: ${Parkour.activeLevel + 1}`, canvas.width * 0.133 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+          GUI.writeText(canvas, `Alive: ${Math.round(Game.alivePlayers.length / Game.neat.players.length * 1000) / 10}%`, canvas.width * 0.21 - Statistics.visualisationPosition, canvas.height * 0.065, 'center', 'system-ui', 20, 'white');
+          GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
+          
+          if (Parkour.levels[Parkour.activeLevel].finished) {
+            GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+            GUI.writeText(canvas, 'Next level', canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+          } else {
+            GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * 0.75), 1))
+            GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * 0.75)} players`, canvas.width * 0.31 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+          }
+          
+          // race button, needs 84% of players completed instead of 75
+          const numPlayersNeeded = 0.84
+          GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 10)
           GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
-          GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * numPlayersNeeded)} players`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+          if (Game.neat.usePretrainedNetwork || this.race.isRaceReady || (Game.neat.players.filter(player => player.finished).length) / (Math.floor(Game.neat.neat.popsize)) >= numPlayersNeeded) {
+            this.race.isRaceReady = true;
+            GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 200, 0.5, 10)
+            GUI.writeText(canvas, `Start race`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'black')
+          } else {
+            GUI.fillRectangle(canvas, canvas.width * 0.485 - Statistics.visualisationPosition, canvas.height * 0.929, (canvas.width * 0.1) * (Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1)), canvas.height * 0.05, 0, 0, 0, 0.2, 10 * Math.min(Game.neat.players.filter(player => player.finished).length / (Game.neat.neat.popsize * numPlayersNeeded), 1))
+            GUI.writeText(canvas, `${Game.neat.players.filter(player => player.finished).length} / ${Math.floor(Game.neat.neat.popsize * numPlayersNeeded)} players`, canvas.width * 0.535 - Statistics.visualisationPosition, canvas.height * 0.96, 'center', 'system-ui', 20, 'white')
+          }
+        }
+      
+      
+        
+        // the three buttons hide-ui, auto-progress and auto updating camera position
+        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+        GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+        GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
+        if (!Statistics.visualisationHidden) {
+          GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+        }
+        
+        
+        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+        GUI.drawRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+        GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.28 - Statistics.visualisationPosition, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
+        if (this.autoProgress) {
+          GUI.fillCircle(canvas, canvas.width * 0.2661 - Statistics.visualisationPosition, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
+        }
+        
+        GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
+        GUI.drawRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
+        GUI.writeText(canvas, 'Auto-update camera pos', canvas.width * 0.28 - Statistics.visualisationPosition, canvas.height * 0.868, 'left', 'system-ui', 15, 'black')
+        if (this.updateCamera) {
+          GUI.fillCircle(canvas, canvas.width * 0.2661 - Statistics.visualisationPosition, canvas.height * 0.863, canvas.height * 0.008, 0, 0, 0, 0.8)
+        }
+        
+        // the graphs and button for the graphs
+        this.statistics.chooseVisualisation()
+        if (!Game.extinct) {
+          const bestPlayer = Game.neat.players[0]
+          this.statistics.renderOutput(bestPlayer);
+        }
+        
+        // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
+        if (this.openEditor) { 
+          this.editor.render(canvas)
+        } else {
+          this.settings.render(canvas, this.statistics)
+        }
+        
+        // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
+        
+        if (Game.neat.usePretrainedNetwork) {
+          GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
+          GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+        } else {
+          GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
+          GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
         }
       }
-
-
       
-      // the three buttons hide-ui, auto-progress and auto updating camera position
-
-      GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-      GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-      GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
-      if (!Statistics.visualisationHidden) {
-        GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+      if (this.race.isRaceActive) {
+        this.race.render(canvas)
       }
-      
-      
-      GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-      GUI.drawRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.89, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-      GUI.writeText(canvas, 'Auto-progress', canvas.width * 0.28 - Statistics.visualisationPosition, canvas.height * 0.909, 'left', 'system-ui', 15, 'black')
-      if (this.autoProgress) {
-        GUI.fillCircle(canvas, canvas.width * 0.2661 - Statistics.visualisationPosition, canvas.height * 0.9025, canvas.height * 0.008, 0, 0, 0, 0.8)
-      }
-      
-      GUI.fillRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.4, 8)
-      GUI.drawRectangle(canvas, canvas.width * 0.26 - Statistics.visualisationPosition, canvas.height * 0.85, canvas.width * 0.012, canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-      GUI.writeText(canvas, 'Auto-update camera pos', canvas.width * 0.28 - Statistics.visualisationPosition, canvas.height * 0.868, 'left', 'system-ui', 15, 'black')
-      if (this.updateCamera) {
-        GUI.fillCircle(canvas, canvas.width * 0.2661 - Statistics.visualisationPosition, canvas.height * 0.863, canvas.height * 0.008, 0, 0, 0, 0.8)
-      }
-
-      // the graphs and button for the graphs
-      this.statistics.chooseVisualisation()
-      if (!Game.extinct) {
-        const bestPlayer = Game.neat.players[0]
-        this.statistics.renderOutput(bestPlayer);
-      }
-      
-      // GUI.writeText(canvas, `Color mode ${Game.colorMode.toString()}`, canvas.width * 0.5, canvas.height * 0.07, 'center', 'system-ui', 14, 'black');
-      if (this.openEditor) { 
-      this.editor.render(canvas)
-      } else {
-        this.settings.render(canvas, this.statistics)
-      }
-
-      // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
-
-      if (Game.neat.usePretrainedNetwork) {
-        GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
-        GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
-      } else {
-        GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
-        GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
-      }
-    }
-
-    if (this.race.isRaceActive) {
-      this.race.render(canvas)
     }
   }
 }

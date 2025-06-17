@@ -115,6 +115,11 @@ export default class Level {
     }
   }
 
+  public resetCamera() {
+    MainCanvas.camera.position.set(this.location.x - 60, this.location.y + 50, this.location.z);
+    MainCanvas.camera.rotation.set(this.cameraRotation.x, this.cameraRotation.y, this.cameraRotation.z)
+  }
+
   /**
   * Adds the level meshes to the scene
   * 
