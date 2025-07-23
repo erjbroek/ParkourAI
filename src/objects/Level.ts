@@ -8,8 +8,6 @@ import Foliage from './Foliage.js';
 import Game from '../scenes/Game.js';
 import { Network } from 'neataptic';
 
-
-
 export default class Level {
   public pieces: Obstacle[] = [];
   
@@ -87,10 +85,13 @@ export default class Level {
     pieces.forEach((piece, idx) => {
       const [mesh, posX, posY, posZ, rotationX = 0, rotationY = 0, rotationZ = 0] = piece;
       const obstacle = this.createObstacle(mesh, posX + this.location.x, posY + this.location.y, posZ + this.location.z, rotationX, rotationY, rotationZ);
+      if (idx == 1) {
+        console.log(obstacle)
+      }
       if (idx !== pieces.length - 1) {
-      this.pieces.push(obstacle);
+        this.pieces.push(obstacle);
       } else {
-      this.finishLine = obstacle;
+        this.finishLine = obstacle;
       }
     });
     this.spawnPoint = spawnpoint.clone().add(this.location);

@@ -70,10 +70,6 @@ export default class MainCanvas {
 
   public static composer: EffectComposer;
 
-  public vBlur: ShaderPass;
-
-  public hBlur: ShaderPass;
-
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     // MainCanvas.camera.position.set(5, 18, 45);
@@ -126,8 +122,6 @@ export default class MainCanvas {
     Game.neat.switchNetwork()
     Game.neat.usePretrainedNetwork = true;
     Game.neat.initializePopulation();
-    this.hBlur.enabled = true;
-    this.vBlur.enabled = true;
   }
 
   public endIntro() {
@@ -138,17 +132,13 @@ export default class MainCanvas {
       player.killPlayer()
     })
 
-    // this.hBlur.enabled = false;
-    // this.vBlur.enabled = false;
-
     const introPlane = (MainCanvas as any)._introPlane;
     if (introPlane) {
       MainCanvas.camera.remove(introPlane);
       (MainCanvas as any)._introPlane = undefined;
     }
-    // this.activeScene = new Game()
-    // this.activeScene.parkour = new Parkour()
-    Parkour.activeLevel = 0
+
+    // Parkour.activeLevel = 10
     Game.neat.usePretrainedNetwork = false;
     Game.neat.setTrainedNetwork()
     if (!Game.neat.usePretrainedNetwork) {
@@ -165,7 +155,6 @@ export default class MainCanvas {
       MainCanvas.yaw = euler.y;
       MainCanvas.pitch = euler.x;
     }
-    // Parkour.activeLevel = 0;
   }
 
   /*
@@ -207,6 +196,8 @@ export default class MainCanvas {
       if (MainCanvas.clickedStartGame) {
         this.endIntro();
       }
+      // console.log(`Position: ${MainCanvas.camera.position.x}, ${MainCanvas.camera.position.y}, ${MainCanvas.camera.position.z}`)
+      // console.log(`Rotation: ${MainCanvas.camera.rotation.x}, ${MainCanvas.camera.rotation.y}, ${MainCanvas.camera.rotation.z}`)
 
       if (KeyListener.keyPressed('KeyP')) {
         this.pauzed = !this.pauzed;

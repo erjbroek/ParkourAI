@@ -13,11 +13,12 @@ import NeatManager from '../utilities/NeatManager.js';
 import Island from './Island.js';
 import Foliage from './Foliage.js';
 import Water from './Water.js';
+import * as CANNON from 'cannon-es';
 
 export default class Parkour {
   public static levels: Level[] = []
 
-  public static activeLevel: number = 6;
+  public static activeLevel: number = 0;
 
   public static addedParkour: Obstacle[][] = [[]];
 
@@ -259,8 +260,6 @@ export default class Parkour {
       [ParkourPieces.startingPlatform, 58, -2, -40],
       [ParkourPieces.long3, 34, -2, -40, Math.PI / 2, Math.PI / 2],
       [ParkourPieces.long3, 14, -2, -40, Math.PI / 2, Math.PI / 2],
-      // [ParkourPieces.normal2, 32, -2, -40],
-      // [ParkourPieces.normal2, 16, -2, -40],
       [ParkourPieces.normal2, 0, -2, -40],
       [ParkourPieces.normal2, 0, -2, -56],
       [ParkourPieces.normal2, 0, -2, -72],
@@ -309,6 +308,118 @@ export default class Parkour {
       new Foliage('bushgroup', new THREE.Vector3(-14, 33, -120), 10, 5, 24),
     ]
     Parkour.levels.push(new Level(9, obstacles, islands, foliage, new THREE.Vector3(58, 0, -40), 40))
+
+    // Distance between jumps changed from 15 to 12
+    obstacles = [
+      [ParkourPieces.startingPlatform, 58, -2, -40],
+      // [ParkourPieces.normal2, 46, -2, -40],
+      [ParkourPieces.normal2, 34, -2, -40],
+      [ParkourPieces.normal2, 34, -2, -52],
+      [ParkourPieces.normal2, 34, -2, -64],
+      [ParkourPieces.normal2, 46, 1.5, -64],
+      [ParkourPieces.normal2, 58, 5, -64],
+      [ParkourPieces.normal2, 58, 8.5, -52],
+      [ParkourPieces.normal2, 58, 12, -40],
+      [ParkourPieces.normal2, 46, 15.5, -40],
+      [ParkourPieces.normal2, 34, 19, -40],
+      [ParkourPieces.normal2, 34, 22.5, -52],
+      [ParkourPieces.normal2, 34, 26, -64],
+      [ParkourPieces.normal2, 46, 29.5, -64],
+      [ParkourPieces.normal2, 58, 33, -64],
+      [ParkourPieces.normal2, 58, 36.5, -52],
+      [ParkourPieces.normal2, 58, 40, -40],
+      [ParkourPieces.normal2, 46, 43.5, -40],
+      [ParkourPieces.normal2, 34, 47, -40],
+      [ParkourPieces.normal2, 34, 50.5, -52],
+      [ParkourPieces.normal2, 34, 54, -64],
+      [ParkourPieces.normal2, 46, 57.5, -64],
+      [ParkourPieces.normal2, 58, 61, -64],
+      [ParkourPieces.normal2, 58, 64.5, -52],
+      [ParkourPieces.normal2, 58, 68, -40],
+      [ParkourPieces.normal2, 46, 71.5, -40],
+      [ParkourPieces.normal2, 34, 75, -40],
+      [ParkourPieces.normal2, 34, 78.5, -52],
+      [ParkourPieces.normal2, 34, 82, -64],
+      [ParkourPieces.normal2, 34, 82, -78],
+      [ParkourPieces.normal2, 34, 82, -92],
+      [ParkourPieces.long2, 34, 82, -106],
+      [ParkourPieces.long2, 34, 82, -126],
+      [ParkourPieces.long2, 34, 82, -146],
+      [ParkourPieces.normal2, 34, 82, -160],
+      [ParkourPieces.long2, 20, 82, -160, 0, Math.PI / 2],
+      [ParkourPieces.long2, 0, 82, -160, 0, Math.PI / 2],
+      [ParkourPieces.normal2, -14, 82, -160],
+      [ParkourPieces.long1, -26, 82, -160],
+      [ParkourPieces.long1, -34, 86, -160],
+      [ParkourPieces.long1, -26, 90, -160],
+      [ParkourPieces.long1, -34, 94, -160],
+      [ParkourPieces.long1, -26, 98, -160],
+      [ParkourPieces.long1, -34, 102, -160],
+      [ParkourPieces.long1, -26, 106, -160],
+      [ParkourPieces.long1, -34, 110, -160],
+      [ParkourPieces.long1, -26, 114, -160],
+      [ParkourPieces.normal2, -14, 114, -160],
+      [ParkourPieces.long2, 0, 114, -160, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 14, 114, -160, 0, Math.PI / 2],
+      [ParkourPieces.normal2, 14, 114, -144, 0, Math.PI / 2],
+      [ParkourPieces.normal1, 14, 117, -132],
+      [ParkourPieces.normal1, 14, 119.5, -122],
+      [ParkourPieces.normal1, 14, 122, -112],
+      [ParkourPieces.normal1, 14, 124.5, -102],
+      [ParkourPieces.normal1, 14, 127, -92],
+      [ParkourPieces.normal1, 14, 129.5, -82],
+      [ParkourPieces.normal1, 14, 132, -72],
+      [ParkourPieces.normal1, 14, 134.5, -62],
+      [ParkourPieces.normal2, 14, 137.5, -50],
+      [ParkourPieces.normal2, 26, 139, -50],
+      [ParkourPieces.normal2, 26, 141, -38],
+      [ParkourPieces.normal2, 14, 143, -38],
+      [ParkourPieces.normal2, 2, 146.5, -38],
+      [ParkourPieces.normal2, -10, 150, -38],
+      [ParkourPieces.normal2, -10, 153.5, -48],
+      [ParkourPieces.normal2, -10, 157, -60],
+      [ParkourPieces.normal2, 2, 160.5, -60],
+      [ParkourPieces.normal2, 14, 164, -60],
+      [ParkourPieces.normal2, 14, 167.5, -48],
+      [ParkourPieces.normal2, 14, 171, -38],
+      [ParkourPieces.normal2, 2, 174.5, -38],
+      [ParkourPieces.normal2, -10, 178, -38],
+      [ParkourPieces.normal2, -22, 178, -38],
+      [ParkourPieces.normal2, -34, 178, -38],
+      [ParkourPieces.normal2, -46, 178, -38],
+      [ParkourPieces.normal2, -58, 178, -38],
+      [ParkourPieces.normal2, -70, 178, -38],
+      [ParkourPieces.long1, -80, 182, -38],
+      [ParkourPieces.long1, -72, 186, -38],
+      [ParkourPieces.long1, -80, 190, -38],
+      [ParkourPieces.long1, -72, 194, -38],
+      [ParkourPieces.long1, -80, 198, -38],
+      [ParkourPieces.long1, -72, 202, -38],
+      [ParkourPieces.long1, -80, 206, -38],
+      [ParkourPieces.long1, -72, 210, -38],
+      [ParkourPieces.long1, -80, 214, -38],
+      [ParkourPieces.long1, -72, 218, -38],
+      [ParkourPieces.long1, -80, 222, -38],
+      [ParkourPieces.long1, -72, 226, -38],
+      [ParkourPieces.long1, -80, 230, -38],
+      [ParkourPieces.long1, -72, 234, -38],
+      [ParkourPieces.long1, -64, 238, -38],
+      [ParkourPieces.long1, -56, 238, -38],
+      [ParkourPieces.long2, -40, 238, -38, 0, Math.PI / 2],
+      [ParkourPieces.long1, -22, 241, -38, 0, Math.PI / 2],
+      [ParkourPieces.long1, -8, 244, -38, 0, Math.PI / 2],
+      [ParkourPieces.long1, 6, 247, -38, 0, Math.PI / 2],
+      [ParkourPieces.long3, 22, 246.5, -38, 0, Math.PI / 2],
+      [ParkourPieces.platform, 42, 247, -38, 0, Math.PI / 2],
+      [ParkourPieces.checkPoint, 32, 253.5, -38, 0, Math.PI / 2],
+    ];
+    islands = [
+      new Island(new THREE.Vector3(58, -3, -40), new THREE.Vector3(24.1, 10, 16.1)),
+    ];
+    foliage = [];
+
+    Parkour.levels.push(new Level(10, obstacles, islands, foliage, new THREE.Vector3(50, 0, -40), 130, new THREE.Vector3(-60, 140, 100), new THREE.Vector3(-0.2326268335272262, -0.5865329289962137, -0.13038356028309644)))
+
     for(let i = 0; i < Parkour.levels.length; i++) {
       Parkour.levels[i].renderParkour()
     }
@@ -328,11 +439,11 @@ export default class Parkour {
     let foundObject: { index: number; object: Obstacle } | null = { index: null, object: null };
     let current: Obstacle = null;
     let next: Obstacle = null;
-
+    
     const activeLevel: Level = Parkour.levels[Parkour.activeLevel]
     const activeIndex: number = Parkour.levels.indexOf(activeLevel)
     const collidingFinishline = activeLevel.finishLine.boundingBox.intersectsBox(player.boundingBox)
-
+  
     // if the player finishes:
     // - the player finished flag gets sets to true (used to track the percentage of finished players)
     // - the mesh gets updated and becomes green to indicate player has reached it

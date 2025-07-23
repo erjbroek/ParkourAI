@@ -58,26 +58,26 @@ export default class Obstacle {
     const size = this.boundingBox.getSize(new THREE.Vector3());
 
     this.platformBody = new CANNON.Body({
-        mass: 0,
-        shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2)),
-        position: new CANNON.Vec3(posX, posY, posZ),
-        material: Obstacle.material,
-        collisionFilterGroup: OBSTACLE_GROUP, // Obstacle belongs to OBSTACLE_GROUP
-        collisionFilterMask: PLAYER_GROUP, // Obstacle can collide with PLAYER_GROUP
-      });
+      mass: 0,
+      shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 2, size.z / 2)),
+      position: new CANNON.Vec3(posX, posY, posZ),
+      material: Obstacle.material,
+      collisionFilterGroup: OBSTACLE_GROUP, // Obstacle belongs to OBSTACLE_GROUP
+      collisionFilterMask: PLAYER_GROUP, // Obstacle can collide with PLAYER_GROUP
+    });
 
-      // makes sure physics object is synchronised with the mesh
-      this.mesh.addEventListener('change', () => {
-        this.platformBody.position.copy(new CANNON.Vec3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z));
-        this.platformBody.quaternion.copy(new CANNON.Quaternion(this.mesh.quaternion.x, this.mesh.quaternion.y, this.mesh.quaternion.z, this.mesh.quaternion.w));
-      });
+    // makes sure physics object is synchronised with the mesh
+    this.mesh.addEventListener('change', () => {
+      this.platformBody.position.copy(new CANNON.Vec3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z));
+      this.platformBody.quaternion.copy(new CANNON.Quaternion(this.mesh.quaternion.x, this.mesh.quaternion.y, this.mesh.quaternion.z, this.mesh.quaternion.w));
+    });
       
-      // turns off physics collision if its a checkpoint
-      if (mesh.geometry !== ParkourPieces.checkPoint.geometry) {
-        MainCanvas.world.addBody(this.platformBody);
-      } else {
-        this.isCheckpoint = true;
-      }
+    // turns off physics collision if its a checkpoint
+    if (mesh.geometry !== ParkourPieces.checkPoint.geometry) {
+      MainCanvas.world.addBody(this.platformBody);
+    } else {
+      this.isCheckpoint = true;
+    }
   }
 
   /**

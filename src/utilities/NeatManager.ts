@@ -16,6 +16,7 @@ import jsonLevel6 from '../../public/jsonProgress/level6finished.json';
 import jsonLevel7 from '../../public/jsonProgress/level7finished.json';
 import jsonLevel8 from '../../public/jsonProgress/level8finished.json';
 import jsonLevel9 from '../../public/jsonProgress/level9finished.json';
+import jsonLevel10 from '../../public/jsonProgress/level10finished.json';
 import Parkour from '../objects/Parkour.js';
 
 
@@ -71,7 +72,8 @@ export default class NeatManager {
       jsonLevel6,
       jsonLevel7,
       jsonLevel8,
-      jsonLevel9
+      jsonLevel9,
+      jsonLevel10,
     ];
 
     this.neat.population.forEach((network: any, index: number) => {

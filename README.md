@@ -19,8 +19,8 @@ to find the best balance between complexity and efficiency.
 
 future plans:
 
-- after race ends, move camera back to previous position
 - add a true final level
+- find out what is missing in the intro scene
 - display names of level
 - add proper button for showing visualisations
 - remove code duplication in race text rendering

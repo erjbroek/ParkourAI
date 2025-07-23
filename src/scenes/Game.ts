@@ -84,15 +84,16 @@ export default class Game extends Scene {
     MainCanvas.scene.add(this.water);
 
     this.sun = new THREE.Vector3();
-    this.sky = new Sky()
-    this.sky.scale.setScalar(10000)
+    this.sky = new Sky();
+    this.sky.scale.setScalar(2000)
+    this.sky.rotation.z = Math.PI;
     MainCanvas.scene.add(this.sky)
 
     const skyUniforms = this.sky.material.uniforms;
-    skyUniforms[ 'turbidity' ].value = 10;
-    skyUniforms[ 'rayleigh' ].value = 2;
-    skyUniforms[ 'mieCoefficient' ].value = 0.005;
-    skyUniforms[ 'mieDirectionalG' ].value = 0.8;
+    skyUniforms[ 'turbidity' ].value = 0.2;
+    skyUniforms[ 'rayleigh' ].value = 0.05;
+    skyUniforms[ 'mieCoefficient' ].value = 0.045;
+    skyUniforms[ 'mieDirectionalG' ].value = 0.7;
     this.updateSun();
 
     Game.neat = new NeatManager()
@@ -116,8 +117,8 @@ export default class Game extends Scene {
 
   public updateSun() {
     const parameters = {
-      elevation: 0.2,
-      azimuth: 130
+      elevation: 30,
+      azimuth: 130,
     };
     let renderTarget;
     const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
@@ -131,6 +132,7 @@ export default class Game extends Scene {
 
     this.sceneEnv.add( this.sky );
     renderTarget = this.pmremGenerator.fromScene( this.sceneEnv );
+
     MainCanvas.scene.add( this.sky );
 
     MainCanvas.scene.environment = renderTarget.texture;
