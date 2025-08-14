@@ -1,15 +1,9 @@
 import * as THREE from "three";
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { HorizontalBlurShader } from 'three/examples/jsm/shaders/HorizontalBlurShader';
-import { VerticalBlurShader } from 'three/examples/jsm/shaders/VerticalBlurShader';
 import * as CANNON from "cannon-es";
 import Game from "../scenes/Game.js";
 import GUI from "../utilities/GUI.js";
 import MouseListener from "../utilities/MouseListener.js";
 import UICollision from "../utilities/UICollision.js";
-import { FlyControls } from 'three/examples/jsm/controls/FlyControls';
 import KeyListener from '../utilities/KeyListener.js';
 import Edit from '../scenes/Edit.js';
 import Stats from 'stats.js'
@@ -46,8 +40,6 @@ export default class MainCanvas {
 
   private cameraSpeed: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
 
-  public static flyControls: FlyControls = new FlyControls(MainCanvas.camera, MainCanvas.renderer.domElement);
-
   public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);
 
   public static yaw: number = 0;
@@ -70,8 +62,6 @@ export default class MainCanvas {
 
   public static clickedStartGame: boolean = false;
 
-  public static composer: EffectComposer;
-
   public constructor() {
     MainCanvas.scene.background = new THREE.Color(0xaaddff);
     // MainCanvas.camera.position.set(5, 18, 45);
@@ -92,9 +82,6 @@ export default class MainCanvas {
     GUI.setCanvas(canvas);
     MainCanvas.canvas = GUI.getCanvas();
 
-    MainCanvas.flyControls.movementSpeed = 0;
-    MainCanvas.flyControls.rollSpeed = 0;
-    MainCanvas.flyControls.dragToLook = false;
     window.addEventListener("mousedown", () => this.onMouseDown(), false);
     window.addEventListener("mouseup", () => this.onMouseUp(), false);
 
@@ -222,11 +209,7 @@ export default class MainCanvas {
       }
 
       if (!MainCanvas.introActive) {
-
         this.updateCamera(deltaTime)
-
-        // Always update controls, even when paused
-        MainCanvas.flyControls.update(deltaTime);
       }
 
       // Render the GUI and the active scene
@@ -371,7 +354,5 @@ export default class MainCanvas {
     if (KeyListener.isKeyDown('KeyD')) {
       MainCanvas.camera.position.add(right.clone().multiplyScalar(moveSpeed));
     }
-
-    MainCanvas.flyControls.update(deltaTime);
   }
 }

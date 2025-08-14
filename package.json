@@ -7,6 +7,13 @@
   },
   "devDependencies": {
     "@types/three": "^0.167.1",
-    "vite": "^5.4.3"
+    "gh-pages": "^6.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^5.4.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "deploy": "gh-pages -d dist"
   }
 }
