@@ -10,6 +10,7 @@ import ParkourPieces from "../objects/ParkourPieces.js";
 import Player from "../objects/Player.js";
 import KeyListener from '../utilities/KeyListener.js';
 import { InfiniteGridHelper } from "../InfiniteGridHelper.js"; // Import the InfiniteGridHelper
+import Level from '../objects/Level.js';
 
 
 export default class Edit {
@@ -55,8 +56,7 @@ export default class Edit {
     if (MouseListener.isButtonDown(0)) {
       for (let i = 0; i < 4; i++) {
         // if mouse collides with selected object
-        if (MouseListener.x2 >= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i && MouseListener.x2 <= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i + window.innerWidth * 0.09 && MouseListener.y2 >= window.innerHeight * 0.8 && MouseListener.y2 <= window.innerHeight * 0.8 + window.innerHeight * 0.16
-        ) {
+        if (MouseListener.x2 >= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i && MouseListener.x2 <= window.innerWidth * 0.02 + window.innerWidth * 0.1 * i + window.innerWidth * 0.09 && MouseListener.y2 >= window.innerHeight * 0.8 && MouseListener.y2 <= window.innerHeight * 0.8 + window.innerHeight * 0.16) {
           if (!this.confirmedAdded) {
             this.removeObstacle()
           }
@@ -112,6 +112,8 @@ export default class Edit {
       MainCanvas.scene.add(this.mesh);
       this.transformControls.attach(mesh);
     }
+    const activeLevel: THREE.Vector3 = Parkour.levels[Parkour.activeLevel].location
+    this.mesh.position.add(new THREE.Vector3(activeLevel.x, activeLevel.y, activeLevel.z))
     
     // Creates obstacle class from mesh
     // here, physics body is automatically added

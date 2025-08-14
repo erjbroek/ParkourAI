@@ -1,36 +1,58 @@
-﻿# ParkourAI
-(project not finished yet, so for now the readme will just show the current progress from newest to oldest)
-![image](https://github.com/user-attachments/assets/d5050467-a790-4927-aaaa-63aaabd5bdae)
+﻿![Static Badge](https://img.shields.io/badge/npm-v10.9.2-blue)
+![GitHub last commit](https://img.shields.io/github/last-commit/erjbroek/parkourAI)
+![Three.js](https://img.shields.io/badge/made%20with-Three.js-red)
+# ParkourAI
+### A TypeScript 3D parkour game using Three.js and NEAT to teach agents
 
-![image](https://github.com/user-attachments/assets/e297d31b-c543-4197-9b88-6e3b8b2fd2e9)
-![image](https://github.com/user-attachments/assets/2bd18bb6-e5a6-487f-8ab6-49eca426501d)
 
-![gif_parkour](https://github.com/user-attachments/assets/f8fd1075-7acd-413f-8540-fc97ffe4ca21)
-![image](https://github.com/user-attachments/assets/7eb102e4-6463-4160-9ab2-1d88e1fd6c4d)
+ParkourAI is a project that explores how agents can learn and adapt in a 3D ([Three.js](https://threejs.org/)) environment. The agents start with simple neural networks and, over multiple generations, slowly learn to navigate increasingly complex obstacles and complete levels more efficiently. 
 
-<br>
+Normally, a neural network’s structure is chosen by a human, and the connection weights are learned through training. This can require a lot of trial and error to find a good setup.This project however uses [NEAT](https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies) (Neuroevolution of augmenting topologies). NEAT is different from choosing the network: it evolves both the network’s structure and its weights at the same time. This means it can automatically find an effective network topology while learning the best connection values.The goal is to see how agents can learn and adapt to the environment on their own, without being directly programmed to solve the course. As a result, agents can learn to complete many different parkour courses.
 
-## progress:
-implemented neural network, which structure mutates and evolves over time,
-to find the best balance between complexity and efficiency.
+
+![Parkour Demo](assets/parkour.gif)
 
 
 
 
-future plans:
 
-- add a true final level
-- find out what is missing in the intro scene
-- display names of level
-- add proper button for showing visualisations
-- remove code duplication in race text rendering
-- increase player gravity a bit when falling 
-- proper intro screen
-- manually select the level you want to do on the screen
-- change design of robots, to not be square. maybe a face is sufficient. Rotating the meshes in the movement direction could also help with this.
 
-- maybe there is some way i can use actual grass. shaders, idk dont know much about them?
-- redesign jump platforms
-- change fitness calculation to also be related to speed (divided by amount of seconds for example)
-- update fontsize based on screensize
+## Features
 
+**Race the agents** - You can race the agents once they complete a level, to see if you can beat them.
+**Custom Levels** - Create your own parkour courses.  
+**Adaptive Learning** - Agents improve over generations automatically.  
+**Configurable NEAT** - Change mutation rate, strength, population size, and elitism percentage.  
+**Neuroevolution Steps** - Initialization → Simulation → Evaluation → Selection → Mutation (repeats continuously).  
+**Advanced Mutations** - Mutations can add hidden layers, recurrent connections, extra neurons between layers, change weights and more.  
+**Visual Feedback** - Watch agents learn in real-time.  
+**Saving generations** - Agent networks can be downloaded as json, which can be used
+
+
+<br></br>
+## Installation
+
+**Clone the repository:**
+```bash
+git clone https://github.com/erjbroek/ParkourAI
+cd parkour-ai
+```
+
+**Install dependencies:**
+```bash
+npm install
+```
+> `neataptic` is included in the dependencies, so no separate install is needed.
+
+<br></br>
+
+## Running the Game
+
+This project uses [Vite](https://vitejs.dev/) for development.
+
+**Start the local server:**
+```bash
+npx vite
+```
+
+Then open the printed `localhost` address in your browser.

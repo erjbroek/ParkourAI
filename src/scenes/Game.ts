@@ -91,7 +91,7 @@ export default class Game extends Scene {
 
     const skyUniforms = this.sky.material.uniforms;
     skyUniforms[ 'turbidity' ].value = 0.2;
-    skyUniforms[ 'rayleigh' ].value = 0.05;
+    skyUniforms[ 'rayleigh' ].value = 0.1;
     skyUniforms[ 'mieCoefficient' ].value = 0.045;
     skyUniforms[ 'mieDirectionalG' ].value = 0.7;
     this.updateSun();
@@ -117,7 +117,7 @@ export default class Game extends Scene {
 
   public updateSun() {
     const parameters = {
-      elevation: 30,
+      elevation: 70,
       azimuth: 130,
     };
     let renderTarget;
@@ -129,12 +129,9 @@ export default class Game extends Scene {
     this.water.material.uniforms[ 'sunDirection' ].value.copy( this.sun ).normalize();
 
     if ( renderTarget !== undefined ) renderTarget.dispose();
-
     this.sceneEnv.add( this.sky );
     renderTarget = this.pmremGenerator.fromScene( this.sceneEnv );
-
     MainCanvas.scene.add( this.sky );
-
     MainCanvas.scene.environment = renderTarget.texture;
   }
 
@@ -143,15 +140,14 @@ export default class Game extends Scene {
    */
   public override processInput(deltaTime: number): void {
     if (MainCanvas.introActive) {
-      if (UICollision.checkCollision(MainCanvas.canvas.width * 0.65 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.66, MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05)) {
-        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.6 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.66, MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05, 0, 0, 0, 0.1, 5)
+      if (UICollision.checkCollision(MainCanvas.canvas.width * 0.65 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.71, MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05)) {
+        GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.6 + MainCanvas.canvas.width * 0.19 - MainCanvas.canvas.width * 0.05, MainCanvas.canvas.height * 0.71 , MainCanvas.canvas.width * 0.1, MainCanvas.canvas.height * 0.05, 0, 0, 0, 0.1, 5)
         if (MouseListener.isButtonDown(0)) {
           MainCanvas.clickedStartGame = true;
         }
       }
     } else {
       this.statistics.procesInput()
-      
       // save current generation to json
       if (KeyListener.keyPressed('Delete')) {
         Game.neat.players.forEach((player) => {
@@ -391,16 +387,16 @@ export default class Game extends Scene {
       const swing = time < 0.5
         ? 0.5 * (1 - Math.cos(Math.PI * time * 2))
         : 0.5 * (1 - Math.cos(Math.PI * (2 - time * 2)));
-      const angle = -3 + 3 * swing;
+      const angle = -4 + 4 * swing;
 
-      GUI.writeText(canvas, 'ParkourAI', canvas.width * 0.08, canvas.height * 0.25, 'left', 'Calibri', 180, 'white', 400, angle);
-      GUI.writeText(canvas, 'Made by: Erik van den Broek', canvas.width * 0.15, canvas.height * 0.3, 'left', 'system-ui', 20, 'rgb(255, 255, 255, 0.4)');
+      GUI.writeText(canvas, 'ParkourAI', canvas.width * 0.08, canvas.height * 0.35, 'left', 'Calibri', 220 * (canvas.width * 0.0005), 'white', 400, angle);
+      GUI.writeText(canvas, 'Made by: Erik van den Broek', canvas.width * 0.04, canvas.height * 0.94, 'left', 'system-ui', 20, 'rgb(255, 255, 255, 0.8)');
       GUI.fillRectangle(canvas, canvas.width * 0.68, 0, canvas.width * 0.32, canvas.height, 0, 0, 0, 0.2);
-      GUI.fillRectangle(canvas, canvas.width * 0.7, canvas.height * 0.04, canvas.width * 0.28, canvas.height * 0.6, 0, 0, 0, 0.2, 10);
-      GUI.fillRectangle(canvas, canvas.width * 0.65 + canvas.width * 0.19 - canvas.width * 0.05, canvas.height * 0.66, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 5);
-      GUI.writeText(canvas, 'Start game', canvas.width * 0.65 + canvas.width * 0.19, canvas.height * 0.695, 'center', 'system-ui', 25, 'white');
-      GUI.writeText(canvas, 'ParkourAI is a project i have been working on in my spare time. It is<br>a game where agents are able to traverse different parkour levels. <br>While doing this, they learn from one another and slowly improve <br>until they reach the finish line.<br><br>These agents learn because of a thing called a genetic algoritm. <br>Genetic algoritms are inspired by nature, meaning the agents learn <br>through the process of evolution. <br><br>Each player starts off with a brain (neural net), that converts things <br>they see to actions. Because of this, each player has different <br>strategies. This is also where the genetic algorithm comes in, which <br>causes only the best players to survive. When they survive, some of <br>the agents mutate slighty with the hope that they improve and get <br>further.', canvas.width * 0.71, canvas.height * 0.07, 'left', 'Calibri', 18, 'white')
-      GUI.writeText(canvas, "While the game is using fancy stuff, genetic algorithm using NEAT,<br>the main focus isn't the algorithm itself, it's you experimenting <br>with it. You can adjust parameters like mutation chance, mutation <br>strength, agent count and more.  It's not just about watching the AI <br>improve, the goal is to explore how these changes affect the learning <br>process in a fun, interactive way.", canvas.width * 0.71, canvas.height * 0.4, 'left', 'Calibri', 18, 'rgba(255, 255, 255, 0.3)')
+      GUI.fillRectangle(canvas, canvas.width * 0.7, canvas.height * 0.09, canvas.width * 0.28, canvas.height * 0.6, 0, 0, 0, 0.2, 10);
+      GUI.fillRectangle(canvas, canvas.width * 0.65 + canvas.width * 0.19 - canvas.width * 0.05, canvas.height * 0.71, canvas.width * 0.1, canvas.height * 0.05, 0, 0, 0, 0.2, 5);
+      GUI.writeText(canvas, 'Start game', canvas.width * 0.65 + canvas.width * 0.19, canvas.height * 0.745, 'center', 'system-ui', 25, 'white');
+      GUI.writeText(canvas, 'ParkourAI is a project i have been working on in my spare time. It is<br>a game where agents are able to traverse different parkour levels. <br>While doing this, they learn from one another and slowly improve <br>until they reach the finish line.<br><br>These agents learn because of a thing called a genetic algoritm. <br>Genetic algoritms are inspired by nature, meaning the agents learn <br>through the process of evolution. <br><br>Each player starts off with a brain (neural net), that converts things <br>they see to actions. Because of this, each player has different <br>strategies. This is also where the genetic algorithm comes in, which <br>causes only the best players to survive. When they survive, some of <br>the agents mutate slighty with the hope that they improve and get <br>further.', canvas.width * 0.71, canvas.height * 0.12, 'left', 'Calibri', 18, 'white')
+      GUI.writeText(canvas, "While the game is using fancy stuff, genetic algorithm using NEAT,<br>the main focus isn't the algorithm itself, it's you experimenting <br>with it. You can adjust parameters like mutation chance, mutation <br>strength, agent count and more.  It's not just about watching the AI <br>improve, the goal is to explore how these changes affect the learning <br>process in a fun, interactive way.", canvas.width * 0.71, canvas.height * 0.45, 'left', 'Calibri', 18, 'rgba(255, 255, 255, 0.3)')
     } else {
       if (!this.settings.visible) {
         if (this.clickEditor) {
@@ -450,9 +446,11 @@ export default class Game extends Scene {
         // the three buttons hide-ui, auto-progress and auto updating camera position
         GUI.fillRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.4, 8)
         GUI.drawRectangle(MainCanvas.canvas, MainCanvas.canvas.width * 0.26 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.81, MainCanvas.canvas.width * 0.012, MainCanvas.canvas.height * 0.025, 100, 100, 100, 0.55, 3, 8)
-        GUI.writeText(MainCanvas.canvas, 'Hide ui', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
         if (!Statistics.visualisationHidden) {
+          GUI.writeText(MainCanvas.canvas, 'Show graphs', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
           GUI.fillCircle(MainCanvas.canvas, MainCanvas.canvas.width * 0.2661 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.823, MainCanvas.canvas.height * 0.008, 0, 0, 0, 0.8)
+        } else {
+          GUI.writeText(MainCanvas.canvas, 'Hide graphs', MainCanvas.canvas.width * 0.28 - Statistics.visualisationPosition, MainCanvas.canvas.height * 0.828, 'left', 'system-ui', 15, 'black')
         }
         
         
@@ -485,13 +483,14 @@ export default class Game extends Scene {
         }
         
         // if (UICollision.checkSquareCollisionMult(((0.37 * window.innerWidth) - Statistics.visualisationPosition) / window.innerWidth, 0.929, 0.1, 0.05))
-        
-        if (Game.neat.usePretrainedNetwork) {
-          GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
-          GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
-        } else {
-          GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
-          GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+        if (!this.settings.visible && !this.openEditor) {
+          if (Game.neat.usePretrainedNetwork) {
+            GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 200, 252, 252, 0.5, 10)
+            GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+          } else {
+            GUI.fillRectangle(canvas, canvas.width * 0.37 - Statistics.visualisationPosition, canvas.height * 0.929, canvas.width * 0.1, canvas.height * 0.05, 255, 200, 200, 0.5, 10)
+            GUI.writeText(canvas, 'Use pretrained <br> network', canvas.width * 0.42 - Statistics.visualisationPosition, canvas.height * 0.951, 'center', 'system-ui', 20, 'black')
+          }
         }
       }
       

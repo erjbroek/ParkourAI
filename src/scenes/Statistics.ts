@@ -21,7 +21,7 @@ export default class Statistics {
 
   public static startHidingGraphs: boolean = true;
 
-  public static visualisationHidden = true;
+  public static visualisationHidden = false;
 
   public static visualisationPosition: number = 0
 

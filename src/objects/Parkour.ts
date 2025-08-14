@@ -1,19 +1,12 @@
 import Level from './Level.js';
-import { platform } from 'os';
 import Obstacle from './Obstacle.js';
 import * as THREE from 'three';
-import MainCanvas from '../setup/MainCanvas.js';
 import ParkourPieces from './ParkourPieces.js';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import Edit from '../scenes/Edit.js';
 import Player from './Player.js';
 import Statistics from '../scenes/Statistics.js';
-import NeatManager from '../utilities/NeatManager.js';
 import Island from './Island.js';
 import Foliage from './Foliage.js';
 import Water from './Water.js';
-import * as CANNON from 'cannon-es';
 
 export default class Parkour {
   public static levels: Level[] = []
@@ -491,7 +484,7 @@ export default class Parkour {
       player.inputLevels.next = next
     }
 
-    player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;
-    player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;
+    // player.inputLevels.current.mesh.material = ParkourPieces.activeMaterial1;
+    // player.inputLevels.next.mesh.material = ParkourPieces.activeMaterial2;
   }
 }

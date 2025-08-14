@@ -44,6 +44,8 @@ export default class MainCanvas {
 
   public static canvas: HTMLCanvasElement;
 
+  private cameraSpeed: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+
   public static flyControls: FlyControls = new FlyControls(MainCanvas.camera, MainCanvas.renderer.domElement);
 
   public static directionalLight: THREE.DirectionalLight = new THREE.DirectionalLight(0xeeeeff, Math.PI);
@@ -108,13 +110,15 @@ export default class MainCanvas {
     const material = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       transmission: 1,
-      roughness: 0.4,
+      roughness: 0.3,
       thickness: 1,
       transparent: true,
     });
 
     const introPlane = new THREE.Mesh(geometry, material);
+    MainCanvas.camera.position.sub(new THREE.Vector3(0, 20, 0))
     MainCanvas.camera.add(introPlane);
+    MainCanvas.camera.rotation.set(-0.4437, -0.6225, -0.25819)
     introPlane.position.set(0, 0, -0.6);
     MainCanvas.scene.add(MainCanvas.camera);
     (MainCanvas as any)._introPlane = introPlane;
@@ -122,6 +126,7 @@ export default class MainCanvas {
     Game.neat.switchNetwork()
     Game.neat.usePretrainedNetwork = true;
     Game.neat.initializePopulation();
+    console.log(MainCanvas.camera.rotation)
   }
 
   public endIntro() {
@@ -320,6 +325,13 @@ export default class MainCanvas {
         MouseListener.mouseDelta.y = 0;
       }
     }
+
+    // also allows camera rotation with arrow keys
+    MainCanvas.yaw += 0.009 * (KeyListener.isKeyDown('ArrowLeft') ? 1 : 0)
+    MainCanvas.yaw -= 0.009 * (KeyListener.isKeyDown('ArrowRight') ? 1 : 0)
+    MainCanvas.pitch += 0.009 * (KeyListener.isKeyDown('ArrowUp') ? 1 : 0)
+    MainCanvas.pitch -= 0.009 * (KeyListener.isKeyDown('ArrowDown') ? 1 : 0)
+    MainCanvas.camera.quaternion.setFromEuler(new THREE.Euler(MainCanvas.pitch, MainCanvas.yaw, 0, 'YXZ'));
   }
 
   private moveCamera(deltaTime: number) {
@@ -330,6 +342,10 @@ export default class MainCanvas {
     if (KeyListener.isKeyDown('ShiftLeft') || KeyListener.isKeyDown('ShiftRight')) {
       MainCanvas.camera.position.y -= 0.5;
     }
+
+    this.cameraSpeed.x *= (this.cameraSpeed.x > 0) ? 0.97 : 1
+    this.cameraSpeed.y *= (this.cameraSpeed.y > 0) ? 0.97 : 1
+    this.cameraSpeed.z *= (this.cameraSpeed.z > 0) ? 0.97 : 1
 
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
